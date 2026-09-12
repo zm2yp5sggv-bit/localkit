@@ -142,13 +142,13 @@ select, input[type="text"], input[type="number"], input[type="url"], textarea {
 }
 textarea { width: 100%; min-height: 220px; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: .88rem; resize: vertical; }
 input[type="range"] { accent-color: var(--accent); }
-button, .btn {
+button {
   background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: #fff;
   border: none; border-radius: 9px; padding: 10px 20px; font-size: .95rem; font-weight: 700;
   cursor: pointer; font-family: inherit; display: inline-flex; align-items: center; gap: 8px;
   text-decoration: none; transition: filter .15s;
 }
-button:hover, .btn:hover { filter: brightness(1.08); text-decoration: none; }
+button:hover { filter: brightness(1.08); text-decoration: none; }
 button:disabled { opacity: .5; cursor: not-allowed; }
 button.ghost {
   background: var(--surface); color: var(--text); border: 1px solid var(--border); font-weight: 600;

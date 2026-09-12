@@ -70,6 +70,10 @@
       var g = document.getElementById('ghLink');
       if (g) g.href = window.LK_CONFIG.github;
     }
+    if (window.LK_CONFIG && window.LK_CONFIG.repo) {
+      var r = document.getElementById('repoLink');
+      if (r) r.href = window.LK_CONFIG.repo;
+    }
     if (window.LK_CONFIG && window.LK_CONFIG.afdian) {
       var card = document.getElementById('afdianCard');
       var link = document.getElementById('afdianLink');
