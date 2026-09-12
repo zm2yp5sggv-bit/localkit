@@ -1,0 +1,15 @@
+# OS junk
+Thumbs.db
+.DS_Store
+Desktop.ini
+
+# local debug artifacts
+_debug/
+
+# editors
+*.swp
+.vscode/
+.idea/
+
+# private ops playbook (do not publish)
+OPS-本地运营手册.md

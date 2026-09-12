@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en" data-title-key="about.title">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About LocalKit — Private, Local, Free Browser Tools</title>
+  <meta name="description" content="LocalKit is a collection of free online tools that run entirely in your browser. Learn how it works, why it's private, and how to get in touch.">
+  <link rel="canonical" href="https://localkit.tools/about.html">
+  <link rel="icon" href="data:image/svg+xml,&lt;svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'&gt;&lt;rect width='100' height='100' rx='22' fill='%234f46e5'/&gt;&lt;text x='50' y='68' font-size='52' text-anchor='middle' fill='white' font-family='sans-serif' font-weight='bold'&gt;L&lt;/text&gt;&lt;/svg&gt;">
+  <link rel="stylesheet" href="assets/style.css">
+  <script src="assets/i18n.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="inner">
+      <a class="logo" href="index.html"><span class="mark">L</span>LocalKit</a>
+      <nav class="nav">
+        <a href="index.html" data-i18n="nav.tools">Tools</a>
+        <a href="about.html" class="active" data-i18n="nav.about">About</a>
+        <a href="privacy.html" data-i18n="nav.privacy">Privacy</a>
+        <button id="langBtn" class="ghost lang-btn" type="button">中文</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap narrow prose">
+    <h1 style="color:var(--text)" data-i18n="about.h1">About LocalKit</h1>
+    <p data-i18n="about.p1">LocalKit is a collection of small, focused tools for everyday file and text tasks — compressing images, converting formats, merging and splitting PDFs, generating QR codes, converting JSON to TypeScript and more.</p>
+
+    <h2 data-i18n="about.how.h2">How it works</h2>
+    <p data-i18n-html="about.how.p1">Every tool on this site is a piece of JavaScript that runs <strong>inside your browser</strong>. When you drop in a file, your browser reads it from your device, processes it in local memory and hands the result back for download. There is no upload step — we physically can't see your files, because they are never sent anywhere.</p>
+    <p data-i18n="about.how.p2">This design has three nice consequences: your data stays private by default, results are instant regardless of file size, and the site costs almost nothing to run — which is why everything is free.</p>
+
+    <h2 data-i18n="about.why.h2">Why we built it</h2>
+    <p data-i18n="about.why.p">We got tired of "free" converter sites that upload your documents, watermark the output, cap you at two files a day and hide the real limits behind a subscription. LocalKit does one thing differently — local processing — and everything else follows: no sign-up, no watermarks, no artificial limits.</p>
+
+    <h2 data-i18n="about.credits.h2">Open source &amp; credits</h2>
+    <p data-i18n-html="about.credits.p">LocalKit stands on the shoulders of open source: <a href="https://github.com/mozilla/pdf.js" rel="noopener">PDF.js</a>, <a href="https://github.com/Hopding/pdf-lib" rel="noopener">pdf-lib</a>, <a href="https://github.com/dolanmiu/docx" rel="noopener">docx</a>, <a href="https://github.com/Stuk/jszip" rel="noopener">JSZip</a>, <a href="https://github.com/niklasvh/html2canvas" rel="noopener">html2canvas</a>, <a href="https://github.com/parallax/jsPDF" rel="noopener">jsPDF</a>, <a href="https://github.com/VolodymyrBaydalka/docxjs" rel="noopener">docx-preview</a> and <a href="https://github.com/kazuhikoarase/qrcode-generator" rel="noopener">qrcode-generator</a> — and draws inspiration from <a href="https://github.com/CorentinTh/it-tools" rel="noopener">it-tools</a> and <a href="https://github.com/iib0011/omni-tools" rel="noopener">omni-tools</a>. Thank you, open web.</p>
+
+    <h2 data-i18n="about.contact.h2">Contact</h2>
+    <p data-i18n-html="about.contact.p">Found a bug, or is there a tool you'd love to see? Email us at <a href="mailto:hello@localkit.tools">hello@localkit.tools</a> — we read everything and ship popular requests first.</p>
+  </main>
+
+  <footer class="site-footer">
+    <div class="inner">
+      <span data-i18n="footer.line">© 2026 LocalKit · Made for privacy</span>
+      <div class="links">
+        <a href="index.html" data-i18n="nav.tools">Tools</a>
+        <a href="about.html" data-i18n="nav.about">About</a>
+        <a href="privacy.html" data-i18n="nav.privacy">Privacy Policy</a>
+      </div>
+    </div>
+  </footer>
+  <script src="assets/app.js"></script>
+</body>
+</html>

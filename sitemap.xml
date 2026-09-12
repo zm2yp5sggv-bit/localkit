@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://localkit.tools/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
+  <url><loc>https://localkit.tools/tools/compress-image.html</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://localkit.tools/tools/convert-image.html</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://localkit.tools/tools/image-watermark.html</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://localkit.tools/tools/qr-generator.html</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://localkit.tools/tools/merge-pdf.html</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://localkit.tools/tools/split-pdf.html</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://localkit.tools/tools/pdf-to-image.html</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://localkit.tools/tools/docx-to-pdf.html</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://localkit.tools/tools/pdf-to-docx.html</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://localkit.tools/tools/json-to-typescript.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://localkit.tools/tools/text-diff.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://localkit.tools/tools/case-converter.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://localkit.tools/tools/text-statistics.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://localkit.tools/tools/json-formatter.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://localkit.tools/tools/base64-converter.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://localkit.tools/tools/hash-calculator.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://localkit.tools/tools/password-generator.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://localkit.tools/tools/uuid-generator.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://localkit.tools/tools/timestamp-converter.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://localkit.tools/tools/color-converter.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://localkit.tools/donate.html</loc><changefreq>yearly</changefreq><priority>0.4</priority></url>
+  <url><loc>https://localkit.tools/about.html</loc><changefreq>yearly</changefreq><priority>0.4</priority></url>
+  <url><loc>https://localkit.tools/privacy.html</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
+</urlset>

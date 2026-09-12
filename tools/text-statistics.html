@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en" data-title-key="stat.title">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Word &amp; Character Counter Online Free — Live Text Statistics | LocalKit</title>
+  <meta name="description" content="Count characters, words, lines, paragraphs, sentences and reading time as you type. Chinese and Latin aware. Free, no upload.">
+  <link rel="canonical" href="https://localkit.tools/tools/text-statistics.html">
+  <meta property="og:title" content="Word &amp; Character Counter Online Free">
+  <meta property="og:description" content="Live text statistics — characters, words, lines, reading time.">
+  <meta property="og:type" content="website">
+  <link rel="icon" href="data:image/svg+xml,&lt;svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'&gt;&lt;rect width='100' height='100' rx='22' fill='%234f46e5'/&gt;&lt;text x='50' y='68' font-size='52' text-anchor='middle' fill='white' font-family='sans-serif' font-weight='bold'&gt;L&lt;/text&gt;&lt;/svg&gt;">
+  <link rel="stylesheet" href="../assets/style.css">
+  <script src="../assets/i18n.js"></script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org", "@type": "WebApplication",
+    "name": "LocalKit Text Statistics", "url": "https://localkit.tools/tools/text-statistics.html",
+    "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any (browser-based)",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+  }
+  </script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="inner">
+      <a class="logo" href="../index.html"><span class="mark">L</span>LocalKit</a>
+      <nav class="nav">
+        <a href="../index.html" data-i18n="nav.tools">Tools</a>
+        <a href="../about.html" data-i18n="nav.about">About</a>
+        <a href="../privacy.html" data-i18n="nav.privacy">Privacy</a>
+        <button id="langBtn" class="ghost lang-btn" type="button">中文</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="tool-head">
+      <div class="crumbs"><a href="../index.html" data-i18n="nav.tools">Tools</a> / <span data-i18n="stat.crumb">Text Statistics</span></div>
+      <h1 data-i18n="stat.h1">Text Statistics</h1>
+      <p class="lede" data-i18n="stat.lede">Count characters, words, lines and reading time as you type — nothing is uploaded.</p>
+    </div>
+
+    <div class="panel">
+      <div class="controls" style="margin-top:0">
+        <label style="flex:1;min-width:280px"><span data-i18n="stat.in">Type or paste your text</span>
+          <textarea id="input" style="min-height:200px"></textarea>
+        </label>
+      </div>
+      <div class="stat-grid" id="grid">
+        <div class="cell"><b id="v-chars">0</b><span data-i18n="stat.chars">Characters</span></div>
+        <div class="cell"><b id="v-charsNs">0</b><span data-i18n="stat.charsNs">Without spaces</span></div>
+        <div class="cell"><b id="v-words">0</b><span data-i18n="stat.words">Words</span></div>
+        <div class="cell"><b id="v-lines">0</b><span data-i18n="stat.lines">Lines</span></div>
+        <div class="cell"><b id="v-paras">0</b><span data-i18n="stat.paras">Paragraphs</span></div>
+        <div class="cell"><b id="v-sents">0</b><span data-i18n="stat.sents">Sentences</span></div>
+        <div class="cell"><b id="v-read">0</b><span data-i18n="stat.read">Reading time</span></div>
+        <div class="cell"><b id="v-speak">0</b><span data-i18n="stat.speak">Speaking time</span></div>
+      </div>
+    </div>
+
+    <section class="narrow prose">
+      <h2 data-i18n="stat.how.h2">What gets counted</h2>
+      <ol>
+        <li data-i18n="stat.how1">Characters are counted exactly, with and without spaces.</li>
+        <li data-i18n="stat.how2">Words count each CJK character individually and Latin text by whitespace-separated words.</li>
+        <li data-i18n="stat.how3">Paragraphs are blocks separated by blank lines; sentences end with . ! ? …</li>
+      </ol>
+      <h2 data-i18n="index.faq.h2">Frequently asked questions</h2>
+      <details>
+        <summary data-i18n="stat.fq1">How are words counted for Chinese or Japanese?</summary>
+        <p data-i18n="stat.fa1">Each CJK character counts as one word, while Latin text is counted by whitespace-separated words — the standard approach for mixed-language text.</p>
+      </details>
+      <details>
+        <summary data-i18n="stat.fq2">What reading speed do you assume?</summary>
+        <p data-i18n="stat.fa2">About 200 words (or 300 CJK characters) per minute for silent reading, and 130 words per minute for speaking.</p>
+      </details>
+      <details>
+        <summary data-i18n="stat.fq3">Is my text sent anywhere?</summary>
+        <p data-i18n="stat.fa3">No. All statistics are computed locally as you type.</p>
+      </details>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="inner">
+      <span data-i18n="footer.line">© 2026 LocalKit · Made for privacy</span>
+      <div class="links">
+        <a href="../index.html" data-i18n="nav.tools">Tools</a>
+        <a href="../about.html" data-i18n="nav.about">About</a>
+        <a href="../privacy.html" data-i18n="nav.privacy">Privacy Policy</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="../assets/app.js"></script>
+  <script>
+  (function () {
+    'use strict';
+    const { el } = window.LK;
+    const t = (k, v) => window.LKI.t(k, v);
+
+    function fmtTime(words, cjk) {
+      const mins = words ? words / 200 : 0;
+      const minsCjk = cjk ? cjk / 300 : 0;
+      const m = Math.max(mins, minsCjk);
+      if (m > 0 && m < 1) return t('stat.sec', { n: Math.max(1, Math.round(m * 60)) });
+      return t('stat.min', { n: Math.max(1, Math.round(m)) });
+    }
+
+    function compute(text) {
+      const chars = text.length;
+      const charsNs = text.replace(/\s/g, '').length;
+      const cjk = (text.match(/[\u4e00-\u9fff\u3040-\u30ff\uac00-\ud7af]/g) || []).length;
+      const latin = (text.match(/[A-Za-z0-9'’\-]+/g) || []).length;
+      const words = cjk + latin;
+      const lines = text === '' ? 0 : text.split('\n').length;
+      const paras = text.trim() === '' ? 0 : text.trim().split(/\n\s*\n+/).length;
+      const sents = text.trim() === '' ? 0 : (text.match(/[.!?…]+(\s|$)/g) || []).length;
+      return { chars, charsNs, words, lines, paras, sents,
+        read: fmtTime(words - cjk, cjk), speak: fmtTime(latin / 200 * 200 / 130, cjk / 300 * 300 / 130) };
+    }
+
+    function update() {
+      const r = compute(el('input').value);
+      for (const k of ['chars', 'charsNs', 'words', 'lines', 'paras', 'sents']) el('v-' + k).textContent = r[k];
+      el('v-read').textContent = r.read;
+      el('v-speak').textContent = r.speak;
+      return r;
+    }
+
+    el('input').addEventListener('input', update);
+    window.__lkStat = s => { el('input').value = s; return update(); };
+  })();
+  </script>
+</body>
+</html>

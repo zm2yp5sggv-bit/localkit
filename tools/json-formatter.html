@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en" data-title-key="jf.title">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JSON Formatter &amp; Validator Online Free — Beautify, Minify | LocalKit</title>
+  <meta name="description" content="Beautify, minify and validate JSON online. Exact line/column error locations, key order preserved, fully local and private.">
+  <link rel="canonical" href="https://localkit.tools/tools/json-formatter.html">
+  <meta property="og:title" content="JSON Formatter &amp; Validator Online Free">
+  <meta property="og:description" content="Beautify, minify and validate JSON — exact error locations, fully local.">
+  <meta property="og:type" content="website">
+  <link rel="icon" href="data:image/svg+xml,&lt;svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'&gt;&lt;rect width='100' height='100' rx='22' fill='%234f46e5'/&gt;&lt;text x='50' y='68' font-size='52' text-anchor='middle' fill='white' font-family='sans-serif' font-weight='bold'&gt;L&lt;/text&gt;&lt;/svg&gt;">
+  <link rel="stylesheet" href="../assets/style.css">
+  <script src="../assets/i18n.js"></script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org", "@type": "WebApplication",
+    "name": "LocalKit JSON Formatter", "url": "https://localkit.tools/tools/json-formatter.html",
+    "applicationCategory": "DeveloperApplication", "operatingSystem": "Any (browser-based)",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+  }
+  </script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="inner">
+      <a class="logo" href="../index.html"><span class="mark">L</span>LocalKit</a>
+      <nav class="nav">
+        <a href="../index.html" data-i18n="nav.tools">Tools</a>
+        <a href="../about.html" data-i18n="nav.about">About</a>
+        <a href="../privacy.html" data-i18n="nav.privacy">Privacy</a>
+        <button id="langBtn" class="ghost lang-btn" type="button">中文</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="tool-head">
+      <div class="crumbs"><a href="../index.html" data-i18n="nav.tools">Tools</a> / <span data-i18n="jf.crumb">JSON Formatter</span></div>
+      <h1 data-i18n="jf.h1">JSON Formatter</h1>
+      <p class="lede" data-i18n="jf.lede">Beautify, minify and validate JSON — with precise error locations. Runs locally.</p>
+    </div>
+
+    <div class="panel">
+      <div class="controls" style="margin-top:0">
+        <label><span data-i18n="jf.indent">Indent</span>
+          <select id="indent">
+            <option value="2" data-i18n="jf.i2" selected>2 spaces</option>
+            <option value="4" data-i18n="jf.i4">4 spaces</option>
+            <option value="tab" data-i18n="jf.itab">Tab</option>
+          </select>
+        </label>
+        <button id="beautyBtn" data-i18n="jf.beautify">Beautify</button>
+        <button id="minifyBtn" data-i18n="jf.minify">Minify</button>
+        <button id="copyBtn" class="ghost" data-i18n="jf.copy" disabled>Copy</button>
+        <button id="dlBtn" class="ghost" data-i18n="jf.dl" disabled>Download .json</button>
+      </div>
+      <div class="controls" style="margin-top:4px">
+        <label style="flex:1;min-width:280px"><span data-i18n="jf.in">JSON input</span>
+          <textarea id="input" style="min-height:230px" placeholder='{"compact":"json","paste":"it here"}'></textarea>
+        </label>
+        <label style="flex:1;min-width:280px"><span data-i18n="jf.out">Result</span>
+          <textarea id="output" readonly style="min-height:230px"></textarea>
+        </label>
+      </div>
+      <div class="status" role="status"></div>
+    </div>
+
+    <section class="narrow prose">
+      <h2 data-i18n="jf.how.h2">How to format JSON</h2>
+      <ol>
+        <li data-i18n="jf.how1">Paste JSON into the input box.</li>
+        <li data-i18n-html="jf.how2">Press <strong>Beautify</strong> for readable indentation or <strong>Minify</strong> to strip every unnecessary byte.</li>
+        <li data-i18n="jf.how3">Invalid input? You get the exact line and column of the error.</li>
+      </ol>
+      <h2 data-i18n="index.faq.h2">Frequently asked questions</h2>
+      <details>
+        <summary data-i18n="jf.fq1">Can it tell me where my JSON breaks?</summary>
+        <p data-i18n="jf.fa1">Yes — on parse errors you get the exact line and column, usually a stray comma, an unquoted key or a trailing comma.</p>
+      </details>
+      <details>
+        <summary data-i18n="jf.fq2">Does it sort or modify my keys?</summary>
+        <p data-i18n="jf.fa2">Never — beautifying only changes whitespace. Key order is preserved exactly as you pasted it.</p>
+      </details>
+      <details>
+        <summary data-i18n="jf.fq3">Is private API data safe here?</summary>
+        <p data-i18n="jf.fa3">Yes — parsing happens in your browser; responses with customer data never leave your machine.</p>
+      </details>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="inner">
+      <span data-i18n="footer.line">© 2026 LocalKit · Made for privacy</span>
+      <div class="links">
+        <a href="../index.html" data-i18n="nav.tools">Tools</a>
+        <a href="../about.html" data-i18n="nav.about">About</a>
+        <a href="../privacy.html" data-i18n="nav.privacy">Privacy Policy</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="../assets/app.js"></script>
+  <script>
+  (function () {
+    'use strict';
+    const { el, downloadBlob, setStatus } = window.LK;
+    const t = (k, v) => window.LKI.t(k, v);
+
+    function indentStr() {
+      const v = el('indent').value;
+      return v === 'tab' ? '\t' : parseInt(v, 10);
+    }
+
+    function lineCol(text, pos) {
+      const before = text.slice(0, pos);
+      const line = (before.match(/\n/g) || []).length + 1;
+      const col = pos - before.lastIndexOf('\n');
+      return { line: line, col: col };
+    }
+
+    function transform(minify) {
+      const src = el('input').value;
+      if (!src.trim()) return;
+      try {
+        const obj = JSON.parse(src);
+        const out = minify ? JSON.stringify(obj) : JSON.stringify(obj, null, indentStr());
+        el('output').value = out;
+        el('copyBtn').disabled = false; el('dlBtn').disabled = false;
+        setStatus(t('jf.ok'), 'ok');
+        return out;
+      } catch (err) {
+        el('output').value = '';
+        el('copyBtn').disabled = true; el('dlBtn').disabled = true;
+        const m = String(err.message).match(/position (\d+)/);
+        if (m) {
+          const p = lineCol(src, parseInt(m[1], 10));
+          setStatus(t('jf.err.at', { l: p.line, c: p.col, msg: err.message.replace(/^.+position \d+ ?/i, '') }), 'err');
+        } else {
+          setStatus(t('jf.err.at', { l: '?', c: '?', msg: err.message }), 'err');
+        }
+        return null;
+      }
+    }
+
+    el('beautyBtn').addEventListener('click', () => transform(false));
+    el('minifyBtn').addEventListener('click', () => transform(true));
+    el('copyBtn').addEventListener('click', async () => {
+      await navigator.clipboard.writeText(el('output').value);
+      setStatus(t('jt.copied'), 'ok');
+    });
+    el('dlBtn').addEventListener('click', () => {
+      downloadBlob(new Blob([el('output').value], { type: 'application/json' }), 'formatted.json');
+    });
+    window.__lkJson = (s, minify) => { el('input').value = s; return transform(minify); };
+  })();
+  </script>
+</body>
+</html>

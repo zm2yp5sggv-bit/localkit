@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en" data-title-key="ci.title">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Compress Image Online Free (JPG, PNG, WebP) — No Upload | LocalKit</title>
+  <meta name="description" content="Compress JPG, PNG and WebP images in your browser. Batch compression with quality control and resizing — files never leave your device, no upload, free and unlimited.">
+  <link rel="canonical" href="https://localkit.tools/tools/compress-image.html">
+  <meta property="og:title" content="Compress Image Online Free — No Upload">
+  <meta property="og:description" content="Batch-compress JPG, PNG and WebP locally in your browser. Free, private, no sign-up.">
+  <meta property="og:type" content="website">
+  <link rel="icon" href="data:image/svg+xml,&lt;svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'&gt;&lt;rect width='100' height='100' rx='22' fill='%234f46e5'/&gt;&lt;text x='50' y='68' font-size='52' text-anchor='middle' fill='white' font-family='sans-serif' font-weight='bold'&gt;L&lt;/text&gt;&lt;/svg&gt;">
+  <link rel="stylesheet" href="../assets/style.css">
+  <script src="../assets/i18n.js"></script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "LocalKit Image Compressor",
+    "url": "https://localkit.tools/tools/compress-image.html",
+    "applicationCategory": "MultimediaApplication",
+    "operatingSystem": "Any (browser-based)",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Are my images uploaded to a server?",
+        "acceptedAnswer": { "@type": "Answer", "text": "No. Compression happens entirely inside your browser using the Canvas API. Your images never leave your device." }
+      },
+      {
+        "@type": "Question",
+        "name": "Why is my PNG barely smaller after compressing?",
+        "acceptedAnswer": { "@type": "Answer", "text": "PNG is a lossless format, so quality settings do not affect it. To shrink PNG files dramatically, convert them to WebP or JPEG with the output format option." }
+      },
+      {
+        "@type": "Question",
+        "name": "How many images can I compress at once?",
+        "acceptedAnswer": { "@type": "Answer", "text": "There is no fixed limit — compression is batch and runs on your own hardware, so it depends only on your device's memory." }
+      }
+    ]
+  }
+  </script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="inner">
+      <a class="logo" href="../index.html"><span class="mark">L</span>LocalKit</a>
+      <nav class="nav">
+        <a href="../index.html" data-i18n="nav.tools">Tools</a>
+        <a href="../about.html" data-i18n="nav.about">About</a>
+        <a href="../privacy.html" data-i18n="nav.privacy">Privacy</a>
+        <button id="langBtn" class="ghost lang-btn" type="button">中文</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="tool-head">
+      <div class="crumbs"><a href="../index.html" data-i18n="nav.tools">Tools</a> / <span data-i18n="ci.crumb">Compress Image</span></div>
+      <h1 data-i18n="ci.h1">Compress Image</h1>
+      <p class="lede" data-i18n="ci.lede">Shrink JPG, PNG and WebP files in batches — right in your browser. Nothing is uploaded.</p>
+    </div>
+
+    <div class="panel">
+      <div class="dropzone" id="dropzone">
+        <div class="big">🖼️</div>
+        <div class="title" data-i18n="ci.drop.title">Drop images here, or click to choose files</div>
+        <div class="hint" data-i18n="ci.drop.hint">JPG · PNG · WebP · GIF · BMP — as many as you like</div>
+      </div>
+      <input type="file" id="fileInput" accept="image/*" multiple hidden>
+
+      <div class="controls">
+        <label><span data-i18n="ci.fmt">Output format</span>
+          <select id="format">
+            <option value="same" data-i18n="ci.fmt.same" selected>Same as source</option>
+            <option value="image/jpeg" data-i18n="ci.fmt.jpg">JPEG — smallest photos</option>
+            <option value="image/webp" data-i18n="ci.fmt.webp">WebP — best balance</option>
+            <option value="image/png" data-i18n="ci.fmt.png">PNG — lossless</option>
+          </select>
+        </label>
+        <label class="inline"><span data-i18n="ci.quality">Quality:</span> <span id="qVal">80</span>% <input type="range" id="quality" min="10" max="100" value="80"></label>
+        <label><span data-i18n="ci.maxdim">Max dimension (px, 0 = keep)</span>
+          <input type="number" id="maxDim" value="0" min="0" step="50" style="width:110px">
+        </label>
+        <button id="runBtn" data-i18n="ci.run" disabled>Compress</button>
+        <button id="zipBtn" class="ghost" data-i18n="ci.zip" disabled>Download all (.zip)</button>
+      </div>
+      <div class="status" role="status"></div>
+      <div class="result-list" id="results"></div>
+    </div>
+
+    <section class="narrow prose">
+      <h2 data-i18n="ci.how.h2">How to compress images</h2>
+      <ol>
+        <li data-i18n="ci.how1">Drop your images onto the box above (or click it to pick files).</li>
+        <li data-i18n="ci.how2">Choose a format, quality level and optional maximum size in pixels.</li>
+        <li data-i18n-html="ci.how3">Press <strong>Compress</strong> — each result shows the original vs. new size.</li>
+        <li data-i18n="ci.how4">Download files one by one, or grab everything as a ZIP.</li>
+      </ol>
+
+      <h2 data-i18n="ci.tips.h2">Tips for smaller files</h2>
+      <ul>
+        <li data-i18n-html="ci.tip1"><strong>Photos:</strong> JPEG at 70–85% quality is usually indistinguishable from the original and 3–10× smaller.</li>
+        <li data-i18n-html="ci.tip2"><strong>Screenshots and graphics:</strong> choose WebP — it stays sharp while cutting size dramatically.</li>
+        <li data-i18n-html="ci.tip3"><strong>PNG files:</strong> PNG is lossless, so the quality slider won't change it. Convert to WebP for real savings, or reduce the max dimension.</li>
+        <li data-i18n-html="ci.tip4"><strong>For the web:</strong> resizing to the actual display width (e.g. 1600&nbsp;px) often saves more than quality tweaks alone.</li>
+      </ul>
+
+      <h2 data-i18n="index.faq.h2">Frequently asked questions</h2>
+      <details>
+        <summary data-i18n="ci.fq1">Are my images uploaded to a server?</summary>
+        <p data-i18n="ci.fa1">No. Compression happens entirely inside your browser using the Canvas API. Your images never leave your device — you can even disconnect from the internet after loading the page.</p>
+      </details>
+      <details>
+        <summary data-i18n="ci.fq2">Why is my PNG barely smaller after compressing?</summary>
+        <p data-i18n="ci.fa2">PNG is a lossless format, so the quality setting doesn't affect it. To shrink PNG files dramatically, pick WebP or JPEG as the output format, or lower the max dimension.</p>
+      </details>
+      <details>
+        <summary data-i18n="ci.fq3">Is there a file count or size limit?</summary>
+        <p data-i18n="ci.fa3">No artificial limits. Because everything runs on your own hardware, the practical limit is your device's memory. On phones, batches of a few hundred photos work fine.</p>
+      </details>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="inner">
+      <span data-i18n="footer.line">© 2026 LocalKit · Made for privacy</span>
+      <div class="links">
+        <a href="../index.html" data-i18n="nav.tools">Tools</a>
+        <a href="../about.html" data-i18n="nav.about">About</a>
+        <a href="../privacy.html" data-i18n="nav.privacy">Privacy Policy</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="../assets/app.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+  <script>
+  (function () {
+    'use strict';
+    const { el, setupDropzone, formatBytes, downloadBlob, setStatus, decodeImage, canvasToBlob } = window.LK;
+    const t = (k, v) => window.LKI.t(k, v);
+    let files = [];
+    const results = el('results');
+
+    setupDropzone(el('dropzone'), el('fileInput'), (fl) => {
+      files = Array.from(fl).filter(f => f.type.startsWith('image/'));
+      if (!files.length) { setStatus(t('ci.none'), 'err'); return; }
+      el('runBtn').disabled = false;
+      results.innerHTML = '';
+      setStatus(t('ci.ready', { n: files.length }));
+    });
+
+    el('quality').addEventListener('input', (e) => el('qVal').textContent = e.target.value);
+
+    const extFor = { 'image/jpeg': 'jpg', 'image/webp': 'webp', 'image/png': 'png' };
+
+    async function processOne(file) {
+      const format = el('format').value;
+      const type = format === 'same' ? (file.type === 'image/jpg' ? 'image/jpeg' : file.type) : format;
+      const q = parseInt(el('quality').value, 10) / 100;
+      const maxDim = parseInt(el('maxDim').value, 10) || 0;
+
+      const { bitmap, width, height } = await decodeImage(file, maxDim);
+      const canvas = document.createElement('canvas');
+      canvas.width = width; canvas.height = height;
+      canvas.getContext('2d').drawImage(bitmap, 0, 0, width, height);
+      bitmap.close();
+      const blob = await canvasToBlob(canvas, type, q);
+
+      const base = file.name.replace(/\.[^.]+$/, '');
+      const outName = base + (type === file.type ? '-min' : '') + '.' + (extFor[type] || 'img');
+      return { blob, outName, outSize: blob.size, inSize: file.size };
+    }
+
+    const produced = [];
+
+    el('runBtn').addEventListener('click', async () => {
+      if (!files.length) return;
+      el('runBtn').disabled = true; el('zipBtn').disabled = true;
+      produced.length = 0; results.innerHTML = '';
+      let ok = 0;
+      for (const f of files) {
+        setStatus(t('ci.working', { name: f.name, i: ok + 1, n: files.length }));
+        try {
+          const r = await processOne(f);
+          produced.push(r);
+          const saved = r.inSize ? Math.max(0, Math.round((1 - r.outSize / r.inSize) * 100)) : 0;
+          const item = document.createElement('div');
+          item.className = 'result-item';
+          item.innerHTML =
+            '<span class="name">' + r.outName + '</span>' +
+            '<span class="meta">' + formatBytes(r.inSize) + ' → ' + formatBytes(r.outSize) + '</span>' +
+            '<span class="spacer"></span>' +
+            (saved > 0 ? '<span class="saved">−' + saved + '%</span>' : '<span class="meta">' + t('ci.nogain') + '</span>') +
+            '<button class="small ghost">' + t('ci.dl') + '</button>';
+          item.querySelector('button').addEventListener('click', () => downloadBlob(r.blob, r.outName));
+          results.appendChild(item);
+          ok++;
+        } catch (err) {
+          setStatus(t('ci.fail', { name: f.name, msg: err.message }), 'err');
+        }
+      }
+      setStatus(t('ci.done', { ok: ok, n: files.length }), ok ? 'ok' : 'err');
+      el('runBtn').disabled = false;
+      el('zipBtn').disabled = !produced.length;
+    });
+
+    el('zipBtn').addEventListener('click', async () => {
+      if (!produced.length) return;
+      setStatus(t('ci.zipping'));
+      const zip = new JSZip();
+      produced.forEach(r => zip.file(r.outName, r.blob));
+      const blob = await zip.generateAsync({ type: 'blob' });
+      downloadBlob(blob, 'localkit-compressed.zip');
+      setStatus(t('ci.zipok'), 'ok');
+    });
+
+    // test hook
+    window.__lkProcess = async (filesIn) => {
+      files = Array.from(filesIn).filter(f => f.type.startsWith('image/'));
+      el('runBtn').disabled = false;
+      el('runBtn').click();
+      while (el('runBtn').disabled) await new Promise(r => setTimeout(r, 100));
+      return produced.length;
+    };
+  })();
+  </script>
+</body>
+</html>

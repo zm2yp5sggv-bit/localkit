@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en" data-title-key="jt.title">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JSON to TypeScript Converter — Interfaces Online, Free | LocalKit</title>
+  <meta name="description" content="Paste JSON and instantly get clean TypeScript interfaces. Handles nested objects, arrays and unions. Runs locally in your browser — your API responses never leave your machine.">
+  <link rel="canonical" href="https://localkit.tools/tools/json-to-typescript.html">
+  <meta property="og:title" content="JSON to TypeScript Converter — Free Online">
+  <meta property="og:description" content="Paste JSON, get clean TypeScript interfaces instantly. Private — runs in your browser.">
+  <meta property="og:type" content="website">
+  <link rel="icon" href="data:image/svg+xml,&lt;svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'&gt;&lt;rect width='100' height='100' rx='22' fill='%234f46e5'/&gt;&lt;text x='50' y='68' font-size='52' text-anchor='middle' fill='white' font-family='sans-serif' font-weight='bold'&gt;L&lt;/text&gt;&lt;/svg&gt;">
+  <link rel="stylesheet" href="../assets/style.css">
+  <script src="../assets/i18n.js"></script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "LocalKit JSON to TypeScript",
+    "url": "https://localkit.tools/tools/json-to-typescript.html",
+    "applicationCategory": "DeveloperApplication",
+    "operatingSystem": "Any (browser-based)",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Is it safe to paste API responses here?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Yes. The conversion runs entirely in your browser — nothing is transmitted to any server, so private API payloads stay on your machine." }
+      },
+      {
+        "@type": "Question",
+        "name": "How are arrays handled?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Array element types are unified: an array of objects becomes a single interface followed by [], and arrays with mixed element types become a union type like (string | number)[]." }
+      },
+      {
+        "@type": "Question",
+        "name": "Can I customize the root interface name?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Yes — change the 'Root name' field before converting. Nested interfaces are named automatically from their JSON keys." }
+      }
+    ]
+  }
+  </script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="inner">
+      <a class="logo" href="../index.html"><span class="mark">L</span>LocalKit</a>
+      <nav class="nav">
+        <a href="../index.html" data-i18n="nav.tools">Tools</a>
+        <a href="../about.html" data-i18n="nav.about">About</a>
+        <a href="../privacy.html" data-i18n="nav.privacy">Privacy</a>
+        <button id="langBtn" class="ghost lang-btn" type="button">中文</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="tool-head">
+      <div class="crumbs"><a href="../index.html" data-i18n="nav.tools">Tools</a> / <span data-i18n="jt.crumb">JSON to TypeScript</span></div>
+      <h1 data-i18n="jt.h1">JSON to TypeScript</h1>
+      <p class="lede" data-i18n="jt.lede">Paste JSON, get clean interfaces — instantly, locally, no data sent anywhere.</p>
+    </div>
+
+    <div class="panel">
+      <div class="controls">
+        <label><span data-i18n="jt.root">Root name</span> <input type="text" id="rootName" value="Root" style="width:130px"></label>
+        <button id="runBtn" data-i18n="jt.run">Convert</button>
+        <button id="sampleBtn" class="ghost" data-i18n="jt.sample">Load sample</button>
+        <button id="copyBtn" class="ghost" data-i18n="jt.copy" disabled>Copy</button>
+        <button id="dlBtn" class="ghost" data-i18n="jt.dl" disabled>Download .ts</button>
+      </div>
+      <div class="controls" style="margin-top:4px">
+        <label style="flex:1;min-width:280px"><span data-i18n="jt.in">JSON input</span>
+          <textarea id="input" data-i18n-ph="jt.ph" placeholder='{"id": 1, "name": "Ada", "tags": ["math", "code"], "address": {"city": "London"}}'></textarea>
+        </label>
+        <label style="flex:1;min-width:280px"><span data-i18n="jt.out">TypeScript output</span>
+          <textarea id="output" readonly></textarea>
+        </label>
+      </div>
+      <div class="status" role="status"></div>
+    </div>
+
+    <section class="narrow prose">
+      <h2 data-i18n="jt.why.h2">Why another JSON to TS tool?</h2>
+      <p data-i18n="jt.why.p">Because it's instant and private. Paste a response from your internal API — the payload never leaves your machine, which matters when the JSON contains customer data, tokens or unreleased product fields. Nested objects become their own interfaces, arrays of objects are unified into one type, and mixed arrays become unions.</p>
+
+      <h2 data-i18n="index.faq.h2">Frequently asked questions</h2>
+      <details>
+        <summary data-i18n="jt.fq1">Is it safe to paste API responses here?</summary>
+        <p data-i18n="jt.fa1">Yes. Conversion runs entirely in your browser — nothing is transmitted. You can unplug your network and it keeps working.</p>
+      </details>
+      <details>
+        <summary data-i18n="jt.fq2">How are arrays handled?</summary>
+        <p data-i18n-html="jt.fa2">Element types are unified: an array of same-shaped objects becomes a single interface followed by <code>[]</code>; arrays with mixed element types become unions like <code>(string | number)[]</code>.</p>
+      </details>
+      <details>
+        <summary data-i18n="jt.fq3">What about null values?</summary>
+        <p data-i18n-html="jt.fa3"><code>null</code> appears as <code>null</code> in a union, e.g. <code>string | null</code> — exactly what the sample JSON contained.</p>
+      </details>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="inner">
+      <span data-i18n="footer.line">© 2026 LocalKit · Made for privacy</span>
+      <div class="links">
+        <a href="../index.html" data-i18n="nav.tools">Tools</a>
+        <a href="../about.html" data-i18n="nav.about">About</a>
+        <a href="../privacy.html" data-i18n="nav.privacy">Privacy Policy</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="../assets/app.js"></script>
+  <script>
+  (function () {
+    'use strict';
+    const { el, downloadBlob, setStatus } = window.LK;
+    const t = (k, v) => window.LKI.t(k, v);
+
+    function convert(json, rootName) {
+      const blocks = [];
+      const used = new Set();
+
+      function pascal(s) {
+        const out = String(s).replace(/[^a-zA-Z0-9]+(.)/g, (_, c) => c.toUpperCase())
+          .replace(/^[^a-zA-Z]+/, '');
+        return out ? out[0].toUpperCase() + out.slice(1) : 'Item';
+      }
+
+      function freshName(hint) {
+        let base = pascal(hint) || 'Item';
+        let name = base, i = 2;
+        while (used.has(name)) name = base + i++;
+        used.add(name);
+        return name;
+      }
+
+      function shapeOf(v) {
+        if (v === null) return 'null';
+        if (Array.isArray(v)) return '[' + v.map(shapeOf).join(',') + ']';
+        if (typeof v === 'object') return '{' + Object.keys(v).sort().map(k => k + ':' + shapeOf(v[k])).join(',') + '}';
+        return typeof v;
+      }
+
+      function gen(value, hint) {
+        if (value === null) return 'null';
+        switch (typeof value) {
+          case 'string': return 'string';
+          case 'number': return 'number';
+          case 'boolean': return 'boolean';
+          case 'object': {
+            if (Array.isArray(value)) {
+              if (!value.length) return 'unknown[]';
+              // dedupe same-shaped elements so an array of objects yields one interface
+              const seen = new Set();
+              const uniq = [];
+              for (const v of value) {
+                const sig = shapeOf(v);
+                if (!seen.has(sig)) { seen.add(sig); uniq.push(v); }
+              }
+              const types = [...new Set(uniq.map(v => gen(v, hint.replace(/s$/, '') || 'Item')))];
+              return types.length === 1 ? types[0] + '[]' : '(' + types.join(' | ') + ')[]';
+            }
+            const name = freshName(hint);
+            const fields = Object.entries(value).map(([k, v]) => {
+              const key = /^[A-Za-z_$][A-Za-z0-9_$]*$/.test(k) ? k : JSON.stringify(k);
+              return '  ' + key + ': ' + gen(v, k) + ';';
+            });
+            blocks.push('export interface ' + name + ' {\n' + (fields.join('\n') || '  [key: string]: unknown;') + '\n}');
+            return name;
+          }
+          default: return 'unknown';
+        }
+      }
+
+      const rootType = gen(json, rootName);
+      // children are pushed before their parent, so the root interface is the last block
+      const rootBlock = blocks.pop();
+      return rootBlock
+        ? rootBlock + (blocks.length ? '\n\n' + blocks.join('\n\n') : '') + '\n\nexport type ' + pascal(rootName) + 'Value = ' + rootBlock.match(/interface (\w+)/)[1] + ';\n'
+        : 'export type ' + pascal(rootName) + 'Value = ' + rootType + ';\n';
+    }
+
+    el('sampleBtn').addEventListener('click', () => {
+      el('input').value = JSON.stringify({
+        id: 42,
+        name: 'Ada Lovelace',
+        email: 'ada@example.com',
+        active: true,
+        tags: ['math', 'code'],
+        score: 98.5,
+        address: { city: 'London', zip: 'W1', geo: { lat: 51.5, lng: -0.12 } },
+        orders: [{ id: 7, total: 129.9, items: [{ sku: 'A1', qty: 2 }] }, { id: 8, total: 40, items: [{ sku: 'B2', qty: 1 }] }],
+        nickname: null
+      }, null, 2);
+      setStatus(t('jt.sampleloaded'));
+    });
+
+    el('runBtn').addEventListener('click', () => {
+      try {
+        const json = JSON.parse(el('input').value);
+        const rootName = el('rootName').value.trim() || 'Root';
+        const ts = convert(json, rootName);
+        el('output').value = ts;
+        el('copyBtn').disabled = false; el('dlBtn').disabled = false;
+        setStatus(t('jt.done', { n: (ts.match(/interface /g) || []).length }), 'ok');
+      } catch (err) {
+        el('output').value = '';
+        el('copyBtn').disabled = true; el('dlBtn').disabled = true;
+        setStatus(t('jt.invalid', { msg: err.message }), 'err');
+      }
+    });
+
+    el('copyBtn').addEventListener('click', async () => {
+      await navigator.clipboard.writeText(el('output').value);
+      setStatus(t('jt.copied'), 'ok');
+    });
+
+    el('dlBtn').addEventListener('click', () => {
+      downloadBlob(new Blob([el('output').value], { type: 'text/plain' }),
+        (el('rootName').value.trim() || 'types').toLowerCase() + '.ts');
+    });
+  })();
+  </script>
+</body>
+</html>

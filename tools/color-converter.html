@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en" data-title-key="col.title">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Color Converter Online Free — HEX, RGB, HSL | LocalKit</title>
+  <meta name="description" content="Convert colors between HEX, RGB and HSL with a live preview. Supports 8-digit hex with alpha. Free, instant, fully local.">
+  <link rel="canonical" href="https://localkit.tools/tools/color-converter.html">
+  <meta property="og:title" content="Color Converter Online Free — HEX, RGB, HSL">
+  <meta property="og:description" content="HEX, RGB and HSL conversions with a live preview.">
+  <meta property="og:type" content="website">
+  <link rel="icon" href="data:image/svg+xml,&lt;svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'&gt;&lt;rect width='100' height='100' rx='22' fill='%234f46e5'/&gt;&lt;text x='50' y='68' font-size='52' text-anchor='middle' fill='white' font-family='sans-serif' font-weight='bold'&gt;L&lt;/text&gt;&lt;/svg&gt;">
+  <link rel="stylesheet" href="../assets/style.css">
+  <script src="../assets/i18n.js"></script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org", "@type": "WebApplication",
+    "name": "LocalKit Color Converter", "url": "https://localkit.tools/tools/color-converter.html",
+    "applicationCategory": "DesignApplication", "operatingSystem": "Any (browser-based)",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+  }
+  </script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="inner">
+      <a class="logo" href="../index.html"><span class="mark">L</span>LocalKit</a>
+      <nav class="nav">
+        <a href="../index.html" data-i18n="nav.tools">Tools</a>
+        <a href="../about.html" data-i18n="nav.about">About</a>
+        <a href="../privacy.html" data-i18n="nav.privacy">Privacy</a>
+        <button id="langBtn" class="ghost lang-btn" type="button">中文</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="tool-head">
+      <div class="crumbs"><a href="../index.html" data-i18n="nav.tools">Tools</a> / <span data-i18n="col.crumb">Color Converter</span></div>
+      <h1 data-i18n="col.h1">Color Converter</h1>
+      <p class="lede" data-i18n="col.lede">Convert colors between HEX, RGB and HSL with a live preview — pick, paste or tune.</p>
+    </div>
+
+    <div class="panel">
+      <div class="controls" style="margin-top:0;align-items:flex-end">
+        <label style="flex:1;min-width:240px"><span data-i18n="col.in">Color (hex, rgb() or hsl())</span>
+          <input type="text" id="colorIn" value="#4f46e5">
+        </label>
+        <label><span data-i18n="col.picker">Or pick visually</span>
+          <input type="color" id="picker" value="#4f46e5" style="width:52px;height:40px;padding:2px;border:1px solid var(--border);border-radius:8px;background:var(--bg)">
+        </label>
+        <label><span data-i18n="col.preview">Preview</span>
+          <div id="swatch" style="width:64px;height:40px;border-radius:8px;border:1px solid var(--border);background:#4f46e5"></div>
+        </label>
+      </div>
+      <div class="status" role="status"></div>
+      <div class="result-list" id="results"></div>
+    </div>
+
+    <section class="narrow prose">
+      <h2 data-i18n="col.how.h2">How to convert colors</h2>
+      <ol>
+        <li data-i18n="col.how1">Paste any CSS color — #hex, rgb() or hsl() — or use the visual picker.</li>
+        <li data-i18n="col.how2">All equivalent formats update instantly with a live preview.</li>
+        <li data-i18n="col.how3">Click a value to copy it.</li>
+      </ol>
+      <h2 data-i18n="index.faq.h2">Frequently asked questions</h2>
+      <details>
+        <summary data-i18n="col.fq1">When should I use HSL instead of HEX?</summary>
+        <p data-i18n="col.fa1">HSL is for humans: raising Lightness brightens a color without changing its hue — perfect for hover states and dark-mode palettes. HEX/RGB are for machines.</p>
+      </details>
+      <details>
+        <summary data-i18n="col.fq2">Do you support 8-digit hex with alpha?</summary>
+        <p data-i18n="col.fa2">Yes — #RRGGBBAA input is parsed and the alpha channel appears in the RGB output as rgba().</p>
+      </details>
+      <details>
+        <summary data-i18n="col.fq3">Are colors sent anywhere?</summary>
+        <p data-i18n="col.fa3">No — parsing and preview run locally in your browser.</p>
+      </details>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="inner">
+      <span data-i18n="footer.line">© 2026 LocalKit · Made for privacy</span>
+      <div class="links">
+        <a href="../index.html" data-i18n="nav.tools">Tools</a>
+        <a href="../about.html" data-i18n="nav.about">About</a>
+        <a href="../privacy.html" data-i18n="nav.privacy">Privacy Policy</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="../assets/app.js"></script>
+  <script>
+  (function () {
+    'use strict';
+    const { el, setStatus } = window.LK;
+    const t = (k, v) => window.LKI.t(k, v);
+    const r2 = n => Math.round(n * 100) / 100;
+
+    function parseColor(str) {
+      str = str.trim().toLowerCase();
+      let m;
+      if ((m = str.match(/^#([0-9a-f]{3})$/))) {
+        return { r: parseInt(m[1][0] + m[1][0], 16), g: parseInt(m[1][1] + m[1][1], 16), b: parseInt(m[1][2] + m[1][2], 16), a: 1 };
+      }
+      if ((m = str.match(/^#([0-9a-f]{6})$/))) {
+        return { r: parseInt(m[1].slice(0, 2), 16), g: parseInt(m[1].slice(2, 4), 16), b: parseInt(m[1].slice(4, 6), 16), a: 1 };
+      }
+      if ((m = str.match(/^#([0-9a-f]{8})$/))) {
+        return { r: parseInt(m[1].slice(0, 2), 16), g: parseInt(m[1].slice(2, 4), 16), b: parseInt(m[1].slice(4, 6), 16), a: parseInt(m[1].slice(6, 8), 16) / 255 };
+      }
+      if ((m = str.match(/^rgba?\(\s*(\d+)[,\s]+(\d+)[,\s]+(\d+)\s*(?:[,/]\s*([\d.]+%?))?\s*\)$/))) {
+        return { r: +m[1], g: +m[2], b: +m[3], a: m[4] ? (m[4].endsWith('%') ? parseFloat(m[4]) / 100 : +m[4]) : 1 };
+      }
+      if ((m = str.match(/^hsla?\(\s*([\d.]+)(?:deg)?[,\s]+([\d.]+)%?[,\s]+([\d.]+)%?\s*(?:[,/]\s*([\d.]+%?))?\s*\)$/))) {
+        const rgb = hslToRgb(+m[1] / 360, +m[2] / 100, +m[3] / 100);
+        return { r: rgb.r, g: rgb.g, b: rgb.b, a: m[4] ? (m[4].endsWith('%') ? parseFloat(m[4]) / 100 : +m[4]) : 1 };
+      }
+      return null;
+    }
+
+    function hslToRgb(h, s, l) {
+      if (s === 0) { const v = Math.round(l * 255); return { r: v, g: v, b: v }; }
+      const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+      const p = 2 * l - q;
+      const f = tt => {
+        if (tt < 0) tt += 1; if (tt > 1) tt -= 1;
+        if (tt < 1 / 6) return p + (q - p) * 6 * tt;
+        if (tt < 1 / 2) return q;
+        if (tt < 2 / 3) return p + (q - p) * (2 / 3 - tt) * 6;
+        return p;
+      };
+      return { r: Math.round(f(h + 1 / 3) * 255), g: Math.round(f(h) * 255), b: Math.round(f(h - 1 / 3) * 255) };
+    }
+
+    function rgbToHsl(r, g, b) {
+      r /= 255; g /= 255; b /= 255;
+      const max = Math.max(r, g, b), min = Math.min(r, g, b);
+      let h = 0, s = 0; const l = (max + min) / 2;
+      if (max !== min) {
+        const d = max - min;
+        s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+        if (max === r) h = ((g - b) / d + (g < b ? 6 : 0));
+        else if (max === g) h = (b - r) / d + 2;
+        else h = (r - g) / d + 4;
+        h /= 6;
+      }
+      return { h: Math.round(h * 360), s: Math.round(s * 100), l: Math.round(l * 100) };
+    }
+
+    function render() {
+      const c = parseColor(el('colorIn').value);
+      const swatch = el('swatch'), results = el('results');
+      if (!c) {
+        swatch.style.background = 'transparent';
+        results.innerHTML = '';
+        setStatus(t('col.err'), 'err');
+        return null;
+      }
+      setStatus('');
+      const hex = '#' + [c.r, c.g, c.b].map(v => v.toString(16).padStart(2, '0')).join('');
+      const hsl = rgbToHsl(c.r, c.g, c.b);
+      const rows = [
+        ['HEX', hex + (c.a < 1 ? Math.round(c.a * 255).toString(16).padStart(2, '0') : '')],
+        ['RGB', (c.a < 1 ? 'rgba(' : 'rgb(') + c.r + ', ' + c.g + ', ' + c.b + (c.a < 1 ? ', ' + r2(c.a) : '') + ')'],
+        ['HSL', (c.a < 1 ? 'hsla(' : 'hsl(') + hsl.h + ', ' + hsl.s + '%, ' + hsl.l + '%' + (c.a < 1 ? ', ' + r2(c.a) : '') + ')'],
+      ];
+      swatch.style.background = 'rgba(' + c.r + ',' + c.g + ',' + c.b + ',' + c.a + ')';
+      results.innerHTML = '';
+      rows.forEach(([name, val]) => {
+        const item = document.createElement('div');
+        item.className = 'result-item';
+        item.innerHTML = '<span class="meta" style="font-weight:700;min-width:52px">' + name + '</span>' +
+          '<span class="name" style="font-family:ui-monospace,Menlo,Consolas,monospace">' + val + '</span>' +
+          '<span class="spacer"></span><button class="small ghost">' + t('b64.copy') + '</button>';
+        item.querySelector('button').addEventListener('click', () => navigator.clipboard.writeText(val));
+        results.appendChild(item);
+      });
+      return { hex: hex, rgb: rows[1][1], hsl: rows[2][1] };
+    }
+
+    el('colorIn').addEventListener('input', () => {
+      const c = parseColor(el('colorIn').value);
+      if (c) el('picker').value = '#' + [c.r, c.g, c.b].map(v => v.toString(16).padStart(2, '0')).join('');
+      render();
+    });
+    el('picker').addEventListener('input', (e) => { el('colorIn').value = e.target.value; render(); });
+    render();
+    window.__lkColor = s => { el('colorIn').value = s; return render(); };
+  })();
+  </script>
+</body>
+</html>

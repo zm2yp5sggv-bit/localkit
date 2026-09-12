@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en" data-title-key="pi.title">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PDF to Image Converter Online Free — PNG &amp; JPG, No Upload | LocalKit</title>
+  <meta name="description" content="Convert PDF pages to PNG or JPG images in your browser. Choose the resolution, batch export as ZIP — your PDF is never uploaded.">
+  <link rel="canonical" href="https://localkit.tools/tools/pdf-to-image.html">
+  <meta property="og:title" content="PDF to Image Converter Online Free — PNG &amp; JPG">
+  <meta property="og:description" content="Render PDF pages as images locally in your browser. Free, private, no upload.">
+  <meta property="og:type" content="website">
+  <link rel="icon" href="data:image/svg+xml,&lt;svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'&gt;&lt;rect width='100' height='100' rx='22' fill='%234f46e5'/&gt;&lt;text x='50' y='68' font-size='52' text-anchor='middle' fill='white' font-family='sans-serif' font-weight='bold'&gt;L&lt;/text&gt;&lt;/svg&gt;">
+  <link rel="stylesheet" href="../assets/style.css">
+  <script src="../assets/i18n.js"></script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "LocalKit PDF to Image",
+    "url": "https://localkit.tools/tools/pdf-to-image.html",
+    "applicationCategory": "UtilitiesApplication",
+    "operatingSystem": "Any (browser-based)",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Will the exported images be sharp?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Yes — pick 2× for crisp on-screen use or 3× for print. PNG keeps text razor sharp; JPG suits photo-heavy pages." }
+      },
+      {
+        "@type": "Question",
+        "name": "Why convert PDF pages to images?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Common uses: previews and thumbnails, chat apps that mangle PDFs, slides you want as pictures, and pages that must never be edited again." }
+      },
+      {
+        "@type": "Question",
+        "name": "Is my PDF uploaded to a server?",
+        "acceptedAnswer": { "@type": "Answer", "text": "No. Rendering happens entirely in your browser with PDF.js — the document never leaves your device." }
+      }
+    ]
+  }
+  </script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="inner">
+      <a class="logo" href="../index.html"><span class="mark">L</span>LocalKit</a>
+      <nav class="nav">
+        <a href="../index.html" data-i18n="nav.tools">Tools</a>
+        <a href="../about.html" data-i18n="nav.about">About</a>
+        <a href="../privacy.html" data-i18n="nav.privacy">Privacy</a>
+        <button id="langBtn" class="ghost lang-btn" type="button">中文</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="tool-head">
+      <div class="crumbs"><a href="../index.html" data-i18n="nav.tools">Tools</a> / <span data-i18n="pi.crumb">PDF to Image</span></div>
+      <h1 data-i18n="pi.h1">PDF to Image</h1>
+      <p class="lede" data-i18n="pi.lede">Turn PDF pages into PNG or JPG images — rendered locally in your browser.</p>
+    </div>
+
+    <div class="panel">
+      <div class="dropzone" id="dropzone">
+        <div class="big">🏞️</div>
+        <div class="title" data-i18n="pi.drop.title">Drop a PDF here, or click to choose</div>
+        <div class="hint" data-i18n="pi.drop.hint">One PDF file — password-protected documents are not supported</div>
+      </div>
+      <input type="file" id="fileInput" accept="application/pdf" hidden>
+
+      <div class="controls">
+        <label><span data-i18n="pi.fmt">Output format</span>
+          <select id="format">
+            <option value="image/png" data-i18n="pi.fmt.png" selected>PNG — lossless, sharp text</option>
+            <option value="image/jpeg" data-i18n="pi.fmt.jpg">JPG — smaller files</option>
+          </select>
+        </label>
+        <label><span data-i18n="pi.scale">Resolution</span>
+          <select id="scale">
+            <option value="1" data-i18n="pi.scale1">1× — screen (72 dpi)</option>
+            <option value="2" data-i18n="pi.scale2" selected>2× — sharp (144 dpi)</option>
+            <option value="3" data-i18n="pi.scale3">3× — print (216 dpi)</option>
+          </select>
+        </label>
+        <button id="runBtn" data-i18n="pi.run" disabled>Convert to images</button>
+        <button id="zipBtn" class="ghost" data-i18n="pi.zip" disabled>Download all (.zip)</button>
+      </div>
+      <div class="status" role="status"></div>
+      <div class="result-list" id="results"></div>
+    </div>
+
+    <section class="narrow prose">
+      <h2 data-i18n="pi.how.h2">How to convert a PDF to images</h2>
+      <ol>
+        <li data-i18n="pi.how1">Drop in your PDF.</li>
+        <li data-i18n="pi.how2">Choose PNG or JPG and a resolution (2× is a good default).</li>
+        <li data-i18n-html="pi.how3">Press <strong>Convert to images</strong> — download individually or as a ZIP.</li>
+      </ol>
+
+      <h2 data-i18n="index.faq.h2">Frequently asked questions</h2>
+      <details>
+        <summary data-i18n="pi.fq1">Will the exported images be sharp?</summary>
+        <p data-i18n="pi.fa1">Yes — pick 2× for crisp on-screen use or 3× for print. PNG keeps text razor sharp; JPG suits photo-heavy pages.</p>
+      </details>
+      <details>
+        <summary data-i18n="pi.fq2">Why convert PDF pages to images?</summary>
+        <p data-i18n="pi.fa2">Common uses: previews and thumbnails, chat apps that mangle PDFs, slides you want as pictures, and pages that must never be edited again.</p>
+      </details>
+      <details>
+        <summary data-i18n="pi.fq3">Is my PDF uploaded to a server?</summary>
+        <p data-i18n="pi.fa3">No. Rendering happens entirely in your browser with PDF.js — the document never leaves your device.</p>
+      </details>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="inner">
+      <span data-i18n="footer.line">© 2026 LocalKit · Made for privacy</span>
+      <div class="links">
+        <a href="../index.html" data-i18n="nav.tools">Tools</a>
+        <a href="../about.html" data-i18n="nav.about">About</a>
+        <a href="../privacy.html" data-i18n="nav.privacy">Privacy Policy</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="../assets/app.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/legacy/build/pdf.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+  <script>
+  (function () {
+    'use strict';
+    const { el, setupDropzone, formatBytes, downloadBlob, setStatus } = window.LK;
+    const t = (k, v) => window.LKI.t(k, v);
+    pdfjsLib.GlobalWorkerOptions.workerSrc =
+      'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/legacy/build/pdf.worker.min.js';
+
+    let file = null, pageCount = 0;
+    const results = el('results');
+    const produced = [];
+
+    setupDropzone(el('dropzone'), el('fileInput'), async (fl) => {
+      const f = fl[0];
+      if (!f || (!/pdf$/i.test(f.type) && !/\.pdf$/i.test(f.name))) { setStatus(t('pi.badfile'), 'err'); return; }
+      file = f;
+      try {
+        const src = await pdfjsLib.getDocument({ data: await f.arrayBuffer() }).promise;
+        pageCount = src.numPages;
+        setStatus(t('pi.ready', { name: f.name, n: pageCount, size: formatBytes(f.size) }), 'ok');
+        el('runBtn').disabled = false;
+      } catch (err) {
+        setStatus(t('pi.badread'), 'err');
+        el('runBtn').disabled = true;
+      }
+    });
+
+    async function renderPage(src, i, scale) {
+      const page = await src.getPage(i);
+      const viewport = page.getViewport({ scale: scale });
+      const canvas = document.createElement('canvas');
+      canvas.width = Math.floor(viewport.width);
+      canvas.height = Math.floor(viewport.height);
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      await page.render({ canvasContext: ctx, viewport: viewport }).promise;
+      return canvas;
+    }
+
+    el('runBtn').addEventListener('click', async () => {
+      if (!file) return;
+      el('runBtn').disabled = true; el('zipBtn').disabled = true;
+      results.innerHTML = ''; produced.length = 0;
+      try {
+        const type = el('format').value;
+        const scale = parseInt(el('scale').value, 10);
+        const src = await pdfjsLib.getDocument({ data: await file.arrayBuffer() }).promise;
+        const base = file.name.replace(/\.pdf$/i, '');
+        const ext = type === 'image/png' ? 'png' : 'jpg';
+
+        for (let i = 1; i <= src.numPages; i++) {
+          setStatus(t('pi.working', { i: i, n: src.numPages }));
+          const canvas = await renderPage(src, i, scale);
+          const blob = await new Promise((res, rej) =>
+            canvas.toBlob(b => b ? res(b) : rej(new Error('encode failed')), type, 0.92));
+          const name = base + '-page-' + String(i).padStart(3, '0') + '.' + ext;
+          produced.push({ blob, name });
+
+          const item = document.createElement('div');
+          item.className = 'result-item';
+          const thumb = document.createElement('img');
+          thumb.src = canvas.toDataURL('image/jpeg', 0.6);
+          thumb.style.cssText = 'height:40px;border-radius:4px;border:1px solid var(--border)';
+          item.appendChild(thumb);
+          item.insertAdjacentHTML('beforeend',
+            '<span class="name">' + name + '</span>' +
+            '<span class="meta">' + formatBytes(blob.size) + '</span>' +
+            '<span class="spacer"></span>' +
+            '<button class="small ghost">' + t('pi.dl') + '</button>');
+          item.querySelector('button').addEventListener('click', () => downloadBlob(blob, name));
+          results.appendChild(item);
+        }
+        setStatus(t('pi.done', { n: produced.length }), 'ok');
+        el('zipBtn').disabled = !produced.length;
+      } catch (err) {
+        setStatus(t('pi.badread'), 'err');
+        el('runBtn').disabled = false;
+        return;
+      }
+      el('runBtn').disabled = false;
+    });
+
+    el('zipBtn').addEventListener('click', async () => {
+      if (!produced.length) return;
+      setStatus(t('pi.zipping'));
+      const zip = new JSZip();
+      produced.forEach(r => zip.file(r.name, r.blob));
+      const blob = await zip.generateAsync({ type: 'blob' });
+      downloadBlob(blob, 'localkit-pdf-images.zip');
+      setStatus(t('pi.zipok'), 'ok');
+    });
+
+    // test hook
+    window.__lkProcess = async (files) => {
+      const f = files[0];
+      file = f; el('runBtn').disabled = false;
+      el('runBtn').click();
+    };
+  })();
+  </script>
+</body>
+</html>

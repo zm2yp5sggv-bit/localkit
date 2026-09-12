@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en" data-title-key="sp.title">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Split PDF Online Free — Extract Pages, No Upload | LocalKit</title>
+  <meta name="description" content="Split a PDF in your browser: extract page ranges like 1-3,7 or burst every page into its own file. No upload, no watermark, free and unlimited.">
+  <link rel="canonical" href="https://localkit.tools/tools/split-pdf.html">
+  <meta property="og:title" content="Split PDF Online Free — Extract Pages, No Upload">
+  <meta property="og:description" content="Extract page ranges or split every page of a PDF — locally in your browser.">
+  <meta property="og:type" content="website">
+  <link rel="icon" href="data:image/svg+xml,&lt;svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'&gt;&lt;rect width='100' height='100' rx='22' fill='%234f46e5'/&gt;&lt;text x='50' y='68' font-size='52' text-anchor='middle' fill='white' font-family='sans-serif' font-weight='bold'&gt;L&lt;/text&gt;&lt;/svg&gt;">
+  <link rel="stylesheet" href="../assets/style.css">
+  <script src="../assets/i18n.js"></script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "LocalKit PDF Splitter",
+    "url": "https://localkit.tools/tools/split-pdf.html",
+    "applicationCategory": "UtilitiesApplication",
+    "operatingSystem": "Any (browser-based)",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "How do I specify which pages to extract?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Use comma-separated ranges, e.g. 1-3,7,12-15. Page numbers refer to the physical pages of the PDF, starting at 1." }
+      },
+      {
+        "@type": "Question",
+        "name": "Can I split every page into a separate PDF?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Yes — choose the 'Every page' mode and all pages are exported as individual PDFs inside one ZIP archive." }
+      },
+      {
+        "@type": "Question",
+        "name": "Is my PDF uploaded to a server?",
+        "acceptedAnswer": { "@type": "Answer", "text": "No. Splitting runs entirely in your browser; the document never leaves your device." }
+      }
+    ]
+  }
+  </script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="inner">
+      <a class="logo" href="../index.html"><span class="mark">L</span>LocalKit</a>
+      <nav class="nav">
+        <a href="../index.html" data-i18n="nav.tools">Tools</a>
+        <a href="../about.html" data-i18n="nav.about">About</a>
+        <a href="../privacy.html" data-i18n="nav.privacy">Privacy</a>
+        <button id="langBtn" class="ghost lang-btn" type="button">中文</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="tool-head">
+      <div class="crumbs"><a href="../index.html" data-i18n="nav.tools">Tools</a> / <span data-i18n="sp.crumb">Split PDF</span></div>
+      <h1 data-i18n="sp.h1">Split PDF</h1>
+      <p class="lede" data-i18n="sp.lede">Extract page ranges or burst every page into its own PDF — all in your browser.</p>
+    </div>
+
+    <div class="panel">
+      <div class="dropzone" id="dropzone">
+        <div class="big">✂️</div>
+        <div class="title" data-i18n="sp.drop.title">Drop a PDF here, or click to choose</div>
+        <div class="hint" data-i18n="sp.drop.hint">One PDF file — password-protected documents are not supported</div>
+      </div>
+      <input type="file" id="fileInput" accept="application/pdf" hidden>
+
+      <div class="controls">
+        <label><span data-i18n="sp.mode">Mode</span>
+          <select id="mode">
+            <option value="range" data-i18n="sp.mode.range" selected>Extract page range</option>
+            <option value="every" data-i18n="sp.mode.every">Every page → separate PDFs (zip)</option>
+          </select>
+        </label>
+        <label id="rangeLabel"><span data-i18n="sp.pages">Pages (e.g. 1-3, 7, 12-15)</span>
+          <input type="text" id="pages" value="1-1" style="width:170px">
+        </label>
+        <button id="runBtn" data-i18n="sp.run" disabled>Split</button>
+      </div>
+      <div class="status" role="status"></div>
+      <div class="result-list" id="results"></div>
+    </div>
+
+    <section class="narrow prose">
+      <h2 data-i18n="sp.how.h2">How to split a PDF</h2>
+      <ol>
+        <li data-i18n="sp.how1">Drop in your PDF.</li>
+        <li data-i18n-html="sp.how2">To pull out specific pages, keep <strong>Extract page range</strong> and type ranges like <code>1-3,7,12-15</code>.</li>
+        <li data-i18n-html="sp.how3">To explode the document, choose <strong>Every page</strong> — you'll get one PDF per page in a ZIP.</li>
+        <li data-i18n-html="sp.how4">Press <strong>Split</strong> and download.</li>
+      </ol>
+
+      <h2 data-i18n="sp.uses.h2">Common uses</h2>
+      <ul>
+        <li data-i18n-html="sp.uses1"><strong>Send only the relevant pages</strong> of a long report to a client.</li>
+        <li data-i18n-html="sp.uses2"><strong>Remove sensitive pages</strong> before sharing — since splitting is local, the original never leaves your machine.</li>
+        <li data-i18n-html="sp.uses3"><strong>Chapter-per-file</strong> workflows for scanned books and lecture notes.</li>
+      </ul>
+
+      <h2 data-i18n="index.faq.h2">Frequently asked questions</h2>
+      <details>
+        <summary data-i18n="sp.fq1">How do I specify which pages to extract?</summary>
+        <p data-i18n-html="sp.fa1">Comma-separated ranges, e.g. <code>1-3,7,12-15</code>. Numbers refer to physical pages of the PDF starting at 1 — the same numbers your PDF reader shows.</p>
+      </details>
+      <details>
+        <summary data-i18n="sp.fq2">Can I split every page into a separate PDF?</summary>
+        <p data-i18n-html="sp.fa2">Yes — pick the <strong>Every page</strong> mode. All pages are exported as individual PDFs packed into one ZIP archive.</p>
+      </details>
+      <details>
+        <summary data-i18n="sp.fq3">Is my PDF uploaded to a server?</summary>
+        <p data-i18n="sp.fa3">No. Everything happens in your browser tab. For confidential documents that's exactly what you want — nothing is ever transmitted.</p>
+      </details>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="inner">
+      <span data-i18n="footer.line">© 2026 LocalKit · Made for privacy</span>
+      <div class="links">
+        <a href="../index.html" data-i18n="nav.tools">Tools</a>
+        <a href="../about.html" data-i18n="nav.about">About</a>
+        <a href="../privacy.html" data-i18n="nav.privacy">Privacy Policy</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="../assets/app.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+  <script>
+  (function () {
+    'use strict';
+    const { el, setupDropzone, formatBytes, downloadBlob, setStatus } = window.LK;
+    const t = (k, v) => window.LKI.t(k, v);
+    let file = null, pageCount = 0;
+
+    function parseRanges(str, max) {
+      const out = [];
+      for (const part of str.split(',')) {
+        const tt = part.trim();
+        if (!tt) continue;
+        const m = tt.match(/^(\d+)(?:\s*-\s*(\d+))?$/);
+        if (!m) throw new Error(t('sp.badrange', { t: tt }));
+        const a = parseInt(m[1], 10), b = m[2] ? parseInt(m[2], 10) : a;
+        if (a < 1 || b < a || b > max) throw new Error(t('sp.betweensplit', { t: tt, max: max }));
+        for (let p = a; p <= b; p++) out.push(p - 1);
+      }
+      if (!out.length) throw new Error(t('sp.nopages'));
+      return out;
+    }
+
+    setupDropzone(el('dropzone'), el('fileInput'), async (fl) => {
+      const f = fl[0];
+      if (!f || (!/pdf$/i.test(f.type) && !/\.pdf$/i.test(f.name))) { setStatus(t('sp.badfile'), 'err'); return; }
+      file = f;
+      try {
+        const src = await PDFLib.PDFDocument.load(await f.arrayBuffer(), { ignoreEncryption: true });
+        pageCount = src.getPageCount();
+        el('pages').value = '1-' + pageCount;
+        setStatus(t('sp.ready', { name: f.name, n: pageCount, size: formatBytes(f.size) }), 'ok');
+        el('runBtn').disabled = false;
+      } catch (err) {
+        setStatus(t('sp.badread'), 'err');
+        el('runBtn').disabled = true;
+      }
+    });
+
+    el('mode').addEventListener('change', (e) => {
+      el('rangeLabel').style.display = e.target.value === 'range' ? '' : 'none';
+    });
+
+    el('runBtn').addEventListener('click', async () => {
+      if (!file) return;
+      const mode = el('mode').value;
+      el('runBtn').disabled = true;
+      const results = el('results');
+      results.innerHTML = '';
+      try {
+        const bytes = await file.arrayBuffer();
+        const src = await PDFLib.PDFDocument.load(bytes, { ignoreEncryption: true });
+        const base = file.name.replace(/\.pdf$/i, '');
+
+        if (mode === 'range') {
+          const indices = parseRanges(el('pages').value, pageCount);
+          const out = await PDFLib.PDFDocument.create();
+          const pages = await out.copyPages(src, indices);
+          pages.forEach(p => out.addPage(p));
+          const blob = new Blob([await out.save()], { type: 'application/pdf' });
+          const name = base + '-p' + (indices[0] + 1) + (indices.length > 1 ? '-' + (indices[indices.length - 1] + 1) : '') + '.pdf';
+          downloadBlob(blob, name);
+          setStatus(t('sp.extracted', { n: indices.length }), 'ok');
+        } else {
+          setStatus(t('sp.splitting', { n: pageCount }));
+          const zip = new JSZip();
+          for (let i = 0; i < pageCount; i++) {
+            const out = await PDFLib.PDFDocument.create();
+            const [p] = await out.copyPages(src, [i]);
+            out.addPage(p);
+            zip.file(base + '-page-' + String(i + 1).padStart(3, '0') + '.pdf', await out.save());
+          }
+          const blob = await zip.generateAsync({ type: 'blob' });
+          downloadBlob(blob, base + '-split.zip');
+          setStatus(t('sp.burst', { n: pageCount }), 'ok');
+        }
+      } catch (err) {
+        setStatus(err.message, 'err');
+      }
+      el('runBtn').disabled = false;
+    });
+
+    // test hook
+    window.__lkProcess = async (fs) => {
+      const f = fs[0]; file = f;
+      const src = await PDFLib.PDFDocument.load(await f.arrayBuffer(), { ignoreEncryption: true });
+      pageCount = src.getPageCount();
+      el('pages').value = '1-' + pageCount;
+      el('runBtn').disabled = false;
+      el('runBtn').click();
+      while (el('runBtn').disabled) await new Promise(r => setTimeout(r, 100));
+      return pageCount;
+    };
+  })();
+  </script>
+</body>
+</html>

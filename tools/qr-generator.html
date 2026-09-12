@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en" data-title-key="qr.title">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Free QR Code Generator — Download PNG &amp; SVG, No Expiry | LocalKit</title>
+  <meta name="description" content="Create QR codes for links, text and Wi-Fi logins in your browser. Download as PNG or SVG — no sign-up, no expiry, no tracking, generated locally on your device.">
+  <link rel="canonical" href="https://localkit.tools/tools/qr-generator.html">
+  <meta property="og:title" content="Free QR Code Generator — PNG &amp; SVG, No Expiry">
+  <meta property="og:description" content="Generate QR codes for URLs, text and Wi-Fi — locally in your browser, download PNG or SVG.">
+  <meta property="og:type" content="website">
+  <link rel="icon" href="data:image/svg+xml,&lt;svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'&gt;&lt;rect width='100' height='100' rx='22' fill='%234f46e5'/&gt;&lt;text x='50' y='68' font-size='52' text-anchor='middle' fill='white' font-family='sans-serif' font-weight='bold'&gt;L&lt;/text&gt;&lt;/svg&gt;">
+  <link rel="stylesheet" href="../assets/style.css">
+  <script src="../assets/i18n.js"></script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "LocalKit QR Code Generator",
+    "url": "https://localkit.tools/tools/qr-generator.html",
+    "applicationCategory": "UtilitiesApplication",
+    "operatingSystem": "Any (browser-based)",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Do the QR codes expire or stop working?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Never. These are static QR codes — the content is encoded directly in the image, not behind a redirect service. They work forever and can be printed." }
+      },
+      {
+        "@type": "Question",
+        "name": "What should I use QR codes for?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Common uses: linking printed material to a website, sharing Wi-Fi credentials without typing a password, contactless restaurant menus, event tickets and payment details." }
+      },
+      {
+        "@type": "Question",
+        "name": "PNG or SVG download?",
+        "acceptedAnswer": { "@type": "Answer", "text": "PNG is best for screens and documents. SVG is vector-based and scales to any size without blurring — ideal for print, signage and laser engraving." }
+      }
+    ]
+  }
+  </script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="inner">
+      <a class="logo" href="../index.html"><span class="mark">L</span>LocalKit</a>
+      <nav class="nav">
+        <a href="../index.html" data-i18n="nav.tools">Tools</a>
+        <a href="../about.html" data-i18n="nav.about">About</a>
+        <a href="../privacy.html" data-i18n="nav.privacy">Privacy</a>
+        <button id="langBtn" class="ghost lang-btn" type="button">中文</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="tool-head">
+      <div class="crumbs"><a href="../index.html" data-i18n="nav.tools">Tools</a> / <span data-i18n="qr.crumb">QR Code Generator</span></div>
+      <h1 data-i18n="qr.h1">QR Code Generator</h1>
+      <p class="lede" data-i18n="qr.lede">Static QR codes for links, text and Wi-Fi — generated locally, download PNG or SVG.</p>
+    </div>
+
+    <div class="panel">
+      <div class="controls">
+        <label><span data-i18n="qr.type">Type</span>
+          <select id="type">
+            <option value="url" data-i18n="qr.type.url" selected>Link / text</option>
+            <option value="wifi" data-i18n="qr.type.wifi">Wi-Fi login</option>
+          </select>
+        </label>
+      </div>
+
+      <div id="urlPanel">
+        <div class="controls">
+          <label style="flex:1;min-width:260px"><span data-i18n="qr.content">URL or text</span>
+            <input type="text" id="content" value="https://example.com" placeholder="https://your-link.com">
+          </label>
+        </div>
+      </div>
+
+      <div id="wifiPanel" style="display:none">
+        <div class="controls">
+          <label><span data-i18n="qr.wifi.ssid">Network name (SSID)</span>
+            <input type="text" id="wifiSsid" placeholder="MyHomeWiFi">
+          </label>
+          <label><span data-i18n="qr.wifi.pass">Password</span>
+            <input type="text" id="wifiPass" placeholder="Wi-Fi password">
+          </label>
+          <label><span data-i18n="qr.wifi.sec">Security</span>
+            <select id="wifiSec">
+              <option value="WPA" data-i18n="qr.wifi.wpa" selected>WPA / WPA2 / WPA3</option>
+              <option value="WEP" data-i18n="qr.wifi.wep">WEP</option>
+              <option value="nopass" data-i18n="qr.wifi.open">Open (no password)</option>
+            </select>
+          </label>
+        </div>
+      </div>
+
+      <div class="controls">
+        <label><span data-i18n="qr.ec">Error correction</span>
+          <select id="ec">
+            <option value="L" data-i18n="qr.ec.l">L — smallest (7%)</option>
+            <option value="M" data-i18n="qr.ec.m" selected>M — standard (15%)</option>
+            <option value="Q" data-i18n="qr.ec.q">Q — robust (25%)</option>
+            <option value="H" data-i18n="qr.ec.h">H — max (30%, for logos)</option>
+          </select>
+        </label>
+        <label><span data-i18n="qr.size">Export size (px)</span>
+          <input type="number" id="size" value="1024" min="128" max="4096" step="128" style="width:110px">
+        </label>
+        <button id="dlPng" data-i18n="qr.dlpng" disabled>Download PNG</button>
+        <button id="dlSvg" class="ghost" data-i18n="qr.dlsvg" disabled>Download SVG</button>
+      </div>
+
+      <div class="status" role="status"></div>
+      <div style="display:flex;justify-content:center;padding:16px 0">
+        <div id="preview" style="background:#fff;padding:16px;border-radius:12px;border:1px solid var(--border);width:min(320px,100%)"></div>
+      </div>
+    </div>
+
+    <section class="narrow prose">
+      <h2 data-i18n="qr.wifi.h2">Wi-Fi QR codes, explained</h2>
+      <p data-i18n-html="qr.wifi.p">Choose the <strong>Wi-Fi login</strong> type and enter your network details — phones that scan the code connect automatically, no password dictation needed. Handy for guests, cafés, offices and rental properties.</p>
+
+      <h2 data-i18n="index.faq.h2">Frequently asked questions</h2>
+      <details>
+        <summary data-i18n="qr.fq1">Do the QR codes expire or stop working?</summary>
+        <p data-i18n="qr.fa1">Never. These are static QR codes — the content is encoded directly in the image, not behind a redirect service that could shut down. They work forever and are fine for print.</p>
+      </details>
+      <details>
+        <summary data-i18n="qr.fq2">PNG or SVG download?</summary>
+        <p data-i18n="qr.fa2">PNG is best for screens, chat apps and documents. SVG is vector-based — it scales to any size without blurring, ideal for print, signage and engraving.</p>
+      </details>
+      <details>
+        <summary data-i18n="qr.fq3">Is any data sent to a server?</summary>
+        <p data-i18n="qr.fa3">No. The QR code is built in your browser, so whatever you encode — Wi-Fi passwords included — stays on your device.</p>
+      </details>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="inner">
+      <span data-i18n="footer.line">© 2026 LocalKit · Made for privacy</span>
+      <div class="links">
+        <a href="../index.html" data-i18n="nav.tools">Tools</a>
+        <a href="../about.html" data-i18n="nav.about">About</a>
+        <a href="../privacy.html" data-i18n="nav.privacy">Privacy Policy</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="../assets/app.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
+  <script>
+  (function () {
+    'use strict';
+    const { el, downloadBlob, setStatus } = window.LK;
+    const t = (k, v) => window.LKI.t(k, v);
+    let current = { svg: null, canvas: null };
+
+    function escapeWifi(s) { return s.replace(/([\\;,:"])/g, '\\$1'); }
+
+    function buildPayload() {
+      if (el('type').value === 'wifi') {
+        const ssid = el('wifiSsid').value;
+        const sec = el('wifiSec').value;
+        if (!ssid) throw new Error(t('qr.needssid'));
+        const pass = sec === 'nopass' ? '' : el('wifiPass').value;
+        return 'WIFI:T:' + sec + ';S:' + escapeWifi(ssid) + ';' +
+          (sec === 'nopass' ? '' : 'P:' + escapeWifi(pass) + ';') + ';';
+      }
+      const c = el('content').value;
+      if (!c.trim()) throw new Error(t('qr.needurl'));
+      return c;
+    }
+
+    function render() {
+      try {
+        const text = buildPayload();
+        const qr = qrcode(0, el('ec').value);
+        qr.addData(text);
+        qr.make();
+        el('preview').innerHTML = qr.createSvgTag({ cellSize: 4, margin: 0, scalable: true });
+        current.svg = '<?xml version="1.0" encoding="UTF-8"?>' + qr.createSvgTag({ cellSize: 4, margin: 0 });
+        drawPng(qr);
+        el('dlPng').disabled = false; el('dlSvg').disabled = false;
+        setStatus(t('qr.ready', { n: qr.getModuleCount() }), 'ok');
+      } catch (err) {
+        if (err.message && /code length overflow/i.test(err.message)) {
+          setStatus(t('qr.toobig'), 'err');
+        } else {
+          setStatus(err.message, 'err');
+        }
+      }
+    }
+
+    function drawPng(qr) {
+      const count = qr.getModuleCount();
+      const px = 8, quiet = 4 * px;
+      const dim = (count + 8) * px;
+      const canvas = document.createElement('canvas');
+      canvas.width = canvas.height = dim;
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, dim, dim);
+      ctx.fillStyle = '#000';
+      for (let r = 0; r < count; r++) {
+        for (let c = 0; c < count; c++) {
+          if (qr.isDark(r, c)) ctx.fillRect(c * px + quiet, r * px + quiet, px, px);
+        }
+      }
+      current.canvas = canvas;
+    }
+
+    el('dlPng').addEventListener('click', () => {
+      if (!current.canvas) return;
+      // re-render at requested export size for crisp output
+      const target = Math.min(4096, Math.max(128, parseInt(el('size').value, 10) || 1024));
+      const src = current.canvas;
+      const out = document.createElement('canvas');
+      out.width = out.height = target;
+      const ctx = out.getContext('2d');
+      ctx.imageSmoothingEnabled = false;
+      ctx.drawImage(src, 0, 0, target, target);
+      out.toBlob((b) => downloadBlob(b, 'qrcode.png'), 'image/png');
+    });
+
+    el('dlSvg').addEventListener('click', () => {
+      if (!current.svg) return;
+      downloadBlob(new Blob([current.svg], { type: 'image/svg+xml' }), 'qrcode.svg');
+    });
+
+    el('type').addEventListener('change', (e) => {
+      el('urlPanel').style.display = e.target.value === 'url' ? '' : 'none';
+      el('wifiPanel').style.display = e.target.value === 'wifi' ? '' : 'none';
+      render();
+    });
+    ['content', 'wifiSsid', 'wifiPass', 'wifiSec', 'ec'].forEach(id =>
+      el(id).addEventListener('input', render));
+
+    // initial render after i18n has applied, so the status line lands in the right language
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', render);
+    } else {
+      render();
+    }
+  })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en" data-title-key="tsp.title">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Unix Timestamp Converter Online Free — Epoch &amp; ISO 8601 | LocalKit</title>
+  <meta name="description" content="Convert Unix timestamps to dates and back. Seconds or milliseconds auto-detected, local timezone, UTC and ISO 8601 — free and local.">
+  <link rel="canonical" href="https://localkit.tools/tools/timestamp-converter.html">
+  <meta property="og:title" content="Unix Timestamp Converter Online Free">
+  <meta property="og:description" content="Unix time ↔ date, seconds or milliseconds, local or UTC.">
+  <meta property="og:type" content="website">
+  <link rel="icon" href="data:image/svg+xml,&lt;svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'&gt;&lt;rect width='100' height='100' rx='22' fill='%234f46e5'/&gt;&lt;text x='50' y='68' font-size='52' text-anchor='middle' fill='white' font-family='sans-serif' font-weight='bold'&gt;L&lt;/text&gt;&lt;/svg&gt;">
+  <link rel="stylesheet" href="../assets/style.css">
+  <script src="../assets/i18n.js"></script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org", "@type": "WebApplication",
+    "name": "LocalKit Timestamp Converter", "url": "https://localkit.tools/tools/timestamp-converter.html",
+    "applicationCategory": "DeveloperApplication", "operatingSystem": "Any (browser-based)",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+  }
+  </script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="inner">
+      <a class="logo" href="../index.html"><span class="mark">L</span>LocalKit</a>
+      <nav class="nav">
+        <a href="../index.html" data-i18n="nav.tools">Tools</a>
+        <a href="../about.html" data-i18n="nav.about">About</a>
+        <a href="../privacy.html" data-i18n="nav.privacy">Privacy</a>
+        <button id="langBtn" class="ghost lang-btn" type="button">中文</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="tool-head">
+      <div class="crumbs"><a href="../index.html" data-i18n="nav.tools">Tools</a> / <span data-i18n="tsp.crumb">Timestamp Converter</span></div>
+      <h1 data-i18n="tsp.h1">Timestamp Converter</h1>
+      <p class="lede" data-i18n="tsp.lede">Convert Unix timestamps to dates and back — seconds or milliseconds, local or UTC.</p>
+    </div>
+
+    <div class="panel">
+      <div class="result-item" style="margin-bottom:16px">
+        <span data-i18n="tsp.now">Current Unix timestamp</span>
+        <span class="name" style="font-family:ui-monospace,Menlo,Consolas,monospace;font-size:1.15rem" id="nowS"></span>
+        <span class="meta" data-i18n="tsp.s">seconds</span>
+        <span class="spacer"></span>
+        <span class="saved" data-i18n="tsp.live">live</span>
+      </div>
+
+      <div class="controls" style="border-top:1px solid var(--border);padding-top:14px">
+        <label style="flex:1;min-width:260px"><span data-i18n="tsp.t2d.t">Timestamp → Date</span>
+          <input type="text" id="tsIn" data-i18n-ph="tsp.t.ph" placeholder="Paste a timestamp (s or ms auto-detected)">
+        </label>
+      </div>
+      <div class="stat-grid" id="dOut" style="display:none">
+        <div class="cell"><b id="o-local" style="font-size:.95rem">-</b><span data-i18n="tsp.local">Your timezone</span></div>
+        <div class="cell"><b id="o-utc" style="font-size:.95rem">-</b><span data-i18n="tsp.utc">UTC</span></div>
+        <div class="cell"><b id="o-iso" style="font-size:.95rem">-</b><span data-i18n="tsp.iso">ISO 8601</span></div>
+        <div class="cell"><b id="o-rel" style="font-size:.95rem">-</b><span data-i18n="tsp.rel">Relative</span></div>
+      </div>
+
+      <div class="controls" style="border-top:1px solid var(--border);padding-top:14px;margin-top:14px">
+        <label><span data-i18n="tsp.d2t.t">Date → Timestamp</span>
+          <input type="datetime-local" id="dateIn" step="1">
+        </label>
+        <div class="result-item" style="flex:1;min-width:260px">
+          <span class="name" style="font-family:ui-monospace,Menlo,Consolas,monospace" id="tsOut">—</span>
+        </div>
+      </div>
+      <div class="status" role="status"></div>
+    </div>
+
+    <section class="narrow prose">
+      <h2 data-i18n="tsp.how.h2">How to convert timestamps</h2>
+      <ol>
+        <li data-i18n="tsp.how1">Paste a Unix timestamp to decode it, or pick a date to encode it.</li>
+        <li data-i18n="tsp.how2">Ten-digit inputs are treated as seconds, thirteen-digit as milliseconds — automatically.</li>
+        <li data-i18n="tsp.how3">Results show your local timezone, UTC and ISO 8601 side by side.</li>
+      </ol>
+      <h2 data-i18n="index.faq.h2">Frequently asked questions</h2>
+      <details>
+        <summary data-i18n="tsp.fq1">Seconds or milliseconds?</summary>
+        <p data-i18n="tsp.fa1">Ten-digit timestamps are seconds, thirteen-digit are milliseconds — we detect automatically. Unix time counts from 1970-01-01 UTC.</p>
+      </details>
+      <details>
+        <summary data-i18n="tsp.fq2">Why does my timestamp show a different date?</summary>
+        <p data-i18n="tsp.fa2">Unix timestamps carry no timezone. We display them in your device's timezone plus UTC — a "difference" usually means the source was already in another timezone.</p>
+      </details>
+      <details>
+        <summary data-i18n="tsp.fq3">What is the 2038 problem?</summary>
+        <p data-i18n="tsp.fa3">Old 32-bit systems overflow in January 2038. Modern 64-bit systems — and this tool — are unaffected.</p>
+      </details>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="inner">
+      <span data-i18n="footer.line">© 2026 LocalKit · Made for privacy</span>
+      <div class="links">
+        <a href="../index.html" data-i18n="nav.tools">Tools</a>
+        <a href="../about.html" data-i18n="nav.about">About</a>
+        <a href="../privacy.html" data-i18n="nav.privacy">Privacy Policy</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="../assets/app.js"></script>
+  <script>
+  (function () {
+    'use strict';
+    const { el, setStatus } = window.LK;
+    const t = (k, v) => window.LKI.t(k, v);
+    const pad = n => String(n).padStart(2, '0');
+
+    function fmtLocal(d) {
+      return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()) + ' ' +
+        pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds());
+    }
+    function fmtUtc(d) {
+      return d.getUTCFullYear() + '-' + pad(d.getUTCMonth() + 1) + '-' + pad(d.getUTCDate()) + ' ' +
+        pad(d.getUTCHours()) + ':' + pad(d.getUTCMinutes()) + ':' + pad(d.getUTCSeconds());
+    }
+    function rel(ms) {
+      const diff = Date.now() - ms;
+      const future = diff < 0;
+      let s = Math.floor(Math.abs(diff) / 1000);
+      const units = [[86400 * 365, 'y'], [86400 * 30, 'mo'], [86400, 'd'], [3600, 'h'], [60, 'm'], [1, 's']];
+      let out = '';
+      for (const [sec, label] of units) {
+        if (s >= sec) { out = Math.floor(s / sec) + label; break; }
+      }
+      if (!out) out = '0s';
+      return future ? t('tsp.in', { t: out }) : t('tsp.ago', { t: out });
+    }
+
+    function tsToDate(str) {
+      const n = Number(str.trim());
+      if (!str.trim() || !Number.isFinite(n)) { el('dOut').style.display = 'none'; setStatus(''); return; }
+      const ms = Math.abs(n) >= 1e12 ? n : n * 1000;
+      const d = new Date(ms);
+      if (isNaN(d.getTime())) { el('dOut').style.display = 'none'; setStatus(''); return; }
+      setStatus('');
+      el('dOut').style.display = '';
+      el('o-local').textContent = fmtLocal(d);
+      el('o-utc').textContent = fmtUtc(d);
+      el('o-iso').textContent = d.toISOString();
+      el('o-rel').textContent = rel(ms);
+    }
+
+    function dateToTs() {
+      const v = el('dateIn').value;
+      if (!v) { el('tsOut').textContent = '—'; return; }
+      const d = new Date(v);
+      const ms = d.getTime();
+      el('tsOut').textContent = Math.floor(ms / 1000) + ' s  ·  ' + ms + ' ms';
+    }
+
+    setInterval(() => { el('nowS').textContent = Math.floor(Date.now() / 1000); }, 1000);
+    el('nowS').textContent = Math.floor(Date.now() / 1000);
+    el('tsIn').addEventListener('input', (e) => tsToDate(e.target.value));
+    el('dateIn').addEventListener('input', dateToTs);
+    // default the date picker to now
+    (function () {
+      const d = new Date();
+      el('dateIn').value = d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()) +
+        'T' + pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds());
+      dateToTs();
+    })();
+    window.__lkTs = s => { el('tsIn').value = s; tsToDate(s); return { local: el('o-local').textContent, iso: el('o-iso').textContent }; };
+  })();
+  </script>
+</body>
+</html>

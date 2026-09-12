@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en" data-title-key="cv.title">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Convert Image Format Online Free (PNG ↔ JPG ↔ WebP) — No Upload | LocalKit</title>
+  <meta name="description" content="Convert images between PNG, JPG and WebP right in your browser. Batch conversion, optional resizing, no upload, no sign-up — your files never leave your device.">
+  <link rel="canonical" href="https://localkit.tools/tools/convert-image.html">
+  <meta property="og:title" content="Convert Image Format Online Free — No Upload">
+  <meta property="og:description" content="Batch-convert PNG, JPG and WebP locally in your browser. Free and private.">
+  <meta property="og:type" content="website">
+  <link rel="icon" href="data:image/svg+xml,&lt;svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'&gt;&lt;rect width='100' height='100' rx='22' fill='%234f46e5'/&gt;&lt;text x='50' y='68' font-size='52' text-anchor='middle' fill='white' font-family='sans-serif' font-weight='bold'&gt;L&lt;/text&gt;&lt;/svg&gt;">
+  <link rel="stylesheet" href="../assets/style.css">
+  <script src="../assets/i18n.js"></script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "LocalKit Image Converter",
+    "url": "https://localkit.tools/tools/convert-image.html",
+    "applicationCategory": "MultimediaApplication",
+    "operatingSystem": "Any (browser-based)",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Which formats can I convert between?",
+        "acceptedAnswer": { "@type": "Answer", "text": "PNG, JPEG and WebP, in any direction. Files are decoded and re-encoded locally in your browser." }
+      },
+      {
+        "@type": "Question",
+        "name": "Does converting lose quality?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Converting to JPEG or WebP uses lossy compression, so you choose the quality (default 90%). Converting to PNG is lossless. The original file on your disk is never modified." }
+      },
+      {
+        "@type": "Question",
+        "name": "Why convert PNG to WebP?",
+        "acceptedAnswer": { "@type": "Answer", "text": "WebP typically makes screenshots and graphics 60-90% smaller than PNG at the same visual quality, which speeds up websites and saves storage." }
+      }
+    ]
+  }
+  </script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="inner">
+      <a class="logo" href="../index.html"><span class="mark">L</span>LocalKit</a>
+      <nav class="nav">
+        <a href="../index.html" data-i18n="nav.tools">Tools</a>
+        <a href="../about.html" data-i18n="nav.about">About</a>
+        <a href="../privacy.html" data-i18n="nav.privacy">Privacy</a>
+        <button id="langBtn" class="ghost lang-btn" type="button">中文</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="tool-head">
+      <div class="crumbs"><a href="../index.html" data-i18n="nav.tools">Tools</a> / <span data-i18n="cv.crumb">Convert Image</span></div>
+      <h1 data-i18n="cv.h1">Convert Image</h1>
+      <p class="lede" data-i18n="cv.lede">PNG, JPG and WebP — convert in batches inside your browser. No uploads, ever.</p>
+    </div>
+
+    <div class="panel">
+      <div class="dropzone" id="dropzone">
+        <div class="big">🔄</div>
+        <div class="title" data-i18n="cv.drop.title">Drop images here, or click to choose files</div>
+        <div class="hint" data-i18n="cv.drop.hint">PNG · JPG · WebP · GIF · BMP — batch supported</div>
+      </div>
+      <input type="file" id="fileInput" accept="image/*" multiple hidden>
+
+      <div class="controls">
+        <label><span data-i18n="cv.fmt">Convert to</span>
+          <select id="format">
+            <option value="image/png" data-i18n="cv.fmt.png">PNG — lossless</option>
+            <option value="image/jpeg" data-i18n="cv.fmt.jpg">JPEG — photos, small</option>
+            <option value="image/webp" data-i18n="cv.fmt.webp" selected>WebP — best balance</option>
+          </select>
+        </label>
+        <label class="inline"><span data-i18n="cv.quality">Quality:</span> <span id="qVal">90</span>% <input type="range" id="quality" min="10" max="100" value="90"></label>
+        <label><span data-i18n="cv.maxdim">Max dimension (px, 0 = keep)</span>
+          <input type="number" id="maxDim" value="0" min="0" step="50" style="width:110px">
+        </label>
+        <button id="runBtn" data-i18n="cv.run" disabled>Convert</button>
+        <button id="zipBtn" class="ghost" data-i18n="cv.zip" disabled>Download all (.zip)</button>
+      </div>
+      <div class="status" role="status"></div>
+      <div class="result-list" id="results"></div>
+    </div>
+
+    <section class="narrow prose">
+      <h2 data-i18n="cv.how.h2">How it works</h2>
+      <ol>
+        <li data-i18n="cv.how1">Drop in any images you want to convert.</li>
+        <li data-i18n="cv.how2">Pick the target format, quality and optional max size.</li>
+        <li data-i18n-html="cv.how3">Hit <strong>Convert</strong> and download the results — individually or as a ZIP.</li>
+      </ol>
+
+      <h2 data-i18n="cv.which.h2">Which format should I choose?</h2>
+      <ul>
+        <li data-i18n-html="cv.which1"><strong>WebP</strong> is the best default for the web: sharp graphics and photos at a fraction of the size.</li>
+        <li data-i18n-html="cv.which2"><strong>JPEG</strong> is ideal for photos where maximum compatibility matters (email, older apps).</li>
+        <li data-i18n-html="cv.which3"><strong>PNG</strong> is lossless and supports transparency — right for logos, screenshots and anything that must stay pixel-perfect.</li>
+      </ul>
+
+      <h2 data-i18n="index.faq.h2">Frequently asked questions</h2>
+      <details>
+        <summary data-i18n="cv.fq1">Does converting lose quality?</summary>
+        <p data-i18n="cv.fa1">Converting to JPEG or WebP uses lossy compression — you control it with the quality slider (default 90%). Converting to PNG is lossless. Your original files are never modified or uploaded.</p>
+      </details>
+      <details>
+        <summary data-i18n="cv.fq2">Why convert PNG to WebP?</summary>
+        <p data-i18n="cv.fa2">WebP typically makes screenshots and graphics 60–90% smaller than PNG at the same visual quality — faster websites and more free disk space.</p>
+      </details>
+      <details>
+        <summary data-i18n="cv.fq3">Are my files uploaded anywhere?</summary>
+        <p data-i18n="cv.fa3">No. The whole conversion runs locally in your browser tab. Nothing is sent to any server, and most tools keep working even if you go offline after loading the page.</p>
+      </details>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="inner">
+      <span data-i18n="footer.line">© 2026 LocalKit · Made for privacy</span>
+      <div class="links">
+        <a href="../index.html" data-i18n="nav.tools">Tools</a>
+        <a href="../about.html" data-i18n="nav.about">About</a>
+        <a href="../privacy.html" data-i18n="nav.privacy">Privacy Policy</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="../assets/app.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+  <script>
+  (function () {
+    'use strict';
+    const { el, setupDropzone, formatBytes, downloadBlob, setStatus, decodeImage, canvasToBlob } = window.LK;
+    const t = (k, v) => window.LKI.t(k, v);
+    let files = [];
+    const results = el('results');
+
+    setupDropzone(el('dropzone'), el('fileInput'), (fl) => {
+      files = Array.from(fl).filter(f => f.type.startsWith('image/'));
+      if (!files.length) { setStatus(t('cv.none'), 'err'); return; }
+      el('runBtn').disabled = false;
+      results.innerHTML = '';
+      setStatus(t('cv.ready', { n: files.length }));
+    });
+
+    el('quality').addEventListener('input', (e) => el('qVal').textContent = e.target.value);
+
+    const extFor = { 'image/jpeg': 'jpg', 'image/webp': 'webp', 'image/png': 'png' };
+
+    async function processOne(file) {
+      const type = el('format').value;
+      const q = parseInt(el('quality').value, 10) / 100;
+      const maxDim = parseInt(el('maxDim').value, 10) || 0;
+
+      const { bitmap, width, height } = await decodeImage(file, maxDim);
+      const canvas = document.createElement('canvas');
+      canvas.width = width; canvas.height = height;
+      const ctx = canvas.getContext('2d');
+      // JPEG has no alpha channel — flatten transparency onto white to avoid black backgrounds
+      if (type === 'image/jpeg') { ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, width, height); }
+      ctx.drawImage(bitmap, 0, 0, width, height);
+      bitmap.close();
+      const blob = await canvasToBlob(canvas, type, q);
+
+      const base = file.name.replace(/\.[^.]+$/, '');
+      return { blob, outName: base + '.' + extFor[type], outSize: blob.size, inSize: file.size };
+    }
+
+    const produced = [];
+
+    el('runBtn').addEventListener('click', async () => {
+      if (!files.length) return;
+      el('runBtn').disabled = true; el('zipBtn').disabled = true;
+      produced.length = 0; results.innerHTML = '';
+      let ok = 0;
+      for (const f of files) {
+        setStatus(t('cv.working', { name: f.name, i: ok + 1, n: files.length }));
+        try {
+          const r = await processOne(f);
+          produced.push(r);
+          const delta = r.inSize ? Math.round((r.outSize / r.inSize - 1) * 100) : 0;
+          const item = document.createElement('div');
+          item.className = 'result-item';
+          item.innerHTML =
+            '<span class="name">' + r.outName + '</span>' +
+            '<span class="meta">' + formatBytes(r.inSize) + ' → ' + formatBytes(r.outSize) + '</span>' +
+            '<span class="spacer"></span>' +
+            (delta < 0 ? '<span class="saved">−' + (-delta) + '%</span>' : '<span class="meta">+' + delta + '%</span>') +
+            '<button class="small ghost">' + t('cv.dl') + '</button>';
+          item.querySelector('button').addEventListener('click', () => downloadBlob(r.blob, r.outName));
+          results.appendChild(item);
+          ok++;
+        } catch (err) {
+          setStatus(t('cv.fail', { name: f.name, msg: err.message }), 'err');
+        }
+      }
+      setStatus(t('cv.done', { ok: ok, n: files.length }), ok ? 'ok' : 'err');
+      el('runBtn').disabled = false;
+      el('zipBtn').disabled = !produced.length;
+    });
+
+    el('zipBtn').addEventListener('click', async () => {
+      if (!produced.length) return;
+      setStatus(t('cv.zipping'));
+      const zip = new JSZip();
+      produced.forEach(r => zip.file(r.outName, r.blob));
+      const blob = await zip.generateAsync({ type: 'blob' });
+      downloadBlob(blob, 'localkit-converted.zip');
+      setStatus(t('cv.zipok'), 'ok');
+    });
+
+    // test hook
+    window.__lkProcess = async (filesIn) => {
+      files = Array.from(filesIn).filter(f => f.type.startsWith('image/'));
+      el('runBtn').disabled = false;
+      el('runBtn').click();
+      while (el('runBtn').disabled) await new Promise(r => setTimeout(r, 100));
+      return produced.length;
+    };
+  })();
+  </script>
+</body>
+</html>

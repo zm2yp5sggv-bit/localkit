@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en" data-title-key="td.title">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Text Diff Checker — Compare Two Texts Online Free | LocalKit</title>
+  <meta name="description" content="Compare two texts or code snippets line by line in your browser. Additions and removals highlighted, git-style — nothing is ever uploaded.">
+  <link rel="canonical" href="https://localkit.tools/tools/text-diff.html">
+  <meta property="og:title" content="Text Diff Checker — Compare Two Texts Online Free">
+  <meta property="og:description" content="Line-by-line text comparison, git-style highlights, fully local.">
+  <meta property="og:type" content="website">
+  <link rel="icon" href="data:image/svg+xml,&lt;svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'&gt;&lt;rect width='100' height='100' rx='22' fill='%234f46e5'/&gt;&lt;text x='50' y='68' font-size='52' text-anchor='middle' fill='white' font-family='sans-serif' font-weight='bold'&gt;L&lt;/text&gt;&lt;/svg&gt;">
+  <link rel="stylesheet" href="../assets/style.css">
+  <script src="../assets/i18n.js"></script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "LocalKit Text Diff",
+    "url": "https://localkit.tools/tools/text-diff.html",
+    "applicationCategory": "DeveloperApplication",
+    "operatingSystem": "Any (browser-based)",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "How are the texts compared?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Line by line, using the classic longest-common-subsequence algorithm — the same approach behind git diff." }
+      },
+      {
+        "@type": "Question",
+        "name": "Is my text sent to a server?",
+        "acceptedAnswer": { "@type": "Answer", "text": "No. The comparison runs entirely in your browser — contract drafts, logs and private notes never leave your machine." }
+      },
+      {
+        "@type": "Question",
+        "name": "What do − and + mean?",
+        "acceptedAnswer": { "@type": "Answer", "text": "− marks a line that exists only in the original (removed), + marks a line that exists only in the changed version (added)." }
+      }
+    ]
+  }
+  </script>
+  <style>
+    .diff-out { margin-top: 18px; }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="inner">
+      <a class="logo" href="../index.html"><span class="mark">L</span>LocalKit</a>
+      <nav class="nav">
+        <a href="../index.html" data-i18n="nav.tools">Tools</a>
+        <a href="../about.html" data-i18n="nav.about">About</a>
+        <a href="../privacy.html" data-i18n="nav.privacy">Privacy</a>
+        <button id="langBtn" class="ghost lang-btn" type="button">中文</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="tool-head">
+      <div class="crumbs"><a href="../index.html" data-i18n="nav.tools">Tools</a> / <span data-i18n="td.crumb">Text Diff</span></div>
+      <h1 data-i18n="td.h1">Text Diff</h1>
+      <p class="lede" data-i18n="td.lede">Compare two texts line by line — additions and removals highlighted instantly.</p>
+    </div>
+
+    <div class="panel">
+      <div class="controls" style="margin-top:0">
+        <button id="runBtn" data-i18n="td.run">Compare</button>
+        <button id="swapBtn" class="ghost" data-i18n="td.swap">Swap sides</button>
+        <button id="clearBtn" class="ghost" data-i18n="td.clear">Clear</button>
+      </div>
+      <div class="controls" style="margin-top:4px">
+        <label style="flex:1;min-width:280px"><span data-i18n="td.left">Original text</span>
+          <textarea id="left" placeholder="hello world&#10;this line stays&#10;old line"></textarea>
+        </label>
+        <label style="flex:1;min-width:280px"><span data-i18n="td.right">Changed text</span>
+          <textarea id="right" placeholder="hello there&#10;this line stays&#10;new line"></textarea>
+        </label>
+      </div>
+      <div class="status" role="status"></div>
+      <div class="stats" id="stats" style="font-size:.92rem;color:var(--muted);margin-top:6px"></div>
+      <div class="diff-out" id="output" hidden></div>
+    </div>
+
+    <section class="narrow prose">
+      <h2 data-i18n="td.how.h2">How to compare two texts</h2>
+      <ol>
+        <li data-i18n="td.how1">Paste the original text on the left and the changed version on the right.</li>
+        <li data-i18n-html="td.how2">Press <strong>Compare</strong> — removed lines show red with −, added lines show green with +.</li>
+        <li data-i18n-html="td.how3">Use <strong>Swap sides</strong> to reverse the comparison direction.</li>
+      </ol>
+
+      <h2 data-i18n="index.faq.h2">Frequently asked questions</h2>
+      <details>
+        <summary data-i18n="td.fq1">How are the texts compared?</summary>
+        <p data-i18n="td.fa1">Line by line, using the classic longest-common-subsequence algorithm — the same approach behind git diff. Pure additions, pure deletions and edits of a line are all detected.</p>
+      </details>
+      <details>
+        <summary data-i18n="td.fq2">Is my text sent to a server?</summary>
+        <p data-i18n="td.fa2">No. The comparison runs entirely in your browser — contract drafts, logs and private notes never leave your machine.</p>
+      </details>
+      <details>
+        <summary data-i18n="td.fq3">What do − and + mean?</summary>
+        <p data-i18n="td.fa3">− marks a line that exists only in the original (removed), + marks a line that exists only in the changed version (added). Unchanged context lines are shown dimmed.</p>
+      </details>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="inner">
+      <span data-i18n="footer.line">© 2026 LocalKit · Made for privacy</span>
+      <div class="links">
+        <a href="../index.html" data-i18n="nav.tools">Tools</a>
+        <a href="../about.html" data-i18n="nav.about">About</a>
+        <a href="../privacy.html" data-i18n="nav.privacy">Privacy Policy</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="../assets/app.js"></script>
+  <script>
+  (function () {
+    'use strict';
+    const { el, setStatus } = window.LK;
+    const t = (k, v) => window.LKI.t(k, v);
+    const MAX_LINES = 5000;
+
+    function diffLines(A, B) {
+      const n = A.length, m = B.length;
+      // LCS DP table, walked backwards — Uint32 keeps counts safe, rows are typed arrays
+      const dp = new Array(n + 1);
+      for (let i = 0; i <= n; i++) dp[i] = new Uint32Array(m + 1);
+      for (let i = n - 1; i >= 0; i--) {
+        for (let j = m - 1; j >= 0; j--) {
+          dp[i][j] = A[i] === B[j] ? dp[i + 1][j + 1] + 1 : Math.max(dp[i + 1][j], dp[i][j + 1]);
+        }
+      }
+      const out = [];
+      let i = 0, j = 0;
+      while (i < n && j < m) {
+        if (A[i] === B[j]) { out.push(['=', A[i]]); i++; j++; }
+        else if (dp[i + 1][j] >= dp[i][j + 1]) { out.push(['-', A[i]]); i++; }
+        else { out.push(['+', B[j]]); j++; }
+      }
+      while (i < n) out.push(['-', A[i++]]);
+      while (j < m) out.push(['+', B[j++]]);
+      return out;
+    }
+
+    function esc(s) {
+      return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    function compare() {
+      const a = el('left').value, b = el('right').value;
+      if (a === b) {
+        el('output').hidden = true; el('stats').textContent = '';
+        setStatus(t('td.same'), 'ok');
+        return;
+      }
+      const A = a.split('\n'), B = b.split('\n');
+      if (A.length > MAX_LINES || B.length > MAX_LINES) {
+        setStatus(t('td.toolarge', { n: MAX_LINES }), 'err');
+        return;
+      }
+      const lines = diffLines(A, B);
+      let add = 0, del = 0, same = 0;
+      const out = el('output');
+      const html = [];
+      for (const [type, text] of lines) {
+        if (type === '+') { add++; html.push('<div class="diff-line add"><span class="sign">+</span>' + esc(text) + '</div>'); }
+        else if (type === '-') { del++; html.push('<div class="diff-line del"><span class="sign">−</span>' + esc(text) + '</div>'); }
+        else { same++; html.push('<div class="diff-line ctx"><span class="sign"> </span>' + esc(text) + '</div>'); }
+      }
+      out.innerHTML = html.join('');
+      out.hidden = false;
+      el('stats').textContent = t('td.stats', { add: add, del: del, same: same });
+      setStatus('');
+    }
+
+    el('runBtn').addEventListener('click', compare);
+    el('swapBtn').addEventListener('click', () => {
+      const l = el('left').value;
+      el('left').value = el('right').value;
+      el('right').value = l;
+    });
+    el('clearBtn').addEventListener('click', () => {
+      el('left').value = ''; el('right').value = '';
+      el('output').hidden = true; el('output').innerHTML = '';
+      el('stats').textContent = ''; setStatus('');
+    });
+
+    // test hook
+    window.__lkDiff = (a, b) => {
+      el('left').value = a; el('right').value = b;
+      compare();
+      return { html: el('output').innerHTML.length, stats: el('stats').textContent };
+    };
+  })();
+  </script>
+</body>
+</html>

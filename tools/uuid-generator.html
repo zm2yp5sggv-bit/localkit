@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en" data-title-key="ug.title">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UUID v4 Generator Online Free — Bulk, Local | LocalKit</title>
+  <meta name="description" content="Generate cryptographically random UUID v4 identifiers in bulk. Uppercase, braces and hyphen options — created locally, never transmitted.">
+  <link rel="canonical" href="https://localkit.tools/tools/uuid-generator.html">
+  <meta property="og:title" content="UUID v4 Generator Online Free">
+  <meta property="og:description" content="Bulk UUID v4 identifiers, generated locally in your browser.">
+  <meta property="og:type" content="website">
+  <link rel="icon" href="data:image/svg+xml,&lt;svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'&gt;&lt;rect width='100' height='100' rx='22' fill='%234f46e5'/&gt;&lt;text x='50' y='68' font-size='52' text-anchor='middle' fill='white' font-family='sans-serif' font-weight='bold'&gt;L&lt;/text&gt;&lt;/svg&gt;">
+  <link rel="stylesheet" href="../assets/style.css">
+  <script src="../assets/i18n.js"></script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org", "@type": "WebApplication",
+    "name": "LocalKit UUID Generator", "url": "https://localkit.tools/tools/uuid-generator.html",
+    "applicationCategory": "DeveloperApplication", "operatingSystem": "Any (browser-based)",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+  }
+  </script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="inner">
+      <a class="logo" href="../index.html"><span class="mark">L</span>LocalKit</a>
+      <nav class="nav">
+        <a href="../index.html" data-i18n="nav.tools">Tools</a>
+        <a href="../about.html" data-i18n="nav.about">About</a>
+        <a href="../privacy.html" data-i18n="nav.privacy">Privacy</a>
+        <button id="langBtn" class="ghost lang-btn" type="button">中文</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="tool-head">
+      <div class="crumbs"><a href="../index.html" data-i18n="nav.tools">Tools</a> / <span data-i18n="ug.crumb">UUID Generator</span></div>
+      <h1 data-i18n="ug.h1">UUID Generator</h1>
+      <p class="lede" data-i18n="ug.lede">Generate random UUID v4 identifiers in bulk — created locally, never transmitted.</p>
+    </div>
+
+    <div class="panel">
+      <div class="controls" style="margin-top:0">
+        <label><span data-i18n="ug.count">How many</span>
+          <input type="number" id="count" value="10" min="1" max="500" style="width:90px">
+        </label>
+        <label class="inline"><input type="checkbox" id="upper"> <span data-i18n="ug.upper">Uppercase</span></label>
+        <label class="inline"><input type="checkbox" id="braces"> <span data-i18n="ug.braces">Wrap in braces {…}</span></label>
+        <label class="inline"><input type="checkbox" id="nohyphen"> <span data-i18n="ug.nohyphen">Remove hyphens</span></label>
+        <button id="genBtn" data-i18n="ug.gen">Generate</button>
+        <button id="copyBtn" class="ghost" data-i18n="ug.copyall" disabled>Copy all</button>
+      </div>
+      <div class="status" role="status"></div>
+      <div class="controls" style="margin-top:4px">
+        <label style="flex:1"><span data-i18n="ug.output">Generated UUIDs</span>
+          <textarea id="output" readonly style="min-height:220px"></textarea>
+        </label>
+      </div>
+    </div>
+
+    <section class="narrow prose">
+      <h2 data-i18n="ug.how.h2">What is a UUID v4?</h2>
+      <ol>
+        <li data-i18n="ug.how1">A UUID v4 is a 128-bit random identifier — 122 random bits give about 5.3×10³⁶ possibilities.</li>
+        <li data-i18n="ug.how2">The chance of two colliding is so small that databases, APIs and distributed systems use v4 as unique IDs.</li>
+        <li data-i18n="ug.how3">Pick options above if you need uppercase, braced or hyphen-free variants.</li>
+      </ol>
+      <h2 data-i18n="index.faq.h2">Frequently asked questions</h2>
+      <details>
+        <summary data-i18n="ug.fq1">Are these cryptographically secure?</summary>
+        <p data-i18n="ug.fa1">Yes — generated with your browser's crypto.getRandomValues(), suitable even for secret tokens.</p>
+      </details>
+      <details>
+        <summary data-i18n="ug.fq2">Can I use them as database primary keys?</summary>
+        <p data-i18n="ug.fa2">You can, though for very large tables consider ordered IDs (like ULID) to reduce index fragmentation — v4 is random by design.</p>
+      </details>
+      <details>
+        <summary data-i18n="ug.fq3">Is there a limit on how many I can generate?</summary>
+        <p data-i18n="ug.fa3">No. Generation is local and instant; the display caps at a few hundred per batch for readability.</p>
+      </details>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="inner">
+      <span data-i18n="footer.line">© 2026 LocalKit · Made for privacy</span>
+      <div class="links">
+        <a href="../index.html" data-i18n="nav.tools">Tools</a>
+        <a href="../about.html" data-i18n="nav.about">About</a>
+        <a href="../privacy.html" data-i18n="nav.privacy">Privacy Policy</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="../assets/app.js"></script>
+  <script>
+  (function () {
+    'use strict';
+    const { el, setStatus } = window.LK;
+
+    function uuid4() {
+      if (crypto.randomUUID) return crypto.randomUUID();
+      const b = crypto.getRandomValues(new Uint8Array(16));
+      b[6] = (b[6] & 0x0f) | 0x40; b[8] = (b[8] & 0x3f) | 0x80;
+      const h = [...b].map(x => x.toString(16).padStart(2, '0')).join('');
+      return h.slice(0, 8) + '-' + h.slice(8, 12) + '-' + h.slice(12, 16) + '-' + h.slice(16, 20) + '-' + h.slice(20);
+    }
+
+    function format(u) {
+      if (el('upper').checked) u = u.toUpperCase();
+      if (el('nohyphen').checked) u = u.replace(/-/g, '');
+      if (el('braces').checked) u = '{' + u + '}';
+      return u;
+    }
+
+    function generate() {
+      const n = Math.min(500, Math.max(1, parseInt(el('count').value, 10) || 1));
+      const list = [];
+      for (let i = 0; i < n; i++) list.push(format(uuid4()));
+      el('output').value = list.join('\n');
+      el('copyBtn').disabled = false;
+      return list;
+    }
+
+    el('genBtn').addEventListener('click', generate);
+    el('copyBtn').addEventListener('click', async () => {
+      await navigator.clipboard.writeText(el('output').value);
+      setStatus(window.LKI.t('jt.copied'), 'ok');
+    });
+    window.__lkUuid = () => { el('count').value = 20; return generate(); };
+  })();
+  </script>
+</body>
+</html>

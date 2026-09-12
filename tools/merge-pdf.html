@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en" data-title-key="mp.title">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Merge PDF Files Online Free — No Upload, No Limits | LocalKit</title>
+  <meta name="description" content="Combine multiple PDFs into one document in your browser. Reorder files before merging, no page limits, no watermarks — and your PDFs are never uploaded to any server.">
+  <link rel="canonical" href="https://localkit.tools/tools/merge-pdf.html">
+  <meta property="og:title" content="Merge PDF Files Online Free — No Upload">
+  <meta property="og:description" content="Combine PDFs locally in your browser. No upload, no limits, no watermarks.">
+  <meta property="og:type" content="website">
+  <link rel="icon" href="data:image/svg+xml,&lt;svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'&gt;&lt;rect width='100' height='100' rx='22' fill='%234f46e5'/&gt;&lt;text x='50' y='68' font-size='52' text-anchor='middle' fill='white' font-family='sans-serif' font-weight='bold'&gt;L&lt;/text&gt;&lt;/svg&gt;">
+  <link rel="stylesheet" href="../assets/style.css">
+  <script src="../assets/i18n.js"></script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "LocalKit PDF Merger",
+    "url": "https://localkit.tools/tools/merge-pdf.html",
+    "applicationCategory": "UtilitiesApplication",
+    "operatingSystem": "Any (browser-based)",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Is it safe to merge confidential PDFs here?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Yes. Merging runs entirely in your browser with JavaScript — the files are never transmitted anywhere, so contracts, invoices and IDs stay on your device." }
+      },
+      {
+        "@type": "Question",
+        "name": "Is there a page or file size limit?",
+        "acceptedAnswer": { "@type": "Answer", "text": "No artificial limits. Processing happens on your own hardware, so the practical limit is your device's memory." }
+      },
+      {
+        "@type": "Question",
+        "name": "Does the merged PDF contain watermarks?",
+        "acceptedAnswer": { "@type": "Answer", "text": "No. The output is exactly the pages you merged, in the order you chose — nothing is added." }
+      }
+    ]
+  }
+  </script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="inner">
+      <a class="logo" href="../index.html"><span class="mark">L</span>LocalKit</a>
+      <nav class="nav">
+        <a href="../index.html" data-i18n="nav.tools">Tools</a>
+        <a href="../about.html" data-i18n="nav.about">About</a>
+        <a href="../privacy.html" data-i18n="nav.privacy">Privacy</a>
+        <button id="langBtn" class="ghost lang-btn" type="button">中文</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="tool-head">
+      <div class="crumbs"><a href="../index.html" data-i18n="nav.tools">Tools</a> / <span data-i18n="mp.crumb">Merge PDF</span></div>
+      <h1 data-i18n="mp.h1">Merge PDF</h1>
+      <p class="lede" data-i18n="mp.lede">Combine PDFs into one — processed in your browser, never uploaded.</p>
+    </div>
+
+    <div class="panel">
+      <div class="dropzone" id="dropzone">
+        <div class="big">📚</div>
+        <div class="title" data-i18n="mp.drop.title">Drop PDF files here, or click to choose</div>
+        <div class="hint" data-i18n="mp.drop.hint">Add two or more PDFs — you can reorder them before merging</div>
+      </div>
+      <input type="file" id="fileInput" accept="application/pdf" multiple hidden>
+
+      <div class="result-list" id="fileList"></div>
+
+      <div class="controls">
+        <button id="runBtn" data-i18n="mp.run" disabled>Merge</button>
+        <button id="clearBtn" class="ghost" data-i18n="mp.clear" disabled>Clear list</button>
+      </div>
+      <div class="status" role="status"></div>
+    </div>
+
+    <section class="narrow prose">
+      <h2 data-i18n="mp.how.h2">How to merge PDFs</h2>
+      <ol>
+        <li data-i18n="mp.how1">Drop in the PDFs you want to combine.</li>
+        <li data-i18n="mp.how2">Arrange them with the ↑ / ↓ buttons — top goes first.</li>
+        <li data-i18n-html="mp.how3">Press <strong>Merge</strong> and download the combined file.</li>
+      </ol>
+
+      <h2 data-i18n="mp.why.h2">Why merge locally instead of online?</h2>
+      <p data-i18n-html="mp.why.p">Most PDF websites ask you to upload your documents to their servers — contracts, payslips, IDs. LocalKit's merger loads the files into your browser's memory and writes the combined PDF on your own device. It also means no waiting for uploads: a 50&nbsp;MB file merges just as fast as a 1&nbsp;MB one, limited only by your hardware.</p>
+
+      <h2 data-i18n="index.faq.h2">Frequently asked questions</h2>
+      <details>
+        <summary data-i18n="mp.fq1">Is it safe to merge confidential PDFs here?</summary>
+        <p data-i18n="mp.fa1">Yes. The merging runs entirely in your browser — files are never transmitted anywhere. You can open your browser's network tab and watch: zero requests carry your data.</p>
+      </details>
+      <details>
+        <summary data-i18n="mp.fq2">Is there a page or file size limit?</summary>
+        <p data-i18n="mp.fa2">No artificial limits. The practical limit is your device's memory, which is far above what most online services allow for free.</p>
+      </details>
+      <details>
+        <summary data-i18n="mp.fq3">Are bookmarks and forms preserved?</summary>
+        <p data-i18n="mp.fa3">Pages, text, images and form fields of the source pages are copied as-is. Top-level bookmarks from the original files are not carried over into the merged document.</p>
+      </details>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="inner">
+      <span data-i18n="footer.line">© 2026 LocalKit · Made for privacy</span>
+      <div class="links">
+        <a href="../index.html" data-i18n="nav.tools">Tools</a>
+        <a href="../about.html" data-i18n="nav.about">About</a>
+        <a href="../privacy.html" data-i18n="nav.privacy">Privacy Policy</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="../assets/app.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+  <script>
+  (function () {
+    'use strict';
+    const { el, setupDropzone, formatBytes, downloadBlob, setStatus } = window.LK;
+    const t = (k, v) => window.LKI.t(k, v);
+    let files = []; // {file, name}
+    const list = el('fileList');
+
+    function render() {
+      list.innerHTML = '';
+      files.forEach((f, i) => {
+        const item = document.createElement('div');
+        item.className = 'result-item';
+        item.innerHTML =
+          '<span class="meta">' + (i + 1) + '.</span>' +
+          '<span class="name">' + f.name + '</span>' +
+          '<span class="meta">' + formatBytes(f.file.size) + '</span>' +
+          '<span class="spacer"></span>' +
+          '<button class="small ghost" data-act="up" ' + (i === 0 ? 'disabled' : '') + '>↑</button>' +
+          '<button class="small ghost" data-act="down" ' + (i === files.length - 1 ? 'disabled' : '') + '>↓</button>' +
+          '<button class="small ghost" data-act="rm">✕</button>';
+        item.querySelector('[data-act="up"]').addEventListener('click', () => {
+          [files[i - 1], files[i]] = [files[i], files[i - 1]]; render();
+        });
+        item.querySelector('[data-act="down"]').addEventListener('click', () => {
+          [files[i + 1], files[i]] = [files[i], files[i + 1]]; render();
+        });
+        item.querySelector('[data-act="rm"]').addEventListener('click', () => {
+          files.splice(i, 1); render();
+        });
+        list.appendChild(item);
+      });
+      el('runBtn').disabled = files.length < 2;
+      el('clearBtn').disabled = !files.length;
+    }
+
+    setupDropzone(el('dropzone'), el('fileInput'), (fl) => {
+      Array.from(fl).forEach(f => {
+        if (f.type === 'application/pdf' || /\.pdf$/i.test(f.name)) files.push({ file: f, name: f.name });
+      });
+      render();
+      setStatus(files.length ? t('mp.added', { n: files.length }) : t('mp.nopdf'), files.length ? 'ok' : 'err');
+    });
+
+    el('clearBtn').addEventListener('click', () => { files = []; render(); setStatus(''); });
+
+    el('runBtn').addEventListener('click', async () => {
+      if (files.length < 2) return;
+      el('runBtn').disabled = true;
+      try {
+        setStatus(t('mp.working', { n: files.length }));
+        const out = await PDFLib.PDFDocument.create();
+        for (const f of files) {
+          const bytes = await f.file.arrayBuffer();
+          const src = await PDFLib.PDFDocument.load(bytes, { ignoreEncryption: true });
+          const pages = await out.copyPages(src, src.getPageIndices());
+          pages.forEach(p => out.addPage(p));
+        }
+        const blob = new Blob([await out.save()], { type: 'application/pdf' });
+        downloadBlob(blob, 'merged.pdf');
+        setStatus(t('mp.done', { n: out.getPageCount() }), 'ok');
+      } catch (err) {
+        setStatus(t('mp.fail', { msg: err.message }), 'err');
+      }
+      el('runBtn').disabled = false;
+    });
+
+    // test hook
+    window.__lkProcess = async (fs) => {
+      Array.from(fs).forEach(f => files.push({ file: f, name: f.name }));
+      render();
+      el('runBtn').click();
+      while (el('runBtn').disabled) await new Promise(r => setTimeout(r, 100));
+      return files.length;
+    };
+  })();
+  </script>
+</body>
+</html>

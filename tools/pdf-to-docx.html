@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="en" data-title-key="pd.title">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PDF to Word (DOCX) Converter Online Free — No Upload | LocalKit</title>
+  <meta name="description" content="Convert text-based PDFs to editable Word (.docx) documents in your browser. Paragraphs, indents, ruled tables and images rebuilt locally — your file is never uploaded.">
+  <link rel="canonical" href="https://localkit.tools/tools/pdf-to-docx.html">
+  <meta property="og:title" content="PDF to Word Converter Online Free — No Upload">
+  <meta property="og:description" content="Turn text PDFs into editable Word documents, locally in your browser.">
+  <meta property="og:type" content="website">
+  <link rel="icon" href="data:image/svg+xml,&lt;svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'&gt;&lt;rect width='100' height='100' rx='22' fill='%234f46e5'/&gt;&lt;text x='50' y='68' font-size='52' text-anchor='middle' fill='white' font-family='sans-serif' font-weight='bold'&gt;L&lt;/text&gt;&lt;/svg&gt;">
+  <link rel="stylesheet" href="../assets/style.css">
+  <script src="../assets/i18n.js"></script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org", "@type": "WebApplication",
+    "name": "LocalKit PDF to Word", "url": "https://localkit.tools/tools/pdf-to-docx.html",
+    "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any (browser-based)",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org", "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Will the Word file look exactly like the PDF?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Content, order, headings, indents, ruled tables and images are preserved. Table borders are read from the PDF's own vector grid, so gridded tables become real Word tables; merged-cell layouts and exact fonts stay approximate. Treat the result as an editable draft, not a layout replica." }
+      },
+      {
+        "@type": "Question",
+        "name": "Why does my scanned PDF fail?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Scanned pages are images — there is no text to extract. OCR (in-browser, via WebAssembly) is on our roadmap." }
+      },
+      {
+        "@type": "Question",
+        "name": "Is my document uploaded?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Never. Extraction and .docx generation both run inside your browser." }
+      }
+    ]
+  }
+  </script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="inner">
+      <a class="logo" href="../index.html"><span class="mark">L</span>LocalKit</a>
+      <nav class="nav">
+        <a href="../index.html" data-i18n="nav.tools">Tools</a>
+        <a href="../about.html" data-i18n="nav.about">About</a>
+        <a href="../privacy.html" data-i18n="nav.privacy">Privacy</a>
+        <button id="langBtn" class="ghost lang-btn" type="button">中文</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="tool-head">
+      <div class="crumbs"><a href="../index.html" data-i18n="nav.tools">Tools</a> / <span data-i18n="pd.crumb">PDF to Word</span></div>
+      <h1 data-i18n="pd.h1">PDF to Word</h1>
+      <p class="lede" data-i18n="pd.lede">Turn PDFs into editable Word documents — text extracted locally, paragraphs rebuilt.</p>
+    </div>
+
+    <div class="panel">
+      <div class="dropzone" id="dropzone">
+        <div class="big">📝</div>
+        <div class="title" data-i18n="pd.drop.title">Drop a PDF here, or click to choose</div>
+        <div class="hint" data-i18n="pd.drop.hint">One PDF file — text-based PDFs work best</div>
+      </div>
+      <input type="file" id="fileInput" accept="application/pdf" hidden>
+
+      <div class="controls">
+        <button id="runBtn" data-i18n="pd.run" disabled>Convert to Word</button>
+      </div>
+      <div class="status" role="status"></div>
+    </div>
+
+    <section class="narrow prose">
+      <h2 data-i18n="pd.how.h2">How to convert PDF to Word</h2>
+      <ol>
+        <li data-i18n="pd.how1">Drop in a text-based PDF.</li>
+        <li data-i18n-html="pd.how2">Press <strong>Convert to Word</strong> — text, tables and images are extracted page by page.</li>
+        <li data-i18n="pd.how3">Download the .docx and edit it in Word, WPS or Google Docs.</li>
+      </ol>
+
+      <h2 data-i18n="pd.limits.h2">What to expect (honest version)</h2>
+      <p data-i18n="pd.limits.p">PDF stores glyphs at fixed positions, so this tool reconstructs structure from coordinates: paragraphs and indents are rebuilt, ruled tables are read from the PDF's own border lines and become real Word tables with multi-line cells, and embedded images are re-inserted in place. Borderless tables, merged-cell layouts and decorative effects stay approximate; scanned PDFs have no text layer and cannot be converted.</p>
+
+      <h2 data-i18n="index.faq.h2">Frequently asked questions</h2>
+      <details>
+        <summary data-i18n="pd.fq1">Will the Word file look exactly like the PDF?</summary>
+        <p data-i18n="pd.fa1">Content, order, headings, indents, ruled tables and images are preserved. Borderless tables, merged cells and exact fonts/columns are approximated. Treat the result as an editable draft, not a layout replica.</p>
+      </details>
+      <details>
+        <summary data-i18n="pd.fq2">Why does my scanned PDF fail?</summary>
+        <p data-i18n="pd.fa2">Scanned pages are images — there is no text to extract. OCR (in-browser, via WebAssembly) is on our roadmap.</p>
+      </details>
+      <details>
+        <summary data-i18n="pd.fq3">Is my document uploaded?</summary>
+        <p data-i18n="pd.fa3">Never. Extraction and .docx generation both run inside your browser.</p>
+      </details>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="inner">
+      <span data-i18n="footer.line">© 2026 LocalKit · Made for privacy</span>
+      <div class="links">
+        <a href="../index.html" data-i18n="nav.tools">Tools</a>
+        <a href="../about.html" data-i18n="nav.about">About</a>
+        <a href="../privacy.html" data-i18n="nav.privacy">Privacy Policy</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="../assets/app.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/legacy/build/pdf.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.js"></script>
+  <script>
+  (function () {
+    'use strict';
+    const { el, setupDropzone, formatBytes, downloadBlob, setStatus } = window.LK;
+    const t = (k, v) => window.LKI.t(k, v);
+    pdfjsLib.GlobalWorkerOptions.workerSrc =
+      'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/legacy/build/pdf.worker.min.js';
+    let file = null;
+
+    /* ================= text: items -> lines ================= */
+    function buildLines(items) {
+      const sorted = items
+        .filter(it => it.str && it.str.trim() !== '')
+        .sort((a, b) => b.transform[5] - a.transform[5] || a.transform[4] - b.transform[4]);
+      const rows = [];
+      let cur = null;
+      for (const it of sorted) {
+        const y = it.transform[5];
+        const h = Math.abs(it.transform[3]) || it.height || 10;
+        if (!cur || Math.abs(y - cur.y) > Math.max(2, cur.h * 0.6)) {
+          cur = { y: y, h: h, items: [it] };
+          rows.push(cur);
+        } else {
+          cur.items.push(it);
+          if (h > cur.h) cur.h = h;
+        }
+      }
+      return rows.map(r => {
+        r.items.sort((a, b) => a.transform[4] - b.transform[4]);
+        let text = '', prevEnd = null;
+        for (const it of r.items) {
+          const x = it.transform[4];
+          if (prevEnd !== null && x - prevEnd > 1.2) text += ' ';
+          text += it.str;
+          prevEnd = x + (it.width || 0);
+        }
+        return { text: text.replace(/\s+/g, ' ').trim(), size: r.h, x: r.items[0].transform[4], y: r.y, items: r.items, h: r.h };
+      }).filter(l => l.text);
+    }
+
+    /* ================= tables A: ruled grids (from vector rectangles) ================= */
+    function extractGeometry(page) {
+      return page.getOperatorList().then(ol => {
+        const rects = [];
+        for (let i = 0; i < ol.fnArray.length; i++) {
+          if (ol.fnArray[i] !== pdfjsLib.OPS.constructPath) continue;
+          const a = ol.argsArray[i];
+          const ops = a[0], coords = a[1];
+          let k = 0;
+          for (let j = 0; j < ops.length; j++) {
+            const op = ops[j];
+            if (op === pdfjsLib.OPS.rectangle) {
+              rects.push({ x: coords[k], y: coords[k + 1], w: coords[k + 2], h: coords[k + 3] });
+              k += 4;
+            } else if (op === pdfjsLib.OPS.curveTo) {
+              k += 6;
+            } else if (op === pdfjsLib.OPS.moveTo || op === pdfjsLib.OPS.lineTo) {
+              k += 2;
+            }
+          }
+        }
+        return rects;
+      });
+    }
+
+    function clusterEdges(edges, key, tol) {
+      const s = edges.slice().sort((a, b) => a[key] - b[key]);
+      const out = [];
+      let g = null;
+      for (const e of s) {
+        if (!g || e[key] - g.v > tol) { g = { v: e[key], members: [e] }; out.push(g); }
+        else { g.members.push(e); g.v = g.members.reduce((acc, m) => acc + m[key], 0) / g.members.length; }
+      }
+      return out;
+    }
+
+    function detectGrids(rects, pageW, pageH) {
+      const hE = [], vE = [];
+      for (const r of rects) {
+        if (r.w <= 0 || r.h <= 0) continue;
+        if (r.h <= 2.5 && r.w > 8) { hE.push({ y: r.y + r.h / 2, x1: r.x, x2: r.x + r.w }); continue; }
+        if (r.w <= 2.5 && r.h > 8) { vE.push({ x: r.x + r.w / 2, y1: r.y, y2: r.y + r.h }); continue; }
+        if (r.w > 8 && r.h > 4) {
+          hE.push({ y: r.y, x1: r.x, x2: r.x + r.w });
+          hE.push({ y: r.y + r.h, x1: r.x, x2: r.x + r.w });
+          vE.push({ x: r.x, y1: r.y, y2: r.y + r.h });
+          vE.push({ x: r.x + r.w, y1: r.y, y2: r.y + r.h });
+        }
+      }
+      const hRules = clusterEdges(hE.filter(e => e.y > 10 && e.y < pageH - 10), 'y', 2.5)
+        .map(g => ({ y: g.v, x1: Math.min.apply(null, g.members.map(m => m.x1)), x2: Math.max.apply(null, g.members.map(m => m.x2)) }))
+        .sort((a, b) => b.y - a.y);
+      const vRules = clusterEdges(vE.filter(e => e.x > 10 && e.x < pageW - 10), 'x', 2.5)
+        .map(g => ({ x: g.v, yMin: Math.min.apply(null, g.members.map(m => m.y1)), yMax: Math.max.apply(null, g.members.map(m => m.y2)) }));
+      if (hRules.length < 2 || vRules.length < 1) return [];
+
+      const bands = [];
+      for (let i = 0; i < hRules.length - 1; i++) {
+        const top = hRules[i].y, bottom = hRules[i + 1].y;
+        const height = top - bottom;
+        if (height < 8 || height > pageH * 0.9) { bands.push(null); continue; }
+        const crossing = vRules.filter(v =>
+          v.x > Math.min(hRules[i].x1, hRules[i + 1].x1) - 4 &&
+          v.x < Math.max(hRules[i].x2, hRules[i + 1].x2) + 4 &&
+          v.yMin <= bottom + 3 && v.yMax >= top - 3);
+        bands.push(crossing.length >= 2 ? { top: top, bottom: bottom, vxs: crossing.map(v => v.x) } : null);
+      }
+
+      const grids = [];
+      let cur = null;
+      const close = () => {
+        if (!cur || cur.bands.length < 1) { cur = null; return; }
+        const allV = [];
+        cur.bands.forEach(b => allV.push.apply(allV, b.vxs));
+        allV.sort((a, b) => a - b);
+        const colXs = [];
+        for (const x of allV) if (!colXs.length || x - colXs[colXs.length - 1] > 4) colXs.push(x);
+        grids.push({
+          y: cur.bands[0].top,
+          yBottom: cur.bands[cur.bands.length - 1].bottom,
+          x0: Math.min.apply(null, colXs),
+          x1: Math.max.apply(null, colXs),
+          rowBands: cur.bands.slice(),
+          colXs: colXs,
+        });
+        cur = null;
+      };
+      for (let i = 0; i < bands.length; i++) {
+        const b = bands[i];
+        if (b) {
+          if (cur && cur.bands.length && b.top - cur.bands[cur.bands.length - 1].bottom > 120) close();
+          if (!cur) cur = { bands: [] };
+          cur.bands.push(b);
+        } else close();
+      }
+      close();
+      return grids.filter(g => g.rowBands.length >= 2 && g.colXs.length >= 2);
+    }
+
+    function gridCellTexts(grid, items) {
+      const rows = grid.rowBands.map(b => {
+        const yL = b.bottom, yH = b.top;
+        return grid.colXs.map((cx, j) => {
+          const xL = cx, xR = j + 1 < grid.colXs.length ? grid.colXs[j + 1] : grid.x1 + 1;
+          const txts = [];
+          for (const it of items) {
+            if (!it.str || !it.str.trim()) continue;
+            const cx2 = it.transform[4] + (it.width || 0) / 2;
+            const cy2 = it.transform[5] - (Math.abs(it.transform[3]) || it.height || 10) / 2;
+            if (cx2 >= xL - 1 && cx2 < xR - 1 && cy2 >= yL - 1 && cy2 < yH + 1) txts.push(it.str);
+          }
+          return txts.join('').replace(/\s+/g, ' ').trim();
+        });
+      });
+      while (rows.length && rows[0].every(c => !c)) rows.shift();
+      while (rows.length && rows[rows.length - 1].every(c => !c)) rows.pop();
+      return rows;
+    }
+
+    /* ================= tables B: borderless fallback (alignment, >= 3 rows) ================= */
+    function splitCells(line) {
+      const cells = [];
+      let cur = null;
+      for (const it of line.items) {
+        const x = it.transform[4];
+        if (!cur) cur = { x: x, items: [it] };
+        else if (x - cur.endX > Math.max(24, line.h * 2)) { cells.push(cur); cur = { x: x, items: [it] }; }
+        else cur.items.push(it);
+        cur.endX = x + (it.width || 0);
+      }
+      if (cur) cells.push(cur);
+      return cells
+        .map(c => ({ x: c.x, y: line.y, text: c.items.map(i => i.str).join('').replace(/\s+/g, ' ').trim() }))
+        .filter(c => c.text);
+    }
+
+    function buildBlocks(lines) {
+      const blocks = [];
+      let run = [], table = null;
+      const closeTable = () => {
+        if (!table) return;
+        if (table.rows.length < 3) {
+          const lines2 = table.rows.map(r => ({ text: r.map(c => c.text).join('    '), size: 12, x: r[0].x, y: Math.max.apply(null, r.map(c => c.y)) }));
+          blocks.push({ kind: 'text', lines: lines2, y: Math.max.apply(null, lines2.map(l => l.y)) });
+          table = null;
+          return;
+        }
+        const xs = [];
+        table.rows.forEach(r => r.forEach(c => xs.push(c.x)));
+        xs.sort((a, b) => a - b);
+        const colXs = [];
+        for (const x of xs) if (!colXs.length || x - colXs[colXs.length - 1] > 12) colXs.push(x);
+        const ys = table.rows.map(r => Math.max.apply(null, r.map(c => c.y)));
+        blocks.push({ kind: 'table', rows: table.rows, colXs: colXs, y: Math.max.apply(null, ys) });
+        table = null;
+      };
+      const closeRun = () => {
+        if (run.length) {
+          buildParagraphs(run).forEach(p => blocks.push(p));
+          run = [];
+        }
+      };
+      for (const ln of lines) {
+        const cells = splitCells(ln);
+        if (cells.length >= 2) {
+          closeRun();
+          const aligned = table && Math.abs(cells[0].x - table.rows[0][0].x) < 15;
+          if (!table || !aligned) { closeTable(); table = { rows: [cells] }; }
+          else table.rows.push(cells);
+        } else {
+          closeTable();
+          run.push(ln);
+        }
+      }
+      closeTable();
+      closeRun();
+      return blocks;
+    }
+
+    function buildParagraphs(lines) {
+      const paras = [];
+      let cur = null;
+      for (const ln of lines) {
+        const prev = cur ? cur.lines[cur.lines.length - 1] : null;
+        const newPara = !prev ||
+          ln.size > prev.size * 1.25 ||
+          Math.abs(ln.x - prev.x) > 24 ||
+          (prev.y - ln.y) > prev.size * 2.1;
+        if (newPara) { cur = { kind: 'text', lines: [ln], y: ln.y }; paras.push(cur); }
+        else { cur.lines.push(ln); if (ln.y > cur.y) cur.y = ln.y; }
+      }
+      return paras;
+    }
+
+    /* ================= images: operator list + CTM tracking ================= */
+    function mulM(m, ctm) {
+      return [
+        m[0] * ctm[0] + m[1] * ctm[2],
+        m[0] * ctm[1] + m[1] * ctm[3],
+        m[2] * ctm[0] + m[3] * ctm[2],
+        m[2] * ctm[1] + m[3] * ctm[3],
+        m[4] * ctm[0] + m[5] * ctm[2] + ctm[4],
+        m[4] * ctm[1] + m[5] * ctm[3] + ctm[5],
+      ];
+    }
+
+    function getObj(container, name) {
+      return new Promise((resolve) => {
+        try {
+          if (container.has(name)) { resolve(container.get(name)); return; }
+          container.get(name, (obj) => resolve(obj || null));
+        } catch (e) { resolve(null); }
+      });
+    }
+
+    function objToCanvas(obj) {
+      if (!obj || !obj.width || !obj.height) return null;
+      const canvas = document.createElement('canvas');
+      canvas.width = obj.width; canvas.height = obj.height;
+      const ctx = canvas.getContext('2d');
+      if (obj.bitmap) { ctx.drawImage(obj.bitmap, 0, 0); return canvas; }
+      if (!obj.data) return null;
+      const img = ctx.createImageData(obj.width, obj.height);
+      const s = obj.data;
+      if (obj.kind === 3) {
+        img.data.set(s.length >= obj.width * obj.height * 4 ? s.subarray(0, obj.width * obj.height * 4) : s);
+      } else if (obj.kind === 2) {
+        for (let i = 0, j = 0; i < obj.width * obj.height; i++) {
+          img.data[j++] = s[i * 3]; img.data[j++] = s[i * 3 + 1]; img.data[j++] = s[i * 3 + 2]; img.data[j++] = 255;
+        }
+      } else {
+        const rowBytes = (obj.width + 7) >> 3;
+        for (let y = 0; y < obj.height; y++) {
+          for (let x = 0; x < obj.width; x++) {
+            const bit = (s[y * rowBytes + (x >> 3)] >> (7 - (x & 7))) & 1 ? 255 : 0;
+            const j = (y * obj.width + x) * 4;
+            img.data[j] = img.data[j + 1] = img.data[j + 2] = bit; img.data[j + 3] = 255;
+          }
+        }
+      }
+      ctx.putImageData(img, 0, 0);
+      return canvas;
+    }
+
+    async function extractImages(page) {
+      const ol = await page.getOperatorList();
+      const out = [];
+      let ctm = [1, 0, 0, 1, 0, 0];
+      const stack = [];
+      for (let i = 0; i < ol.fnArray.length; i++) {
+        const fn = ol.fnArray[i], a = ol.argsArray[i];
+        if (fn === pdfjsLib.OPS.save) stack.push(ctm);
+        else if (fn === pdfjsLib.OPS.restore) { if (stack.length) ctm = stack.pop(); }
+        else if (fn === pdfjsLib.OPS.transform) ctm = mulM(a, ctm);
+        else if (fn === pdfjsLib.OPS.paintImageXObject || fn === pdfjsLib.OPS.paintImageXObjectRepeat ||
+                 fn === pdfjsLib.OPS.paintInlineImageXObject || fn === pdfjsLib.OPS.paintInlineImageXObjectRepeat) {
+          try {
+            let obj = null;
+            if (fn === pdfjsLib.OPS.paintInlineImageXObject || fn === pdfjsLib.OPS.paintInlineImageXObjectRepeat) obj = a[0];
+            else obj = (await getObj(page.objs, a[0])) || (await getObj(page.commonObjs, a[0]));
+            const canvas = objToCanvas(obj);
+            if (!canvas) continue;
+            const w = Math.abs(ctm[0]) || obj.width;
+            const h = Math.abs(ctm[3]) || obj.height;
+            if (w < 8 || h < 8) continue;
+            out.push({ kind: 'image', canvas: canvas, x: ctm[4], yTop: ctm[5] + h, w: w, h: h });
+          } catch (e) { /* skip broken image */ }
+        }
+      }
+      return out;
+    }
+
+    function canvasPngBytes(canvas) {
+      return new Promise((resolve, reject) => {
+        canvas.toBlob(async (b) => {
+          if (!b) { reject(new Error('png encode failed')); return; }
+          resolve(new Uint8Array(await b.arrayBuffer()));
+        }, 'image/png');
+      });
+    }
+
+    /* ================= docx building ================= */
+    function buildPara(p, bodyLeft, median) {
+      const text = p.lines.map(l => l.text).join(' ');
+      const minX = Math.min.apply(null, p.lines.map(l => l.x));
+      const isHeading = p.lines[0].size > median * 1.25 && p.lines.length <= 2;
+      const opts = {
+        children: [new docx.TextRun({ text: text, bold: isHeading, size: isHeading ? Math.min(48, Math.max(28, Math.round(22 * (p.lines[0].size / median)))) : 22 })],
+        spacing: { after: 160 },
+      };
+      const left = minX - bodyLeft;
+      const first = p.lines[0].x - minX;
+      const ind = {};
+      if (left > 4) ind.left = Math.min(4800, Math.round(left * 20));
+      if (first > 4) ind.firstLine = Math.min(4800, Math.round(first * 20));
+      if (ind.left || ind.firstLine) opts.indent = ind;
+      return new docx.Paragraph(opts);
+    }
+
+    function buildGridTable(gridRows, colXs, x0, x1) {
+      const bounds = colXs.concat([x1 + 1]);
+      const raw = bounds.map((v, i) => i === 0 ? colXs[0] - x0 : colXs[i] - colXs[i - 1]);
+      const total = raw.reduce((a, b) => a + b, 0) || 1;
+      const widths = raw.map(v => Math.max(6, Math.round(v / total * 100)));
+      return new docx.Table({
+        width: { size: 100, type: docx.WidthType.PERCENTAGE },
+        rows: gridRows.map(r => new docx.TableRow({
+          children: r.map((txt, i) => new docx.TableCell({
+            width: { size: widths[i] || Math.floor(100 / r.length), type: docx.WidthType.PERCENTAGE },
+            children: [new docx.Paragraph({ children: [new docx.TextRun({ text: txt || ' ', size: 20 })] })],
+          })),
+        })),
+      });
+    }
+
+    function buildTable(tb) {
+      const rows = tb.rows.map(cells => {
+        const row = new Array(tb.colXs.length).fill('');
+        for (const c of cells) {
+          let bi = 0, bd = Infinity;
+          tb.colXs.forEach((cx, i) => { const d = Math.abs(cx - c.x); if (d < bd) { bd = d; bi = i; } });
+          row[bi] = row[bi] ? row[bi] + ' ' + c.text : c.text;
+        }
+        return row;
+      });
+      const widths = new Array(tb.colXs.length).fill(Math.floor(100 / tb.colXs.length));
+      return new docx.Table({
+        width: { size: 100, type: docx.WidthType.PERCENTAGE },
+        rows: rows.map(r => new docx.TableRow({
+          children: r.map((txt, i) => new docx.TableCell({
+            width: { size: widths[i] || Math.floor(100 / r.length), type: docx.WidthType.PERCENTAGE },
+            children: [new docx.Paragraph({ children: [new docx.TextRun({ text: txt || ' ', size: 20 })] })],
+          })),
+        })),
+      });
+    }
+
+    /* ================= main pipeline ================= */
+    async function pageToBlocks(src, p) {
+      const page = await src.getPage(p);
+      const vp = page.getViewport({ scale: 1 });
+      const pageOffset = (src.numPages - p) * 100000;
+      const rawItems = (await page.getTextContent()).items;
+      const lines = buildLines(rawItems);
+
+      const rects = await extractGeometry(page);
+      const grids = detectGrids(rects, vp.width, vp.height);
+      const blocks = [];
+      const consumed = new Set();
+      for (const g of grids) {
+        const gridRows = gridCellTexts(g, rawItems);
+        if (!gridRows.some(r => r.some(c => c))) continue;
+        blocks.push({ kind: 'grid', grid: g, gridRows: gridRows, y: g.y + pageOffset });
+        for (const l of lines) {
+          if (l.x >= g.x0 - 3 && l.x <= g.x1 + 3 && l.y <= g.y + 2 && l.y >= g.yBottom - 2) consumed.add(l);
+        }
+      }
+      const usable = lines.filter(l => !consumed.has(l));
+      const rest = buildBlocks(usable);
+      rest.forEach(b => { b.y += pageOffset; });
+      const images = await extractImages(page);
+      images.forEach(im => { im.yTop += pageOffset; });
+      return { blocks: blocks.concat(rest), images: images, usableCount: usable.length };
+    }
+
+    async function convert(file) {
+      const bytes = await file.arrayBuffer();
+      const src = await pdfjsLib.getDocument({ data: bytes.slice(0) }).promise;
+      const flat = [];
+      let totalLines = 0;
+      for (let p = 1; p <= src.numPages; p++) {
+        setStatus(t('pd.working', { i: p, n: src.numPages }));
+        const r = await pageToBlocks(src, p);
+        r.images.forEach(im => flat.push(im));
+        r.blocks.forEach(b => {
+          flat.push(b);
+          totalLines += b.kind === 'grid' ? b.gridRows.length : (b.lines ? b.lines.length : b.rows ? b.rows.length : 0);
+        });
+      }
+      const hasText = flat.some(b =>
+        (b.kind === 'text' && b.lines.length) ||
+        b.kind === 'table' ||
+        (b.kind === 'grid' && b.gridRows.some(r => r.some(c => c))));
+      if (!hasText && !flat.some(b => b.kind === 'image')) throw new Error(t('pd.notext'));
+
+      const counts = {};
+      flat.forEach(b => { if (b.kind === 'text') b.lines.forEach(l => { const k = Math.round(l.x / 4) * 4; counts[k] = (counts[k] || 0) + 1; }); });
+      let bodyLeft = 0, best = -1;
+      for (const k in counts) if (counts[k] > best) { best = counts[k]; bodyLeft = +k; }
+      const sizes = [];
+      flat.forEach(b => { if (b.kind === 'text') b.lines.forEach(l => sizes.push(l.size)); });
+      sizes.sort((a, b) => a - b);
+      const median = sizes.length ? sizes[Math.floor((sizes.length - 1) / 2)] : 12;
+
+      setStatus(t('pd.building'));
+      flat.sort((a, b) => b.y - a.y);
+
+      const children = [];
+      let nTables = 0, nImages = 0, nParas = 0;
+      for (const b of flat) {
+        if (b.kind === 'image') {
+          nImages++;
+          const scale = Math.min(1, 600 / (b.w * 96 / 72 || 1));
+          const pxW = Math.max(32, Math.round(b.w * 96 / 72 * scale));
+          const pxH = Math.max(32, Math.round(b.h * 96 / 72 * scale));
+          children.push(new docx.Paragraph({
+            children: [new docx.ImageRun({ data: await canvasPngBytes(b.canvas), transformation: { width: pxW, height: pxH } })],
+            spacing: { after: 160 },
+          }));
+        } else if (b.kind === 'grid') {
+          nTables++;
+          children.push(buildGridTable(b.gridRows, b.grid.colXs, b.grid.x0, b.grid.x1));
+        } else if (b.kind === 'table') {
+          nTables++;
+          children.push(buildTable(b));
+        } else {
+          nParas++;
+          children.push(buildPara(b, bodyLeft, median));
+        }
+      }
+
+      const doc = new docx.Document({ sections: [{ properties: {}, children: children }] });
+      const blob = await docx.Packer.toBlob(doc);
+      downloadBlob(blob, file.name.replace(/\.pdf$/i, '') + '.docx');
+      return { paras: nParas, tables: nTables, images: nImages, pages: src.numPages };
+    }
+
+    setupDropzone(el('dropzone'), el('fileInput'), async (fl) => {
+      const f = fl[0];
+      if (!f || (!/pdf$/i.test(f.type) && !/\.pdf$/i.test(f.name))) { setStatus(t('pd.badfile'), 'err'); return; }
+      file = f;
+      try {
+        const d = await pdfjsLib.getDocument({ data: await f.arrayBuffer() }).promise;
+        setStatus(t('pd.ready', { name: f.name, n: d.numPages, size: formatBytes(f.size) }), 'ok');
+        el('runBtn').disabled = false;
+      } catch (err) {
+        setStatus(t('pd.badread'), 'err');
+        el('runBtn').disabled = true;
+      }
+    });
+
+    el('runBtn').addEventListener('click', async () => {
+      if (!file) return;
+      el('runBtn').disabled = true;
+      try {
+        const r = await convert(file);
+        setStatus(t('pd.done', { p: r.paras, tb: r.tables, im: r.images, n: r.pages }), 'ok');
+      } catch (err) {
+        setStatus(err.message, 'err');
+      }
+      el('runBtn').disabled = false;
+    });
+
+    // test hook: returns structured summary instead of downloading
+    window.__lkConvert = async (files) => {
+      const f = files[0]; file = f; el('runBtn').disabled = false;
+      const bytes = await f.arrayBuffer();
+      const src = await pdfjsLib.getDocument({ data: bytes.slice(0) }).promise;
+      const flat = [];
+      for (let p = 1; p <= src.numPages; p++) {
+        const r = await pageToBlocks(src, p);
+        r.images.forEach(im => flat.push(im));
+        r.blocks.forEach(b => flat.push(b));
+      }
+      const counts = {};
+      flat.forEach(b => { if (b.kind === 'text') b.lines.forEach(l => { const k = Math.round(l.x / 4) * 4; counts[k] = (counts[k] || 0) + 1; }); });
+      let bodyLeft = 0, best = -1;
+      for (const k in counts) if (counts[k] > best) { best = counts[k]; bodyLeft = +k; }
+      const sizes = [];
+      flat.forEach(b => { if (b.kind === 'text') b.lines.forEach(l => sizes.push(l.size)); });
+      sizes.sort((a, b) => a - b);
+      const median = sizes.length ? sizes[Math.floor((sizes.length - 1) / 2)] : 12;
+      flat.sort((a, b) => b.y - a.y);
+      const children = [];
+      const summary = { paras: 0, tables: 0, gridTables: 0, images: 0, texts: [], firstGrid: null, sampleCellText: [] };
+      for (const b of flat) {
+        if (b.kind === 'image') {
+          summary.images++;
+          children.push(new docx.Paragraph({
+            children: [new docx.ImageRun({ data: await canvasPngBytes(b.canvas), transformation: { width: Math.max(32, Math.round(b.w * 96 / 72)), height: Math.max(32, Math.round(b.h * 96 / 72)) } })],
+            spacing: { after: 160 },
+          }));
+        } else if (b.kind === 'grid') {
+          summary.tables++; summary.gridTables++;
+          const flatCells = b.gridRows.flat().filter(c => c);
+          if (summary.sampleCellText.length < 400) summary.sampleCellText.push.apply(summary.sampleCellText, flatCells);
+          if (!summary.firstGrid && b.gridRows.length >= 4) summary.firstGrid = b.gridRows.map(r => r.map(c => (c || '').slice(0, 20)));
+          children.push(buildGridTable(b.gridRows, b.grid.colXs, b.grid.x0, b.grid.x1));
+        } else if (b.kind === 'table') {
+          summary.tables++;
+          summary.texts.push('[TABLE ' + b.rows.length + 'x' + b.colXs.length + ': ' + b.rows.map(r => r.map(c => c.text).join('|')).join(' ; ') + ']');
+          children.push(buildTable(b));
+        } else {
+          summary.paras++;
+          if (summary.texts.length < 60) summary.texts.push(b.lines.map(l => l.text).join(' '));
+          children.push(buildPara(b, bodyLeft, median));
+        }
+      }
+      const doc = new docx.Document({ sections: [{ properties: {}, children: children }] });
+      summary.blob = await docx.Packer.toBlob(doc);
+      return summary;
+    };
+  })();
+  </script>
+</body>
+</html>

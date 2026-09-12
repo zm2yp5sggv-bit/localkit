@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en" data-title-key="cc.title">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Case Converter Online Free — UPPER, lower, camel, snake | LocalKit</title>
+  <meta name="description" content="Convert text between UPPERCASE, lowercase, Title Case, camelCase, PascalCase, snake_case and kebab-case. Instant, free, fully in your browser.">
+  <link rel="canonical" href="https://localkit.tools/tools/case-converter.html">
+  <meta property="og:title" content="Case Converter Online Free">
+  <meta property="og:description" content="UPPER, lower, camelCase, snake_case and more — instant text case conversion.">
+  <meta property="og:type" content="website">
+  <link rel="icon" href="data:image/svg+xml,&lt;svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'&gt;&lt;rect width='100' height='100' rx='22' fill='%234f46e5'/&gt;&lt;text x='50' y='68' font-size='52' text-anchor='middle' fill='white' font-family='sans-serif' font-weight='bold'&gt;L&lt;/text&gt;&lt;/svg&gt;">
+  <link rel="stylesheet" href="../assets/style.css">
+  <script src="../assets/i18n.js"></script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org", "@type": "WebApplication",
+    "name": "LocalKit Case Converter", "url": "https://localkit.tools/tools/case-converter.html",
+    "applicationCategory": "DeveloperApplication", "operatingSystem": "Any (browser-based)",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+  }
+  </script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="inner">
+      <a class="logo" href="../index.html"><span class="mark">L</span>LocalKit</a>
+      <nav class="nav">
+        <a href="../index.html" data-i18n="nav.tools">Tools</a>
+        <a href="../about.html" data-i18n="nav.about">About</a>
+        <a href="../privacy.html" data-i18n="nav.privacy">Privacy</a>
+        <button id="langBtn" class="ghost lang-btn" type="button">中文</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="tool-head">
+      <div class="crumbs"><a href="../index.html" data-i18n="nav.tools">Tools</a> / <span data-i18n="cc.crumb">Case Converter</span></div>
+      <h1 data-i18n="cc.h1">Case Converter</h1>
+      <p class="lede" data-i18n="cc.lede">Convert text between UPPER, lower, Title, camelCase, snake_case and more — instantly.</p>
+    </div>
+
+    <div class="panel">
+      <div class="controls" style="margin-top:0">
+        <label style="flex:1;min-width:280px"><span data-i18n="cc.in">Your text</span>
+          <textarea id="input" data-i18n-ph="cc.ph" placeholder="hello world from local kit" style="min-height:110px"></textarea>
+        </label>
+      </div>
+      <div class="chips" id="chips">
+        <button class="chip" data-t="upper" data-i18n="cc.upper">UPPER CASE</button>
+        <button class="chip" data-t="lower" data-i18n="cc.lower">lower case</button>
+        <button class="chip" data-t="titlecase" data-i18n="cc.titlecase">Title Case</button>
+        <button class="chip" data-t="sentence" data-i18n="cc.sentence">Sentence case</button>
+        <button class="chip" data-t="camel" data-i18n="cc.camel">camelCase</button>
+        <button class="chip" data-t="pascal" data-i18n="cc.pascal">PascalCase</button>
+        <button class="chip" data-t="snake" data-i18n="cc.snake">snake_case</button>
+        <button class="chip" data-t="kebab" data-i18n="cc.kebab">kebab-case</button>
+        <button class="chip" data-t="constant" data-i18n="cc.constant">CONSTANT_CASE</button>
+        <button class="chip" data-t="invert" data-i18n="cc.invert">iNVERT cASE</button>
+      </div>
+      <div class="controls" style="margin-top:0">
+        <label style="flex:1;min-width:280px"><span data-i18n="cc.out">Result</span>
+          <textarea id="output" readonly style="min-height:110px"></textarea>
+        </label>
+      </div>
+      <div class="controls">
+        <button id="copyBtn" class="ghost" data-i18n="cc.copy" disabled>Copy</button>
+      </div>
+      <div class="status" role="status"></div>
+    </div>
+
+    <section class="narrow prose">
+      <h2 data-i18n="cc.how.h2">How to convert letter case</h2>
+      <ol>
+        <li data-i18n="cc.how1">Paste your text into the box.</li>
+        <li data-i18n="cc.how2">Click any format chip — the result updates instantly and can be copied with one click.</li>
+        <li data-i18n="cc.how3">Word-based formats (camel, snake, kebab…) split your text on spaces, hyphens and underscores automatically.</li>
+      </ol>
+      <h2 data-i18n="index.faq.h2">Frequently asked questions</h2>
+      <details>
+        <summary data-i18n="cc.fq1">What is camelCase used for?</summary>
+        <p data-i18n="cc.fa1">camelCase and PascalCase are the naming conventions in JavaScript, Java and C#; snake_case is common in Python and databases; kebab-case is the standard for URLs, CSS classes and file names.</p>
+      </details>
+      <details>
+        <summary data-i18n="cc.fq2">Does it handle Chinese or accented characters?</summary>
+        <p data-i18n="cc.fa2">Case transforms work for all Latin-based alphabets. CJK characters have no case and pass through unchanged; mixed text is handled word by word.</p>
+      </details>
+      <details>
+        <summary data-i18n="cc.fq3">Is my text uploaded?</summary>
+        <p data-i18n="cc.fa3">No — every conversion runs entirely in your browser.</p>
+      </details>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="inner">
+      <span data-i18n="footer.line">© 2026 LocalKit · Made for privacy</span>
+      <div class="links">
+        <a href="../index.html" data-i18n="nav.tools">Tools</a>
+        <a href="../about.html" data-i18n="nav.about">About</a>
+        <a href="../privacy.html" data-i18n="nav.privacy">Privacy Policy</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="../assets/app.js"></script>
+  <script>
+  (function () {
+    'use strict';
+    const { el, setStatus } = window.LK;
+    const cap = w => w ? w[0].toUpperCase() + w.slice(1).toLowerCase() : w;
+    const words = s => { const t = s.trim(); return t ? t.split(/[\s_\-]+/).filter(Boolean) : []; };
+
+    const T = {
+      upper: s => s.toUpperCase(),
+      lower: s => s.toLowerCase(),
+      titlecase: s => s.replace(/[A-Za-z\u00C0-\u024F]+/g, w => w[0].toUpperCase() + w.slice(1).toLowerCase()),
+      sentence: s => s.toLowerCase().replace(/(^\s*[a-z\u00E0-\u024F])|([.!?…]\s+[a-z\u00E0-\u024F])/g, m => m.toUpperCase()),
+      camel: s => { const w = words(s); return w.length ? w[0].toLowerCase() + w.slice(1).map(x => cap(x.replace(/[^A-Za-z0-9\u00C0-\u024F]/g, ''))) .join('') : s; },
+      pascal: s => words(s).map(x => cap(x.replace(/[^A-Za-z0-9\u00C0-\u024F]/g, ''))).join(''),
+      snake: s => words(s).map(x => x.toLowerCase()).join('_'),
+      kebab: s => words(s).map(x => x.toLowerCase()).join('-'),
+      constant: s => words(s).map(x => x.toUpperCase()).join('_'),
+      invert: s => s.replace(/[A-Za-z]/g, c => c === c.toUpperCase() ? c.toLowerCase() : c.toUpperCase()),
+    };
+
+    function apply(kind) {
+      const out = T[kind](el('input').value);
+      el('output').value = out;
+      el('copyBtn').disabled = !out;
+      document.querySelectorAll('.chip').forEach(c => c.classList.toggle('on', c.dataset.t === kind));
+      return out;
+    }
+
+    document.querySelectorAll('.chip').forEach(c => c.addEventListener('click', () => apply(c.dataset.t)));
+    el('copyBtn').addEventListener('click', async () => {
+      await navigator.clipboard.writeText(el('output').value);
+      setStatus(window.LKI.t('cc.copied'), 'ok');
+    });
+
+    window.__lkCase = (s, kind) => { el('input').value = s; return apply(kind); };
+  })();
+  </script>
+</body>
+</html>

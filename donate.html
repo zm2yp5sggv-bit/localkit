@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en" data-title-key="don.title">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Support LocalKit — Donate</title>
+  <meta name="description" content="LocalKit is free and ad-free. Support its upkeep by scanning a QR code or starring the repository on GitHub.">
+  <link rel="canonical" href="https://localkit.tools/donate.html">
+  <link rel="icon" href="data:image/svg+xml,&lt;svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'&gt;&lt;rect width='100' height='100' rx='22' fill='%23e11d48'/&gt;&lt;text x='50' y='68' font-size='52' text-anchor='middle' fill='white' font-family='sans-serif' font-weight='bold'&gt;♥&lt;/text&gt;&lt;/svg&gt;">
+  <link rel="stylesheet" href="assets/style.css">
+  <script src="assets/i18n.js"></script>
+  <script src="assets/config.js"></script>
+  <style>
+    .qr-row { display: flex; gap: 28px; flex-wrap: wrap; margin-top: 14px; }
+    .qr-slot { width: 190px; text-align: center; }
+    .qr-slot img { width: 190px; height: 190px; object-fit: contain; border: 1px solid var(--border); border-radius: 12px; background: #fff; padding: 6px; }
+    .qr-ph { width: 190px; height: 190px; border: 2px dashed var(--border); border-radius: 12px; display: none; align-items: center; justify-content: center; color: var(--muted); font-size: .85rem; text-align: center; padding: 12px; }
+    .qr-slot figcaption { margin-top: 8px; font-weight: 700; font-size: .92rem; }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="inner">
+      <a class="logo" href="index.html"><span class="mark">L</span>LocalKit</a>
+      <nav class="nav">
+        <a href="index.html" data-i18n="nav.tools">Tools</a>
+        <a href="about.html" data-i18n="nav.about">About</a>
+        <a href="privacy.html" data-i18n="nav.privacy">Privacy</a>
+        <button id="langBtn" class="ghost lang-btn" type="button">中文</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap narrow prose">
+    <h1 style="color:var(--text)" data-i18n="don.h1">Support LocalKit</h1>
+    <p style="font-size:1.05rem" data-i18n="don.lede">LocalKit is free, ad-free and open. If it saves you time, a small donation keeps it running.</p>
+
+    <h2 data-i18n="don.how.h2">Ways to support</h2>
+    <ul class="feature-list">
+      <li>
+        <strong data-i18n="don.qr.h2">Scan to buy the author a coffee</strong>
+        <span data-i18n="don.qr.d">WeChat or Alipay — even one coffee means a lot and keeps the site running.</span>
+        <div class="qr-row">
+          <figure class="qr-slot">
+            <img src="assets/qr-wechat.png" alt="WeChat QR" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+            <div class="qr-ph" data-i18n="don.qr.pending">QR code coming soon</div>
+            <figcaption data-i18n="don.wechat">WeChat Pay</figcaption>
+          </figure>
+          <figure class="qr-slot">
+            <img src="assets/qr-alipay.png" alt="Alipay QR" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+            <div class="qr-ph" data-i18n="don.qr.pending">QR code coming soon</div>
+            <figcaption data-i18n="don.alipay">Alipay</figcaption>
+          </figure>
+        </div>
+      </li>
+      <li>
+        <strong data-i18n="don.gh.t">GitHub</strong>
+        <span data-i18n="don.gh.d">Star or fork the repository — stars are the best way to help LocalKit grow.</span>
+        <p style="margin:10px 0 0"><a id="ghLink" class="donate-btn" style="display:inline-block" href="https://github.com/zm2yp5sggv-bit" target="_blank" rel="noopener">github.com/zm2yp5sggv-bit →</a></p>
+      </li>
+    </ul>
+
+    <h2 data-i18n="don.note.h2">Where the money goes</h2>
+    <p data-i18n="don.note.p">Full transparency: donations pay the domain (about ¥30/year) and hosting (currently ¥0). Anything beyond that funds new tools and thanks the maintainer.</p>
+
+    <h2 data-i18n="don.os.h2">Open source</h2>
+    <p data-i18n-html="don.os.p">The whole site is a set of static pages — view source, self-host it or fork it. Repository: <a href="https://github.com/zm2yp5sggv-bit/localkit" rel="noopener">github.com/zm2yp5sggv-bit/localkit</a>.</p>
+
+    <p style="margin-top:32px;font-size:1.02rem" data-i18n="don.thanks.p">Not in a position to donate? Sharing LocalKit with one friend who needs it helps just as much. ♥</p>
+  </main>
+
+  <footer class="site-footer">
+    <div class="inner">
+      <span data-i18n="footer.line">© 2026 LocalKit · Made for privacy</span>
+      <div class="links">
+        <a href="index.html" data-i18n="nav.tools">Tools</a>
+        <a href="about.html" data-i18n="nav.about">About</a>
+        <a href="privacy.html" data-i18n="nav.privacy">Privacy Policy</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    if (window.LK_CONFIG && window.LK_CONFIG.github) {
+      var g = document.getElementById('ghLink');
+      if (g) g.href = window.LK_CONFIG.github;
+    }
+  </script>
+  <script src="assets/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en" data-title-key="b64.title">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Base64 Encoder / Decoder Online Free — Unicode Safe | LocalKit</title>
+  <meta name="description" content="Encode or decode Base64 and URL percent-encoding online. Unicode-safe — Chinese and emoji handled correctly. Free, instant, fully local.">
+  <link rel="canonical" href="https://localkit.tools/tools/base64-converter.html">
+  <meta property="og:title" content="Base64 Encoder / Decoder Online Free">
+  <meta property="og:description" content="Unicode-safe Base64 and URL encoding, right in your browser.">
+  <meta property="og:type" content="website">
+  <link rel="icon" href="data:image/svg+xml,&lt;svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'&gt;&lt;rect width='100' height='100' rx='22' fill='%234f46e5'/&gt;&lt;text x='50' y='68' font-size='52' text-anchor='middle' fill='white' font-family='sans-serif' font-weight='bold'&gt;L&lt;/text&gt;&lt;/svg&gt;">
+  <link rel="stylesheet" href="../assets/style.css">
+  <script src="../assets/i18n.js"></script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org", "@type": "WebApplication",
+    "name": "LocalKit Base64 Converter", "url": "https://localkit.tools/tools/base64-converter.html",
+    "applicationCategory": "DeveloperApplication", "operatingSystem": "Any (browser-based)",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+  }
+  </script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="inner">
+      <a class="logo" href="../index.html"><span class="mark">L</span>LocalKit</a>
+      <nav class="nav">
+        <a href="../index.html" data-i18n="nav.tools">Tools</a>
+        <a href="../about.html" data-i18n="nav.about">About</a>
+        <a href="../privacy.html" data-i18n="nav.privacy">Privacy</a>
+        <button id="langBtn" class="ghost lang-btn" type="button">中文</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="tool-head">
+      <div class="crumbs"><a href="../index.html" data-i18n="nav.tools">Tools</a> / <span data-i18n="b64.crumb">Base64 &amp; URL</span></div>
+      <h1 data-i18n="b64.h1">Base64 &amp; URL</h1>
+      <p class="lede" data-i18n="b64.lede">Encode or decode Base64 and URL (percent-encoding) — Unicode-safe, fully local.</p>
+    </div>
+
+    <div class="panel">
+      <div class="controls" style="margin-top:0">
+        <label><span data-i18n="b64.mode">Mode</span>
+          <select id="mode">
+            <option value="b64" data-i18n="b64.m.b64" selected>Base64</option>
+            <option value="url" data-i18n="b64.m.url">URL encoding</option>
+          </select>
+        </label>
+        <label><span data-i18n="b64.dir">Direction</span>
+          <select id="dir">
+            <option value="enc" data-i18n="b64.d.enc" selected>Encode</option>
+            <option value="dec" data-i18n="b64.d.dec">Decode</option>
+          </select>
+        </label>
+        <button id="swapBtn" class="ghost" data-i18n="b64.swap">Swap ↑↓</button>
+      </div>
+      <div class="controls" style="margin-top:4px">
+        <label style="flex:1;min-width:280px"><span data-i18n="b64.in">Input</span>
+          <textarea id="input" data-i18n-ph="b64.ph.in" placeholder="Type text to encode, or encoded text to decode…" style="min-height:140px"></textarea>
+        </label>
+        <label style="flex:1;min-width:280px"><span data-i18n="b64.out">Output</span>
+          <textarea id="output" readonly style="min-height:140px"></textarea>
+        </label>
+      </div>
+      <div class="controls">
+        <button id="copyBtn" class="ghost" data-i18n="b64.copy" disabled>Copy</button>
+      </div>
+      <div class="status" role="status"></div>
+    </div>
+
+    <section class="narrow prose">
+      <h2 data-i18n="b64.how.h2">How to encode and decode</h2>
+      <ol>
+        <li data-i18n="b64.how1">Pick Base64 or URL mode and a direction (encode or decode).</li>
+        <li data-i18n="b64.how2">Type or paste — output updates live; use Swap to reverse direction.</li>
+        <li data-i18n="b64.how3">Copy the result with one click.</li>
+      </ol>
+      <h2 data-i18n="index.faq.h2">Frequently asked questions</h2>
+      <details>
+        <summary data-i18n="b64.fq1">Why does Chinese break other Base64 tools?</summary>
+        <p data-i18n="b64.fa1">Base64 operates on bytes, but JS strings are Unicode — many tools call btoa() directly, which fails on non-Latin1 text. We convert through UTF-8 first, so Chinese, emoji and accents encode correctly.</p>
+      </details>
+      <details>
+        <summary data-i18n="b64.fq2">Base64 or URL encoding — which one?</summary>
+        <p data-i18n="b64.fa2">URL (percent) encoding makes text safe inside URLs, e.g. in query strings. Base64 represents binary data as text — for data URIs, JWTs and email attachments.</p>
+      </details>
+      <details>
+        <summary data-i18n="b64.fq3">Is Base64 encryption?</summary>
+        <p data-i18n="b64.fa3">No — it is an encoding, trivially reversible and not a security measure. For secrets use real encryption.</p>
+      </details>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="inner">
+      <span data-i18n="footer.line">© 2026 LocalKit · Made for privacy</span>
+      <div class="links">
+        <a href="../index.html" data-i18n="nav.tools">Tools</a>
+        <a href="../about.html" data-i18n="nav.about">About</a>
+        <a href="../privacy.html" data-i18n="nav.privacy">Privacy Policy</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="../assets/app.js"></script>
+  <script>
+  (function () {
+    'use strict';
+    const { el, setStatus } = window.LK;
+    const t = (k, v) => window.LKI.t(k, v);
+
+    function bytesToB64(bytes) {
+      let bin = '';
+      for (let i = 0; i < bytes.length; i += 0x8000) {
+        bin += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
+      }
+      return btoa(bin);
+    }
+    function b64ToBytes(b64) {
+      const bin = atob(b64.replace(/\s+/g, ''));
+      const bytes = new Uint8Array(bin.length);
+      for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+      return bytes;
+    }
+    const enc = new TextEncoder(), dec = new TextDecoder();
+
+    function convert(text) {
+      const mode = el('mode').value, dir = el('dir').value;
+      if (text === '') return '';
+      try {
+        if (mode === 'b64') {
+          return dir === 'enc' ? bytesToB64(enc.encode(text)) : dec.decode(b64ToBytes(text));
+        }
+        return dir === 'enc' ? encodeURIComponent(text) : decodeURIComponent(text.replace(/\+/g, '%20'));
+      } catch (err) {
+        throw new Error(t(mode === 'b64' ? 'b64.err.b64' : 'b64.err.url'));
+      }
+    }
+
+    function update() {
+      try {
+        el('output').value = convert(el('input').value);
+        el('copyBtn').disabled = !el('output').value;
+        setStatus('');
+      } catch (err) {
+        el('output').value = '';
+        el('copyBtn').disabled = true;
+        setStatus(err.message, 'err');
+      }
+    }
+
+    el('input').addEventListener('input', update);
+    ['mode', 'dir'].forEach(id => el(id).addEventListener('change', update));
+    el('swapBtn').addEventListener('click', () => {
+      const v = el('output').value;
+      el('input').value = v;
+      el('dir').value = el('dir').value === 'enc' ? 'dec' : 'enc';
+      update();
+    });
+    el('copyBtn').addEventListener('click', async () => {
+      await navigator.clipboard.writeText(el('output').value);
+      setStatus(window.LKI.t('jt.copied'), 'ok');
+    });
+    window.__lkB64 = (s, mode, dir) => { el('mode').value = mode; el('dir').value = dir; return convert(s); };
+  })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en" data-title-key="dp.title">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DOCX to PDF Converter Online Free — No Upload | LocalKit</title>
+  <meta name="description" content="Convert Word (.docx) documents to PDF right in your browser. No upload, no sign-up — confidential documents never leave your device.">
+  <link rel="canonical" href="https://localkit.tools/tools/docx-to-pdf.html">
+  <meta property="og:title" content="DOCX to PDF Converter Online Free — No Upload">
+  <meta property="og:description" content="Convert Word documents to PDF locally in your browser. Private and free.">
+  <meta property="og:type" content="website">
+  <link rel="icon" href="data:image/svg+xml,&lt;svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'&gt;&lt;rect width='100' height='100' rx='22' fill='%234f46e5'/&gt;&lt;text x='50' y='68' font-size='52' text-anchor='middle' fill='white' font-family='sans-serif' font-weight='bold'&gt;L&lt;/text&gt;&lt;/svg&gt;">
+  <link rel="stylesheet" href="../assets/style.css">
+  <script src="../assets/i18n.js"></script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "LocalKit DOCX to PDF Converter",
+    "url": "https://localkit.tools/tools/docx-to-pdf.html",
+    "applicationCategory": "UtilitiesApplication",
+    "operatingSystem": "Any (browser-based)",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Is my document uploaded to a server?",
+        "acceptedAnswer": { "@type": "Answer", "text": "No. The .docx is parsed in your browser and the PDF is built on your device — confidential documents stay with you." }
+      },
+      {
+        "@type": "Question",
+        "name": "Will the PDF look exactly like in Word?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Layout, fonts and images are reproduced faithfully for typical documents. Very complex formatting may differ slightly — check the result before sending." }
+      },
+      {
+        "@type": "Question",
+        "name": "Which files are supported?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Modern .docx files (Word 2007+). The legacy binary .doc format is not supported — re-save the file as .docx in Word first." }
+      }
+    ]
+  }
+  </script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="inner">
+      <a class="logo" href="../index.html"><span class="mark">L</span>LocalKit</a>
+      <nav class="nav">
+        <a href="../index.html" data-i18n="nav.tools">Tools</a>
+        <a href="../about.html" data-i18n="nav.about">About</a>
+        <a href="../privacy.html" data-i18n="nav.privacy">Privacy</a>
+        <button id="langBtn" class="ghost lang-btn" type="button">中文</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="tool-head">
+      <div class="crumbs"><a href="../index.html" data-i18n="nav.tools">Tools</a> / <span data-i18n="dp.crumb">DOCX to PDF</span></div>
+      <h1 data-i18n="dp.h1">DOCX to PDF</h1>
+      <p class="lede" data-i18n="dp.lede">Convert Word (.docx) documents to PDF — rendered and saved entirely on your device.</p>
+    </div>
+
+    <div class="panel">
+      <div class="dropzone" id="dropzone">
+        <div class="big">📃</div>
+        <div class="title" data-i18n="dp.drop.title">Drop a .docx file here, or click to choose</div>
+        <div class="hint" data-i18n="dp.drop.hint">Word 2007 and newer (.docx) — one file at a time</div>
+      </div>
+      <input type="file" id="fileInput" accept=".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document" hidden>
+
+      <div class="controls">
+        <button id="runBtn" data-i18n="dp.run" disabled>Convert to PDF</button>
+      </div>
+      <div class="status" role="status"></div>
+    </div>
+
+    <section class="narrow prose">
+      <h2 data-i18n="dp.how.h2">How to convert DOCX to PDF</h2>
+      <ol>
+        <li data-i18n="dp.how1">Drop in a Word .docx file.</li>
+        <li data-i18n-html="dp.how2">Press <strong>Convert to PDF</strong> — each page of the document becomes a PDF page.</li>
+        <li data-i18n="dp.how3">Download the finished PDF.</li>
+      </ol>
+
+      <h2 data-i18n="dp.limits.h2">What to expect</h2>
+      <p data-i18n="dp.limits.p">The document is rendered in your browser and each page is placed into the PDF as a high-resolution image, so text is not selectable in the output. Simple documents (letters, reports, resumes) convert very reliably; exotic fonts and complex layouts may shift slightly. For pixel-perfect legal output, export from Word itself.</p>
+
+      <h2 data-i18n="index.faq.h2">Frequently asked questions</h2>
+      <details>
+        <summary data-i18n="dp.fq1">Is my document uploaded to a server?</summary>
+        <p data-i18n="dp.fa1">No. The .docx is parsed in your browser and the PDF is built on your device — confidential documents stay with you.</p>
+      </details>
+      <details>
+        <summary data-i18n="dp.fq2">Will the PDF look exactly like in Word?</summary>
+        <p data-i18n="dp.fa2">Layout, fonts and images are reproduced faithfully for typical documents. Very complex formatting (exact print typography, some table features) may differ slightly — check the result before sending.</p>
+      </details>
+      <details>
+        <summary data-i18n="dp.fq3">Which files are supported?</summary>
+        <p data-i18n="dp.fa3">Modern .docx files (Word 2007+). The legacy binary .doc format is not supported — re-save the file as .docx in Word first.</p>
+      </details>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="inner">
+      <span data-i18n="footer.line">© 2026 LocalKit · Made for privacy</span>
+      <div class="links">
+        <a href="../index.html" data-i18n="nav.tools">Tools</a>
+        <a href="../about.html" data-i18n="nav.about">About</a>
+        <a href="../privacy.html" data-i18n="nav.privacy">Privacy Policy</a>
+      </div>
+    </div>
+  </footer>
+
+  <div id="render" style="position:fixed;left:-99999px;top:0;background:#fff"></div>
+
+  <script src="../assets/app.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/docx-preview@0.3.2/dist/docx-preview.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <script>
+  (function () {
+    'use strict';
+    const { el, setupDropzone, downloadBlob, setStatus } = window.LK;
+    const t = (k, v) => window.LKI.t(k, v);
+    let file = null;
+
+    setupDropzone(el('dropzone'), el('fileInput'), (fl) => {
+      const f = fl[0];
+      if (!f) return;
+      if (/\.doc$/i.test(f.name)) { setStatus(t('dp.oldformat'), 'err'); return; }
+      if (!/\.docx$/i.test(f.name) && f.type.indexOf('wordprocessing') === -1) {
+        setStatus(t('dp.badfile'), 'err'); return;
+      }
+      file = f;
+      el('runBtn').disabled = false;
+      setStatus(f.name + ' — ready.', 'ok');
+    });
+
+    async function convert(file) {
+      setStatus(t('dp.working'));
+      const container = el('render');
+      container.innerHTML = '';
+      await window.docx.renderAsync(await file.arrayBuffer(), container);
+      const pages = container.querySelectorAll('section.docx, .docx-wrapper > section');
+      if (!pages.length) throw new Error(t('dp.fail', { msg: 'no pages rendered' }));
+
+      const pdf = new window.jspdf.jsPDF({ unit: 'pt', format: 'a4', orientation: 'portrait' });
+      const pw = pdf.internal.pageSize.getWidth();
+      const ph = pdf.internal.pageSize.getHeight();
+
+      for (let i = 0; i < pages.length; i++) {
+        setStatus(t('dp.topdf', { i: i + 1, n: pages.length }));
+        const canvas = await window.html2canvas(pages[i], {
+          scale: 2, backgroundColor: '#ffffff', logging: false, useCORS: true
+        });
+        const img = canvas.toDataURL('image/jpeg', 0.92);
+        if (i > 0) pdf.addPage();
+        const s = Math.min(pw / canvas.width, ph / canvas.height);
+        pdf.addImage(img, 'JPEG', (pw - canvas.width * s) / 2, (ph - canvas.height * s) / 2,
+          canvas.width * s, canvas.height * s);
+      }
+      container.innerHTML = '';
+      const blob = pdf.output('blob');
+      downloadBlob(blob, file.name.replace(/\.docx$/i, '') + '.pdf');
+      const n = pages.length;
+      setStatus(t('dp.done', { n: n }), 'ok');
+      return n;
+    }
+
+    el('runBtn').addEventListener('click', async () => {
+      if (!file) return;
+      el('runBtn').disabled = true;
+      try {
+        await convert(file);
+      } catch (err) {
+        setStatus(t('dp.fail', { msg: err.message }), 'err');
+      }
+      el('runBtn').disabled = false;
+    });
+
+    // test hook (also lets power users script the page)
+    window.__lkProcess = async (files) => {
+      const f = files[0];
+      file = f; el('runBtn').disabled = false;
+      return await convert(f);
+    };
+  })();
+  </script>
+</body>
+</html>

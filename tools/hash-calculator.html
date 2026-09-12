@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en" data-title-key="hc.title">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hash Calculator Online Free — MD5, SHA-1, SHA-256, SHA-512 | LocalKit</title>
+  <meta name="description" content="Compute MD5, SHA-1, SHA-256, SHA-384 and SHA-512 hashes of text or files in your browser. Verify checksums locally — nothing is uploaded.">
+  <link rel="canonical" href="https://localkit.tools/tools/hash-calculator.html">
+  <meta property="og:title" content="Hash Calculator Online Free — MD5 &amp; SHA">
+  <meta property="og:description" content="MD5 and SHA hashes of text or files, computed locally in your browser.">
+  <meta property="og:type" content="website">
+  <link rel="icon" href="data:image/svg+xml,&lt;svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'&gt;&lt;rect width='100' height='100' rx='22' fill='%234f46e5'/&gt;&lt;text x='50' y='68' font-size='52' text-anchor='middle' fill='white' font-family='sans-serif' font-weight='bold'&gt;L&lt;/text&gt;&lt;/svg&gt;">
+  <link rel="stylesheet" href="../assets/style.css">
+  <script src="../assets/i18n.js"></script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org", "@type": "WebApplication",
+    "name": "LocalKit Hash Calculator", "url": "https://localkit.tools/tools/hash-calculator.html",
+    "applicationCategory": "SecurityApplication", "operatingSystem": "Any (browser-based)",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+  }
+  </script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="inner">
+      <a class="logo" href="../index.html"><span class="mark">L</span>LocalKit</a>
+      <nav class="nav">
+        <a href="../index.html" data-i18n="nav.tools">Tools</a>
+        <a href="../about.html" data-i18n="nav.about">About</a>
+        <a href="../privacy.html" data-i18n="nav.privacy">Privacy</a>
+        <button id="langBtn" class="ghost lang-btn" type="button">中文</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="tool-head">
+      <div class="crumbs"><a href="../index.html" data-i18n="nav.tools">Tools</a> / <span data-i18n="hc.crumb">Hash Calculator</span></div>
+      <h1 data-i18n="hc.h1">Hash Calculator</h1>
+      <p class="lede" data-i18n="hc.lede">Compute MD5 and SHA hashes of text or files — computed locally, nothing uploaded.</p>
+    </div>
+
+    <div class="panel">
+      <div class="controls" style="margin-top:0">
+        <label><span data-i18n="hc.text">Text</span>
+          <input type="radio" name="mode" value="text" checked>
+        </label>
+        <label><span data-i18n="hc.file">File</span>
+          <input type="radio" name="mode" value="file">
+        </label>
+      </div>
+
+      <div id="textPane">
+        <div class="controls">
+          <label style="flex:1;min-width:280px"><span data-i18n="hc.in">Text to hash</span>
+            <textarea id="textInput" style="min-height:110px"></textarea>
+          </label>
+        </div>
+      </div>
+
+      <div id="filePane" style="display:none">
+        <div class="dropzone" id="dropzone">
+          <div class="big">📁</div>
+          <div class="title" data-i18n="hc.drop">Drop a file here, or click to choose</div>
+        </div>
+        <input type="file" id="fileInput" hidden>
+      </div>
+
+      <div class="controls">
+        <button id="runBtn" data-i18n="hc.run">Calculate</button>
+        <button id="copyBtn" class="ghost" data-i18n="hc.copyall" disabled>Copy all</button>
+      </div>
+      <div class="status" role="status"></div>
+      <div class="result-list" id="results"></div>
+
+      <div class="controls" style="border-top:1px solid var(--border);padding-top:14px;margin-top:16px">
+        <label style="flex:1;min-width:260px"><span data-i18n="hc.verify.t">Verify a checksum</span>
+          <input type="text" id="verify" data-i18n-ph="hc.verify.ph" placeholder="Paste an expected hash to compare…">
+        </label>
+        <div id="verifyOut" style="font-weight:700;min-width:180px"></div>
+      </div>
+    </div>
+
+    <section class="narrow prose">
+      <h2 data-i18n="hc.how.h2">How to hash text or files</h2>
+      <ol>
+        <li data-i18n="hc.how1">Switch between Text and File, then provide the input.</li>
+        <li data-i18n-html="hc.how2">Press <strong>Calculate</strong> — MD5, SHA-1, SHA-256, SHA-384 and SHA-512 are computed at once.</li>
+        <li data-i18n="hc.how3">Paste an expected checksum to verify a download, or copy any hash.</li>
+      </ol>
+      <h2 data-i18n="index.faq.h2">Frequently asked questions</h2>
+      <details>
+        <summary data-i18n="hc.fq1">Which hash should I use?</summary>
+        <p data-i18n="hc.fa1">SHA-256 is the modern default. MD5 and SHA-1 are broken for security purposes but still used for file checksums — fine for integrity, never for passwords.</p>
+      </details>
+      <details>
+        <summary data-i18n="hc.fq2">Can it hash large files?</summary>
+        <p data-i18n="hc.fa2">Yes — files are hashed through the Web Crypto API in your browser. Large files work, limited only by your device's memory.</p>
+      </details>
+      <details>
+        <summary data-i18n="hc.fq3">Is my data uploaded?</summary>
+        <p data-i18n="hc.fa3">Never. Hashing runs locally, so you can verify confidential files even offline.</p>
+      </details>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="inner">
+      <span data-i18n="footer.line">© 2026 LocalKit · Made for privacy</span>
+      <div class="links">
+        <a href="../index.html" data-i18n="nav.tools">Tools</a>
+        <a href="../about.html" data-i18n="nav.about">About</a>
+        <a href="../privacy.html" data-i18n="nav.privacy">Privacy Policy</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="../assets/app.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/js-md5@0.8.3/src/md5.min.js"></script>
+  <script>
+  (function () {
+    'use strict';
+    const { el, setupDropzone, setStatus } = window.LK;
+    const t = (k, v) => window.LKI.t(k, v);
+    const ALGS = ['MD5', 'SHA-1', 'SHA-256', 'SHA-384', 'SHA-512'];
+    let file = null;
+
+    function toHex(buf) {
+      return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+
+    async function compute(source) { // source: string or ArrayBuffer
+      const out = {};
+      out.MD5 = (typeof source === 'string')
+        ? window.md5(new TextEncoder().encode(source))
+        : window.md5.arrayBuffer(source);
+      const data = typeof source === 'string' ? new TextEncoder().encode(source) : source;
+      for (const alg of ['SHA-1', 'SHA-256', 'SHA-384', 'SHA-512']) {
+        out[alg] = toHex(await crypto.subtle.digest(alg, data));
+      }
+      return out;
+    }
+
+    function render(hashes) {
+      const results = el('results');
+      results.innerHTML = '';
+      for (const alg of ALGS) {
+        const item = document.createElement('div');
+        item.className = 'result-item';
+        item.innerHTML = '<span class="meta" style="font-weight:700;min-width:74px">' + alg + '</span>' +
+          '<span class="name" style="font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.8rem">' + hashes[alg] + '</span>' +
+          '<span class="spacer"></span><button class="small ghost">' + t('hc.copy') + '</button>';
+        item.querySelector('button').addEventListener('click', () => navigator.clipboard.writeText(hashes[alg]));
+        results.appendChild(item);
+      }
+      el('copyBtn').disabled = false;
+      el('results').dataset.hashes = JSON.stringify(hashes);
+      verify(hashes);
+    }
+
+    function verify(hashes) {
+      hashes = hashes || JSON.parse(el('results').dataset.hashes || '{}');
+      const q = el('verify').value.trim().toLowerCase();
+      const out = el('verifyOut');
+      if (!q || !Object.keys(hashes).length) { out.textContent = ''; return; }
+      const hit = ALGS.find(a => hashes[a] === q);
+      out.textContent = hit ? t('hc.match', { alg: hit }) : t('hc.nomatch');
+      out.style.color = hit ? 'var(--ok)' : 'var(--muted)';
+    }
+
+    async function calculate() {
+      const mode = document.querySelector('input[name="mode"]:checked').value;
+      el('runBtn').disabled = true;
+      try {
+        if (mode === 'text') {
+          render(await compute(el('textInput').value));
+        } else if (file) {
+          render(await compute(await file.arrayBuffer()));
+        } else {
+          setStatus(t('pi.badfile'), 'err');
+        }
+      } catch (err) {
+        setStatus(err.message, 'err');
+      }
+      el('runBtn').disabled = false;
+    }
+
+    document.querySelectorAll('input[name="mode"]').forEach(r => r.addEventListener('change', (e) => {
+      el('textPane').style.display = e.target.value === 'text' ? '' : 'none';
+      el('filePane').style.display = e.target.value === 'file' ? '' : 'none';
+    }));
+    el('runBtn').addEventListener('click', calculate);
+    el('textInput').addEventListener('input', () => { if (el('results').children.length) calculate(); });
+    el('verify').addEventListener('input', () => verify());
+    setupDropzone(el('dropzone'), el('fileInput'), (fl) => { file = fl[0]; if (file) calculate(); });
+    window.__lkHash = (s) => compute(s);
+  })();
+  </script>
+</body>
+</html>

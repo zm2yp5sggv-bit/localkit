@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en" data-title-key="wm.title">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Add Text Watermark to Images Online Free — Batch, No Upload | LocalKit</title>
+  <meta name="description" content="Stamp text watermarks on batches of images in your browser. Tiling or corner placement, size and opacity control — files never leave your device.">
+  <link rel="canonical" href="https://localkit.tools/tools/image-watermark.html">
+  <meta property="og:title" content="Add Text Watermark to Images Online Free — Batch">
+  <meta property="og:description" content="Batch-watermark images locally in your browser. Free and private.">
+  <meta property="og:type" content="website">
+  <link rel="icon" href="data:image/svg+xml,&lt;svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'&gt;&lt;rect width='100' height='100' rx='22' fill='%234f46e5'/&gt;&lt;text x='50' y='68' font-size='52' text-anchor='middle' fill='white' font-family='sans-serif' font-weight='bold'&gt;L&lt;/text&gt;&lt;/svg&gt;">
+  <link rel="stylesheet" href="../assets/style.css">
+  <script src="../assets/i18n.js"></script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "LocalKit Image Watermark",
+    "url": "https://localkit.tools/tools/image-watermark.html",
+    "applicationCategory": "MultimediaApplication",
+    "operatingSystem": "Any (browser-based)",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Are my images uploaded to a server?",
+        "acceptedAnswer": { "@type": "Answer", "text": "No. Watermarks are drawn with the Canvas API inside your browser. Images never leave your device." }
+      },
+      {
+        "@type": "Question",
+        "name": "Can someone remove my watermark?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Any visible watermark can technically be edited out. Dense low-opacity tiling is by far the hardest to remove cleanly and is what we recommend for proof of ownership." }
+      },
+      {
+        "@type": "Question",
+        "name": "Can I use a logo image instead of text?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Not yet — the current tool stamps text. Image watermarks are on the roadmap." }
+      }
+    ]
+  }
+  </script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="inner">
+      <a class="logo" href="../index.html"><span class="mark">L</span>LocalKit</a>
+      <nav class="nav">
+        <a href="../index.html" data-i18n="nav.tools">Tools</a>
+        <a href="../about.html" data-i18n="nav.about">About</a>
+        <a href="../privacy.html" data-i18n="nav.privacy">Privacy</a>
+        <button id="langBtn" class="ghost lang-btn" type="button">中文</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="tool-head">
+      <div class="crumbs"><a href="../index.html" data-i18n="nav.tools">Tools</a> / <span data-i18n="wm.crumb">Add Watermark</span></div>
+      <h1 data-i18n="wm.h1">Add Watermark</h1>
+      <p class="lede" data-i18n="wm.lede">Stamp text watermarks on batches of images — right in your browser, nothing uploaded.</p>
+    </div>
+
+    <div class="panel">
+      <div class="dropzone" id="dropzone">
+        <div class="big">💧</div>
+        <div class="title" data-i18n="wm.drop.title">Drop images here, or click to choose files</div>
+        <div class="hint" data-i18n="wm.drop.hint">JPG · PNG · WebP — batch supported</div>
+      </div>
+      <input type="file" id="fileInput" accept="image/*" multiple hidden>
+
+      <div class="controls">
+        <label style="flex:1;min-width:220px"><span data-i18n="wm.text">Watermark text</span>
+          <input type="text" id="wmText" data-i18n-ph="wm.ph" placeholder="© MyStudio 2026">
+        </label>
+        <label><span data-i18n="wm.pos">Position</span>
+          <select id="pos">
+            <option value="tile" data-i18n="wm.pos.tile" selected>Tile (diagonal)</option>
+            <option value="center" data-i18n="wm.pos.center">Center</option>
+            <option value="tl" data-i18n="wm.pos.tl">Top left</option>
+            <option value="tr" data-i18n="wm.pos.tr">Top right</option>
+            <option value="bl" data-i18n="wm.pos.bl">Bottom left</option>
+            <option value="br" data-i18n="wm.pos.br">Bottom right</option>
+          </select>
+        </label>
+        <label><span data-i18n="wm.size">Font size (px, 0 = auto)</span>
+          <input type="number" id="wmSize" value="0" min="0" max="400" step="4" style="width:110px">
+        </label>
+        <label><span data-i18n="wm.color">Color</span>
+          <input type="color" id="wmColor" value="#ffffff" style="width:52px;height:38px;padding:2px;border:1px solid var(--border);border-radius:8px;background:var(--bg)">
+        </label>
+        <label class="inline"><span data-i18n="wm.opacity">Opacity:</span> <span id="oVal">25</span>% <input type="range" id="wmOpacity" min="5" max="100" value="25"></label>
+        <button id="runBtn" data-i18n="wm.run" disabled>Add watermark</button>
+        <button id="zipBtn" class="ghost" data-i18n="wm.zip" disabled>Download all (.zip)</button>
+      </div>
+      <div class="status" role="status"></div>
+      <div class="result-list" id="results"></div>
+    </div>
+
+    <section class="narrow prose">
+      <h2 data-i18n="wm.how.h2">How to add watermarks</h2>
+      <ol>
+        <li data-i18n="wm.how1">Drop in the images you want to protect.</li>
+        <li data-i18n="wm.how2">Type the watermark text, pick a position or tiling, adjust size and opacity.</li>
+        <li data-i18n-html="wm.how3">Press <strong>Add watermark</strong> and download the results.</li>
+      </ol>
+
+      <h2 data-i18n="wm.tips.h2">Tips</h2>
+      <ul>
+        <li data-i18n-html="wm.tip1"><strong>Ownership proof:</strong> use the tile mode with 20–30% opacity — it survives cropping and is hard to remove.</li>
+        <li data-i18n-html="wm.tip2"><strong>Shared drafts:</strong> a single corner mark with the word DRAFT keeps documents readable.</li>
+        <li data-i18n-html="wm.tip3"><strong>Light photos:</strong> white text with a soft black shadow stays visible on any background.</li>
+      </ul>
+
+      <h2 data-i18n="index.faq.h2">Frequently asked questions</h2>
+      <details>
+        <summary data-i18n="wm.fq1">Are my images uploaded to a server?</summary>
+        <p data-i18n="wm.fa1">No. Watermarks are drawn with the Canvas API inside your browser. Images never leave your device.</p>
+      </details>
+      <details>
+        <summary data-i18n="wm.fq2">Can someone remove my watermark?</summary>
+        <p data-i18n="wm.fa2">Any visible watermark can technically be edited out. Dense low-opacity tiling is by far the hardest to remove cleanly and is what we recommend for proof of ownership.</p>
+      </details>
+      <details>
+        <summary data-i18n="wm.fq3">Can I use a logo image instead of text?</summary>
+        <p data-i18n="wm.fa3">Not yet — the current tool stamps text. Image watermarks are on the roadmap.</p>
+      </details>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="inner">
+      <span data-i18n="footer.line">© 2026 LocalKit · Made for privacy</span>
+      <div class="links">
+        <a href="../index.html" data-i18n="nav.tools">Tools</a>
+        <a href="../about.html" data-i18n="nav.about">About</a>
+        <a href="../privacy.html" data-i18n="nav.privacy">Privacy Policy</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="../assets/app.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+  <script>
+  (function () {
+    'use strict';
+    const { el, setupDropzone, formatBytes, downloadBlob, setStatus, decodeImage, canvasToBlob } = window.LK;
+    const t = (k, v) => window.LKI.t(k, v);
+    let files = [];
+    const results = el('results');
+
+    setupDropzone(el('dropzone'), el('fileInput'), (fl) => {
+      files = Array.from(fl).filter(f => f.type.startsWith('image/'));
+      if (!files.length) { setStatus(t('wm.none'), 'err'); return; }
+      el('runBtn').disabled = false;
+      results.innerHTML = '';
+      setStatus(t('wm.ready', { n: files.length }));
+    });
+
+    el('wmOpacity').addEventListener('input', (e) => el('oVal').textContent = e.target.value);
+
+    function stamp(canvas, w, h) {
+      const ctx = canvas.getContext('2d');
+      const text = el('wmText').value;
+      const opacity = parseInt(el('wmOpacity').value, 10) / 100;
+      const color = el('wmColor').value;
+      const pos = el('pos').value;
+      let size = parseInt(el('wmSize').value, 10) || 0;
+      if (!size) size = Math.max(16, Math.round(Math.min(w, h) / (pos === 'tile' ? 16 : 12)));
+
+      ctx.save();
+      ctx.globalAlpha = opacity;
+      ctx.fillStyle = color;
+      ctx.shadowColor = 'rgba(0,0,0,0.45)';
+      ctx.shadowBlur = Math.max(2, size / 12);
+      ctx.font = '600 ' + size + 'px -apple-system, "Segoe UI", Roboto, sans-serif';
+
+      if (pos === 'tile') {
+        ctx.translate(w / 2, h / 2);
+        ctx.rotate(-30 * Math.PI / 180);
+        const tw = ctx.measureText(text).width;
+        const stepX = tw + size * 2.5;
+        const stepY = size * 4.5;
+        const diag = Math.sqrt(w * w + h * h) / 2 + stepX;
+        for (let y = -diag; y < diag; y += stepY) {
+          for (let x = -diag; x < diag; x += stepX) {
+            ctx.fillText(text, x, y);
+          }
+        }
+      } else {
+        const pad = Math.round(size * 0.8);
+        const tw = ctx.measureText(text).width;
+        const map = {
+          center: [(w - tw) / 2, h / 2],
+          tl: [pad, pad + size * 0.8], tr: [w - tw - pad, pad + size * 0.8],
+          bl: [pad, h - pad], br: [w - tw - pad, h - pad]
+        };
+        const xy = map[pos];
+        ctx.fillText(text, xy[0], xy[1]);
+      }
+      ctx.restore();
+    }
+
+    async function processOne(file) {
+      const { bitmap, width, height } = await decodeImage(file, 0);
+      const canvas = document.createElement('canvas');
+      canvas.width = width; canvas.height = height;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(bitmap, 0, 0, width, height);
+      bitmap.close();
+      stamp(canvas, width, height);
+
+      const type = (file.type === 'image/jpeg' || file.type === 'image/webp') ? file.type : 'image/png';
+      const ext = type === 'image/jpeg' ? 'jpg' : (type === 'image/webp' ? 'webp' : 'png');
+      const blob = await canvasToBlob(canvas, type, 0.92);
+      const base = file.name.replace(/\.[^.]+$/, '');
+      return { blob, outName: base + '-wm.' + ext, outSize: blob.size, inSize: file.size };
+    }
+
+    const produced = [];
+
+    el('runBtn').addEventListener('click', async () => {
+      if (!files.length) return;
+      if (!el('wmText').value.trim()) { setStatus(t('wm.needtext'), 'err'); return; }
+      el('runBtn').disabled = true; el('zipBtn').disabled = true;
+      produced.length = 0; results.innerHTML = '';
+      let ok = 0;
+      for (const f of files) {
+        setStatus(t('wm.working', { name: f.name, i: ok + 1, n: files.length }));
+        try {
+          const r = await processOne(f);
+          produced.push(r);
+          const item = document.createElement('div');
+          item.className = 'result-item';
+          const thumb = document.createElement('img');
+          thumb.src = URL.createObjectURL(r.blob);
+          thumb.style.cssText = 'height:40px;border-radius:4px;border:1px solid var(--border)';
+          item.appendChild(thumb);
+          item.insertAdjacentHTML('beforeend',
+            '<span class="name">' + r.outName + '</span>' +
+            '<span class="meta">' + formatBytes(r.inSize) + ' → ' + formatBytes(r.outSize) + '</span>' +
+            '<span class="spacer"></span>' +
+            '<button class="small ghost">' + t('wm.dl') + '</button>');
+          item.querySelector('button').addEventListener('click', () => downloadBlob(r.blob, r.outName));
+          results.appendChild(item);
+          ok++;
+        } catch (err) {
+          setStatus(t('wm.fail', { name: f.name, msg: err.message }), 'err');
+        }
+      }
+      setStatus(t('wm.done', { ok: ok, n: files.length }), ok ? 'ok' : 'err');
+      el('runBtn').disabled = false;
+      el('zipBtn').disabled = !produced.length;
+    });
+
+    el('zipBtn').addEventListener('click', async () => {
+      if (!produced.length) return;
+      setStatus(t('wm.zipping'));
+      const zip = new JSZip();
+      produced.forEach(r => zip.file(r.outName, r.blob));
+      const blob = await zip.generateAsync({ type: 'blob' });
+      downloadBlob(blob, 'localkit-watermarked.zip');
+      setStatus(t('wm.zipok'), 'ok');
+    });
+
+    // test hook
+    window.__lkProcess = async (filesIn) => {
+      files = Array.from(filesIn);
+      el('wmText').value = '© LocalKit';
+      el('runBtn').disabled = false;
+      el('runBtn').click();
+    };
+  })();
+  </script>
+</body>
+</html>
