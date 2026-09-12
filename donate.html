@@ -53,6 +53,11 @@
           </figure>
         </div>
       </li>
+      <li id="afdianCard" style="display:none">
+        <strong data-i18n="don.afdian.t">Afdian</strong>
+        <span data-i18n="don.afdian.d">Support via the Afdian platform (monthly or one-time).</span>
+        <p style="margin:10px 0 0"><a id="afdianLink" class="donate-btn" style="display:inline-block" href="#" target="_blank" rel="noopener">afdian.com →</a></p>
+      </li>
       <li>
         <strong data-i18n="don.gh.t">GitHub</strong>
         <span data-i18n="don.gh.d">Star or fork the repository — stars are the best way to help LocalKit grow.</span>
@@ -66,7 +71,8 @@
     <h2 data-i18n="don.os.h2">Open source</h2>
     <p data-i18n-html="don.os.p">The whole site is a set of static pages — view source, self-host it or fork it. Repository: <a href="https://github.com/zm2yp5sggv-bit/localkit" rel="noopener">github.com/zm2yp5sggv-bit/localkit</a>.</p>
 
-    <p style="margin-top:32px;font-size:1.02rem" data-i18n="don.thanks.p">Not in a position to donate? Sharing LocalKit with one friend who needs it helps just as much. ♥</p>
+    <p data-i18n="don.thanks.p">Not in a position to donate? Sharing LocalKit with one friend who needs it helps just as much. ♥</p>
+    <p style="font-size:.82rem;color:var(--muted);margin-top:18px" data-i18n="don.legal">Donations on this page are voluntary gifts to support the operation of this website. They are not a public fundraising campaign and do not correspond to any goods or services.</p>
   </main>
 
   <footer class="site-footer">
@@ -84,6 +90,11 @@
     if (window.LK_CONFIG && window.LK_CONFIG.github) {
       var g = document.getElementById('ghLink');
       if (g) g.href = window.LK_CONFIG.github;
+    }
+    if (window.LK_CONFIG && window.LK_CONFIG.afdian) {
+      var card = document.getElementById('afdianCard');
+      var link = document.getElementById('afdianLink');
+      if (card && link) { link.href = window.LK_CONFIG.afdian; card.style.display = ''; }
     }
   </script>
   <script src="assets/app.js"></script>
