@@ -11,11 +11,6 @@
   <script src="assets/i18n.js"></script>
   <script src="assets/config.js"></script>
   <style>
-    .qr-row { display: flex; gap: 28px; flex-wrap: wrap; margin-top: 14px; }
-    .qr-slot { width: 190px; text-align: center; }
-    .qr-slot img { width: 190px; height: 190px; object-fit: contain; border: 1px solid var(--border); border-radius: 12px; background: #fff; padding: 6px; }
-    .qr-ph { width: 190px; height: 190px; border: 2px dashed var(--border); border-radius: 12px; display: none; align-items: center; justify-content: center; color: var(--muted); font-size: .85rem; text-align: center; padding: 12px; }
-    .qr-slot figcaption { margin-top: 8px; font-weight: 700; font-size: .92rem; }
   </style>
 </head>
 <body>
@@ -37,22 +32,6 @@
 
     <h2 data-i18n="don.how.h2">Ways to support</h2>
     <ul class="feature-list">
-      <li>
-        <strong data-i18n="don.qr.h2">Scan to buy the author a coffee</strong>
-        <span data-i18n="don.qr.d">WeChat or Alipay — even one coffee means a lot and keeps the site running.</span>
-        <div class="qr-row">
-          <figure class="qr-slot">
-            <img src="assets/qr-wechat.png" alt="WeChat QR" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
-            <div class="qr-ph" data-i18n="don.qr.pending">QR code coming soon</div>
-            <figcaption data-i18n="don.wechat">WeChat Pay</figcaption>
-          </figure>
-          <figure class="qr-slot">
-            <img src="assets/qr-alipay.png" alt="Alipay QR" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
-            <div class="qr-ph" data-i18n="don.qr.pending">QR code coming soon</div>
-            <figcaption data-i18n="don.alipay">Alipay</figcaption>
-          </figure>
-        </div>
-      </li>
       <li id="afdianCard" style="display:none">
         <strong data-i18n="don.afdian.t">Afdian</strong>
         <span data-i18n="don.afdian.d">Support via the Afdian platform (monthly or one-time).</span>

@@ -38,7 +38,7 @@ npx serve .
 1. Fork / 克隆本仓库
 2. [Cloudflare Pages](https://pages.dev) → Create → 连接仓库（或直接拖拽上传文件夹）
 3. 绑定自定义域名，把 `index.html`、`tools/*.html`、`sitemap.xml` 里的 `localkit.tools` 换成你的域名
-4. 赞助链接在 `assets/config.js` 配置；收款码图片放 `assets/qr-wechat.png`、`assets/qr-alipay.png`
+4. 赞助渠道在 `assets/config.js` 配置（GitHub 默认；爱发电可选）
 
 ## 💡 技术栈
 
