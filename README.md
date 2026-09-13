@@ -4,7 +4,7 @@
 > 20+ 个纯浏览器端工具：图片压缩/转换/水印、PDF 合并/拆分/转图片/双向 Word 互转、二维码、JSON、文本对比、哈希、密码……
 > 所有处理 100% 在你的浏览器里完成——没有上传、没有账号、没有追踪。
 
-[在线使用 →](https://localkit.tools) · [GitHub →](https://github.com/zm2yp5sggv-bit) · [赞助支持 ♥](donate.html)
+[在线使用 →](https://youngray.asia) · [GitHub →](https://github.com/zm2yp5sggv-bit) · [赞助支持 ♥](donate.html)
 
 ## ✨ 特性
 
@@ -37,7 +37,7 @@ npx serve .
 
 1. Fork / 克隆本仓库
 2. [Cloudflare Pages](https://pages.dev) → Create → 连接仓库（或直接拖拽上传文件夹）
-3. 绑定自定义域名，把 `index.html`、`tools/*.html`、`sitemap.xml` 里的 `localkit.tools` 换成你的域名
+3. 绑定自定义域名，把 `index.html`、`tools/*.html`、`sitemap.xml` 里的 `youngray.asia` 换成你的域名
 4. 赞助渠道在 `assets/config.js` 配置（GitHub 默认；爱发电可选）
 
 ## 💡 技术栈
