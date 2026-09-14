@@ -10,14 +10,25 @@ import { expect } from '@playwright/test';
 export const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 export const FIXTURES = path.join(ROOT, 'tests', 'fixtures');
 
-/** 全站页面清单：4 个站点页 + tools/ 下全部工具页。 */
+/**
+ * 不应被搜索引擎收录的页面。
+ * 404.html 由 Cloudflare Pages 在未找到路径时自动返回，必须带 noindex 且不进 sitemap。
+ */
+export const NON_INDEXABLE = ['404.html'];
+
+/** 全站页面清单：站点页 + 错误页 + tools/ 下全部工具页。用于逐页健康检查。 */
 export function allPages() {
-  const site = ['index.html', 'about.html', 'privacy.html', 'donate.html'];
+  const site = ['index.html', 'about.html', 'privacy.html', 'donate.html', ...NON_INDEXABLE];
   const tools = fs.readdirSync(path.join(ROOT, 'tools'))
     .filter(f => f.endsWith('.html'))
     .sort()
     .map(f => 'tools/' + f);
   return [...site, ...tools];
+}
+
+/** 应当出现在 sitemap.xml 中的页面（即全站页面减去不可收录的那些）。 */
+export function indexablePages() {
+  return allPages().filter(p => !NON_INDEXABLE.includes(p));
 }
 
 /** 读取夹具并转成 base64，便于传进浏览器上下文。 */

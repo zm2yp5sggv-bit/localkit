@@ -7,7 +7,8 @@
  *   2. 各页面内联 <script> 的语法（传统脚本语义，用 vm.Script 解析但不执行）
  *   3. <script type="application/ld+json"> 是否为合法 JSON（结构化数据直接关系 SEO）
  *   4. 页面里 src/href 指向的本站资源是否真实存在（防止改路径时漏改某页）
- *   5. 是否残留任何指向第三方 CDN 的引用（本项目承诺零外发请求）
+ *   5. canonical 与 sitemap 的地址形态是否一致、是否都指向真实存在的文件
+ *   6. 是否残留任何指向第三方 CDN 的引用（本项目承诺零外发请求）
  *
  * 用法：node scripts/check-syntax.mjs
  * 环境变量：LK_ROOT 指定仓库根目录（供自测使用，默认取脚本上一级）
@@ -95,7 +96,95 @@ for (const f of htmlFiles) {
   }
 }
 
-/* 5. 不得残留第三方 CDN 引用 */
+/* 5. canonical 与 sitemap 的地址形态一致性
+ *
+ * 背景：Cloudflare Pages 的 Pretty URLs 会把 /foo.html 308 跳到 /foo。
+ * 项目为此做过一次明确取舍：**保留 .html 扩展名**（即在 Pages 设置里关闭 Pretty URLs），
+ * 理由是仓库里本来就是 .html 文件，全站内部链接、canonical、sitemap 也都用 .html，
+ * 关闭 Pretty URLs 后三者自然一致，无需改任何页面。
+ *
+ * 但「选了一种形态」这件事只在文档里写是不够的——一旦有人写出无扩展名的 canonical
+ * 或 sitemap 条目，就会重新出现「canonical 指向一个会跳转/会 404 的地址」。
+ * 因此这里用「URL 必须能映射到真实存在的文件」把它锁死：
+ * 无扩展名的地址在仓库里找不到对应文件，会直接在此报错。
+ */
+const ORIGIN = 'https://youngray.asia';
+const ERROR_PAGE = '404.html';
+
+const relPaths = htmlFiles.map(rel).sort();
+const indexablePages = relPaths.filter(r => r !== ERROR_PAGE);
+const ownUrl = (r) => (r === 'index.html' ? ORIGIN + '/' : ORIGIN + '/' + r);
+
+function urlToRelPath(url) {
+  if (!url.startsWith(ORIGIN)) return null;
+  const p = url.slice(ORIGIN.length).split('#')[0].split('?')[0];
+  if (p === '' || p === '/') return 'index.html';
+  return p.replace(/^\//, '');
+}
+
+let canonicalCount = 0;
+let sitemapCount = 0;
+
+for (const f of htmlFiles) {
+  const r = rel(f);
+  const src = fs.readFileSync(f, 'utf8');
+  const m = src.match(/<link[^>]+rel="canonical"[^>]+href="([^"]+)"/i);
+
+  if (r === ERROR_PAGE) {
+    if (m) errors.push(`[canonical] ${r} 不应设置 canonical（它是错误页）`);
+    if (!/<meta[^>]+name="robots"[^>]+content="[^"]*noindex/i.test(src)) {
+      errors.push(`[canonical] ${r} 缺少 noindex，错误页不应被搜索引擎收录`);
+    }
+    continue;
+  }
+
+  if (!m) { errors.push(`[canonical] ${r} 缺少 <link rel="canonical">`); continue; }
+  canonicalCount++;
+
+  const url = m[1];
+  const expected = ownUrl(r);
+  if (!url.startsWith(ORIGIN)) {
+    errors.push(`[canonical] ${r} 的 canonical 不是本站地址: ${url}`);
+  } else if (url !== expected) {
+    errors.push(
+      `[canonical] ${r} 的 canonical 与本页地址不一致\n` +
+      `      应为 ${expected}\n` +
+      `      实为 ${url}`
+    );
+  }
+}
+
+const sitemapPath = path.join(ROOT, 'sitemap.xml');
+if (!fs.existsSync(sitemapPath)) {
+  errors.push('[sitemap] 缺少 sitemap.xml');
+} else {
+  const xml = fs.readFileSync(sitemapPath, 'utf8');
+  const locs = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map(m => m[1].trim());
+  sitemapCount = locs.length;
+
+  const seen = new Set();
+  for (const loc of locs) {
+    if (seen.has(loc)) errors.push(`[sitemap] URL 重复: ${loc}`);
+    seen.add(loc);
+
+    const p = urlToRelPath(loc);
+    if (p === null) { errors.push(`[sitemap] 不是本站地址: ${loc}`); continue; }
+    if (p === ERROR_PAGE) { errors.push(`[sitemap] 不应收录错误页: ${loc}`); continue; }
+    if (!fs.existsSync(path.join(ROOT, p))) {
+      errors.push(
+        `[sitemap] URL 映射不到真实文件: ${loc}\n` +
+        `      按地址推导出的文件是 ${p}，但它不存在。\n` +
+        `      本项目的地址形态是「保留 .html 扩展名」，无扩展名地址会 404。`
+      );
+    }
+  }
+
+  for (const r of indexablePages) {
+    if (!seen.has(ownUrl(r))) errors.push(`[sitemap] 未收录页面: ${ownUrl(r)}`);
+  }
+}
+
+/* 6. 不得残留第三方 CDN 引用 */
 const CDN_RE = /(?:src|href)=["'](https?:\/\/[^"']*(?:cdn\.|unpkg|googleapis|gstatic)[^"']*)["']/gi;
 for (const f of [...htmlFiles, ...jsFiles]) {
   if (VENDOR_RE.test(rel(f))) continue;
@@ -113,6 +202,8 @@ console.log(`脚本文件         : ${fileCount}`);
 console.log(`内联 JavaScript  : ${jsCount}`);
 console.log(`JSON-LD 块       : ${jsonLdCount}`);
 console.log(`本站资源引用     : ${refCount}`);
+console.log(`canonical 标签   : ${canonicalCount}（另有 1 个错误页不设 canonical）`);
+console.log(`sitemap URL      : ${sitemapCount}`);
 console.log('─'.repeat(60));
 
 if (errors.length) {

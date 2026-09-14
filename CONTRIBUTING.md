@@ -55,6 +55,31 @@ Cloudflare Pages 以**仓库根目录**作为发布目录，所以仓库里任�
 这样互相冲突的指令串。`check:deploy` 会拦截这种情况；确实需要按路径分别设置时，
 可以在后一条规则里先写 `! Cache-Control` 取消前一条的值。
 
+还要注意：`_headers` 里那个 `/*` 是「匹配所有路径」的**通配模式**，不是 C 风格注释的开头。
+**不要顺手补 `*/` 收尾**——它会被解析成一条模式为 `*/` 的规则。检查脚本会校验每行模式是否像 URL 路径。
+
+### 地址形态：保留 `.html`
+
+本项目**关闭**了 Cloudflare Pages 的 Pretty URLs，因此线上地址形态是 `/foo.html`（返回 200），
+而不是 `/foo`（会 404）。这决定了两条硬性约定：
+
+- 每个页面的 `<link rel="canonical">` 必须等于它自己的 `.html` 地址；
+- `sitemap.xml` 里的每条 URL 必须指向真实存在的 `.html` 文件，且收录全部可索引页面。
+
+`npm run check:syntax` 会强制这两点（无扩展名地址会因「映射不到真实文件」而报错），
+`tests/01-pages.spec.js` 也有一份行为层的用例。**新增页面时别忘了同步 canonical 与 sitemap。**
+
+`404.html` 是例外：它不设 canonical，必须带 `noindex`，且**不得**写进 `sitemap.xml`。
+
+### 安全响应头的唯一来源
+
+`_headers` 是本项目所有安全响应头的唯一来源，包括 `Strict-Transport-Security`。
+**不要再去 Cloudflare 控制台开启 HSTS**——两处同时设置会让该响应头被逗号合并成非法值，
+浏览器可能整条忽略。
+
+HSTS 的 `max-age` 目前是 180 天，且刻意不含 `includeSubDomains` 与 `preload`：
+前者是为了给将来新增子域留余地，后者一旦进浏览器内置列表几乎无法撤回，应当单独决策。
+
 ## i18n 约定（最容易出错的地方）
 
 页面静态源码**保持英文**，这是给搜索引擎和无 JS 环境看的；运行时由 `assets/i18n.js`

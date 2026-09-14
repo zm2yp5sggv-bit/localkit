@@ -27,6 +27,9 @@ const VOLATILE = [
   'assets/i18n.js',
   'assets/app.js',
   'index.html',
+  '404.html',
+  'sitemap.xml',
+  'tools/hash-calculator.html',
   '_headers',
   '_redirects',
   'assets/vendor/md5.min.js',
@@ -240,6 +243,82 @@ test('check-deploy 能察觉缺少 CSP', () => {
   const r = run('check-deploy.mjs');
   assert.equal(r.code, 1);
   assert.match(r.out, /Content-Security-Policy/, '应报缺少 CSP');
+});
+
+test('check-deploy 能察觉 _headers 里误加了 C 风格的 */ 收尾', () => {
+  // _headers 的 /* 是「匹配所有路径」的通配模式，格式里没有块结束符。
+  // 顺手补 */ 会被当成一条模式为 "*/" 的规则。
+  patch('_headers', s => s.replace(
+    '  Cache-Control: public, max-age=0, must-revalidate\n',
+    '  Cache-Control: public, max-age=0, must-revalidate\n*/\n'
+  ));
+  const r = run('check-deploy.mjs');
+  assert.equal(r.code, 1, '应报错退出\n' + r.out);
+  assert.match(r.out, /不像 URL 路径/, '应指出模式不是合法路径');
+});
+
+/* ================================================================== *
+ * check-syntax.mjs —— canonical 与 sitemap 一致性
+ *
+ * 项目明确选择「保留 .html 扩展名」（Pages 的 Pretty URLs 关闭），
+ * 这些用例确保这个决定被脚本锁住，而不是只写在文档里。
+ * ================================================================== */
+
+test('check-syntax 能查出 sitemap 里写成了无扩展名地址', () => {
+  patch('sitemap.xml', s => s.replace(
+    '<loc>https://youngray.asia/tools/hash-calculator.html</loc>',
+    '<loc>https://youngray.asia/tools/hash-calculator</loc>'
+  ));
+  const r = run('check-syntax.mjs');
+  assert.equal(r.code, 1, '应报错退出\n' + r.out);
+  assert.match(r.out, /映射不到真实文件/, '应指出地址无法映射到文件');
+});
+
+test('check-syntax 能查出 canonical 与本页地址不一致', () => {
+  patch('tools/hash-calculator.html', s => s.replace(
+    'href="https://youngray.asia/tools/hash-calculator.html"',
+    'href="https://youngray.asia/tools/sha256.html"'
+  ));
+  const r = run('check-syntax.mjs');
+  assert.equal(r.code, 1);
+  assert.match(r.out, /canonical 与本页地址不一致/, '应指出 canonical 与本页不符');
+});
+
+test('check-syntax 能查出 canonical 指向站外地址', () => {
+  patch('about.html', s => s.replace(
+    'href="https://youngray.asia/about.html"',
+    'href="https://example.com/about.html"'
+  ));
+  const r = run('check-syntax.mjs');
+  assert.equal(r.code, 1);
+  assert.match(r.out, /不是本站地址/, '应指出 canonical 不是本站地址');
+});
+
+test('check-syntax 能查出 sitemap 漏收页面', () => {
+  patch('sitemap.xml', s => s.replace(
+    '  <url><loc>https://youngray.asia/about.html</loc><changefreq>yearly</changefreq><priority>0.4</priority></url>\n',
+    ''
+  ));
+  const r = run('check-syntax.mjs');
+  assert.equal(r.code, 1);
+  assert.match(r.out, /未收录页面/, '应指出漏收的页面');
+});
+
+test('check-syntax 能查出错误页被写进 sitemap', () => {
+  patch('sitemap.xml', s => s.replace(
+    '</urlset>',
+    '  <url><loc>https://youngray.asia/404.html</loc></url>\n</urlset>'
+  ));
+  const r = run('check-syntax.mjs');
+  assert.equal(r.code, 1);
+  assert.match(r.out, /不应收录错误页/, '应指出错误页不该进 sitemap');
+});
+
+test('check-syntax 能查出错误页缺少 noindex', () => {
+  patch('404.html', s => s.replace('<meta name="robots" content="noindex">\n', ''));
+  const r = run('check-syntax.mjs');
+  assert.equal(r.code, 1);
+  assert.match(r.out, /缺少 noindex/, '应指出错误页缺少 noindex');
 });
 
 /* ================================================================== *

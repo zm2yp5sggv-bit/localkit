@@ -51,6 +51,7 @@ const SITE_PATTERNS = [
   /^about\.html$/,
   /^privacy\.html$/,
   /^donate\.html$/,
+  /^404\.html$/,            // Cloudflare Pages 在未找到路径时自动使用它
   /^tools\/[^/]+\.html$/,
   /^assets\/(?!vendor\/README\.md$).+$/,
   /^robots\.txt$/,
@@ -84,8 +85,22 @@ for (const rule of redirectRules) {
 }
 
 /* ------------------------------------------------------------------ *
- * 检查 2：_headers 同名响应头重叠
+ * 检查 2：_headers 模式与同名响应头重叠
  * ------------------------------------------------------------------ */
+
+// 每条规则的首行必须是一个 URL 路径模式。
+// 这条检查是踩坑换来的：_headers 里的 `/*` 是「匹配所有路径」的通配模式，
+// 格式中并没有 C 风格的块结束符，一旦顺手补上 `*/` 收尾，
+// 就会被解析成一条模式为 "*/" 的规则（空规则，不报错但会让规则数虚增、语义混乱）。
+for (const rule of headerRules) {
+  if (/^https?:\/\//.test(rule.pattern)) continue;
+  if (!rule.pattern.startsWith('/')) {
+    errors.push(
+      `_headers 第 ${rule.lineNo} 行的模式不像 URL 路径: "${rule.pattern}"\n` +
+      `      提示：/* 是「匹配所有路径」的通配模式，格式里没有块结束符，不要写 */ 收尾。`
+    );
+  }
+}
 
 for (let i = 0; i < headerRules.length; i++) {
   for (let j = i + 1; j < headerRules.length; j++) {

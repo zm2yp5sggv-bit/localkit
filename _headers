@@ -12,6 +12,14 @@
 # 一串互相冲突的指令，预期的 immutable 根本没生效。
 # 因此现在只保留一条通配规则。任何新增的按路径规则都必须先确认不会与它重复设置同名头——
 # scripts/check-deploy.mjs 会强制检查这一点。
+#
+# 注释一律写在规则块之外。虽然实测块内的 # 行会被忽略，但放在外面可以避免
+# 依赖任何解析器的容错行为。
+#
+# 关于 HSTS：本文件已经下发 Strict-Transport-Security，请**不要**再去
+# Cloudflare 控制台（SSL/TLS → Edge Certificates）打开 HSTS 开关。
+# 两处同时设置会让该响应头被逗号合并成 `max-age=15552000, max-age=...`，
+# 属非法值，浏览器可能直接忽略整条头——刚好与启用 HSTS 的意图相反。
 
 /*
   X-Content-Type-Options: nosniff
@@ -21,11 +29,23 @@
   Cross-Origin-Opener-Policy: same-origin
   Cross-Origin-Resource-Policy: same-origin
   Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; worker-src 'self' blob:; connect-src 'none'; form-action 'none'; frame-ancestors 'none'; base-uri 'none'; object-src 'none'
-
-  # 全站都走「每次校验」策略，不设长缓存。
-  # 刻意不为 assets/vendor/ 单独设 immutable，原因有两条：
-  #   1) 那需要再加一条按路径规则来设置同一个响应头，而这正是上面踩过的坑；
-  #   2) vendor 文件名不带内容指纹（jszip.min.js 这类），一旦升级依赖，
-  #      返回访客会在缓存有效期内一直拿到旧版本，排查起来很隐蔽。
-  # 代价只是每个资源多一次条件请求（ETag 命中返回 304），可以忽略。
+  Strict-Transport-Security: max-age=15552000
   Cache-Control: public, max-age=0, must-revalidate
+
+# 注意上面那行 `/*` 是「匹配所有路径」的**通配模式**，不是 C 风格注释的开头，
+# 因此**不要**在末尾补 `*/` 收尾——那会被解析成一条模式为 "*/" 的规则。
+# scripts/check-deploy.mjs 会检查每条规则的模式是否像 URL 路径，补了就会报错。
+
+# 全站都走「每次校验」缓存策略，不设长缓存。
+# 刻意不为 assets/vendor/ 单独设 immutable，原因有两条：
+#   1) 那需要再加一条按路径规则来设置同一个响应头，而这正是上面踩过的坑；
+#   2) vendor 文件名不带内容指纹（jszip.min.js 这类），一旦升级依赖，
+#      返回访客会在缓存有效期内一直拿到旧版本，排查起来很隐蔽。
+# 代价只是每个资源多一次条件请求（ETag 命中返回 304），可以忽略。
+#
+# HSTS 取值说明：max-age 为 180 天，且**刻意不加** includeSubDomains 与 preload。
+#   - 不加 includeSubDomains：将来若新增子域（例如 www），不会被迫只能用 HTTPS，
+#     留有回旋余地。
+#   - 不加 preload：preload 一旦进浏览器内置列表几乎无法撤回，应当单独决策。
+#   - HSTS 是「粘性」的，浏览器会把 max-age 记满整个周期，调大容易调小难。
+#     当前值已足以覆盖 SSL-stripping 场景；确认长期稳定后可再上调到 31536000。

@@ -42,12 +42,39 @@ node scripts/serve.mjs 4173    # 仓库自带的零依赖服务器，会一并�
 
 1. Fork / 克隆本仓库
 2. [Cloudflare Pages](https://pages.dev) → Create → 连接仓库（或直接拖拽上传文件夹）
-3. 绑定自定义域名，把 `index.html`、`tools/*.html`、`sitemap.xml` 里的 `youngray.asia` 换成你的域名
-4. 赞助渠道在 `assets/config.js` 配置（GitHub 默认；爱发电可选）
+3. **关闭「Pretty URLs」**（Settings → Builds & deployments）。理由见下方「地址形态」。
+4. 绑定自定义域名，把 `index.html`、`tools/*.html`、`sitemap.xml` 里的 `youngray.asia` 换成你的域名
+5. 建议同时添加 `www` 子域并在 Rules → Redirect Rules 里做 `www` → 根域 301
+6. 赞助渠道在 `assets/config.js` 配置（GitHub 默认；爱发电可选）
 
-根目录的 `_headers` 会被 Cloudflare Pages 自动识别，用于下发 CSP 等安全响应头。其中
+根目录的 `_headers` 会被 Cloudflare Pages 自动识别，用于下发 CSP、HSTS 等安全响应头。其中
 `connect-src 'none'` 会在浏览器层面**强制**禁止本站发起任何网络请求——隐私承诺不只写在文案里，
 而是被策略锁死的。注意 `_headers` 只对 Cloudflare Pages 生效，自建服务器需自行转发。
+
+### 地址形态：保留 `.html` 扩展名
+
+Cloudflare Pages 的「Pretty URLs」会把 `/foo.html` **308 跳转**到 `/foo`。本项目**关闭**了它，
+选择让 `/foo.html` 直接返回 200，理由有三条：
+
+- 仓库里本来就是 `.html` 文件，全站内部链接也都是 `.html`，关闭后三者天然一致；
+- 开着 Pretty URLs 时，页面的 `canonical` 与 `sitemap.xml` 里写的是 `.html`，
+  而它会跳转到无扩展名地址——等于 canonical 指向了一个「非最终地址」，属自找的 SEO 不一致；
+- 关闭后本地开发服务器（`scripts/serve.mjs`）的行为与线上完全一致，不需要额外模拟跳转。
+
+代价：已经存在的无扩展名链接（例如外部站点引用了 `/privacy`）会 404。项目刚上线，这个代价可接受。
+`npm run check:syntax` 会强制 canonical 与 sitemap 保持 `.html` 形态——写错了会被 CI 拦下。
+
+### 404 页面
+
+根目录的 `404.html` 由 Cloudflare Pages 在未找到路径时自动使用（前提是 SPA fallback 处于关闭状态）。
+它带 `noindex` 且不进 `sitemap.xml`；若配置了 SPA fallback，所有未知路径都会返回首页并带 200 状态
+（soft-404），`404.html` 就不会生效——建议在 Pages 设置里关闭 SPA fallback。
+
+### HSTS 只在一个地方配置
+
+`_headers` 已经下发 `Strict-Transport-Security`。**不要**再去 Cloudflare 控制台
+（SSL/TLS → Edge Certificates）打开 HSTS 开关：两处同时设置会让响应头被逗号合并成
+`max-age=15552000, max-age=...`，属非法值，浏览器可能直接忽略整条头——刚好与启用 HSTS 的意图相反。
 
 ## 💡 技术栈
 

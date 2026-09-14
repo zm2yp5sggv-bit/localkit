@@ -5,6 +5,11 @@ const BASE = `http://127.0.0.1:${PORT}`;
 
 export default defineConfig({
   testDir: './tests',
+  // tests/node/ 下是「校验脚本自测」，用 node:test 编写、由 npm run test:checks 运行。
+  // 它的文件名匹配 Playwright 的默认 testMatch（*.test.mjs），若不排除，
+  // 每次跑端到端都会把它加载一遍 —— Playwright 在其中找不到自己的用例，
+  // 但 node:test 的用例会照常在进程里跑完并把 TAP 输出混进结果，既拖慢套件也让输出难读。
+  testIgnore: ['node/**'],
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 1 : 0,

@@ -5,6 +5,40 @@
 
 ## [未发布]
 
+### 站点可达性与错误页
+
+#### 新增
+
+- **HSTS**：`_headers` 增加 `Strict-Transport-Security: max-age=15552000`。
+  此前 http→https 虽有 301，但首次请求仍是明文，可被 SSL-stripping 利用。
+  取值刻意不含 `includeSubDomains` 与 `preload`：前者给将来新增子域留余地，
+  后者一旦进浏览器内置列表几乎无法撤回。**注意 HSTS 只应在 `_headers` 一处配置**，
+  若同时在 Cloudflare 控制台开启，响应头会被逗号合并成非法值而被浏览器整条忽略。
+- **`404.html`**：带 `noindex`、不设 canonical、不进 sitemap。
+  Cloudflare Pages 在未找到路径时自动使用它（需在设置中关闭 SPA fallback 才会生效）。
+- **canonical 与 sitemap 一致性检查**（`scripts/check-syntax.mjs`）：
+  校验每个页面的 canonical 等于其自身地址、sitemap 每条 URL 都能映射到真实文件、
+  收录全部可索引页面且不含错误页。
+
+#### 变更
+
+- **明确地址形态为「保留 `.html` 扩展名」**（即关闭 Cloudflare Pages 的 Pretty URLs）。
+  Pretty URLs 会把 `/foo.html` 308 跳到 `/foo`，而页面的 canonical 与 sitemap 里写的是 `.html`——
+  等于 canonical 指向了一个非最终地址。关闭后三者天然一致，本地开发服务器行为也与线上一致。
+  该决定已由 `check:syntax` 强制，不再只是文档中的约定。
+  代价：已存在的无扩展名链接（如外部引用的 `/privacy`）会 404。
+
+#### 修复
+
+- **`_headers` 里误加的 `*/`**：`/*` 是「匹配所有路径」的通配模式，格式中并没有 C 风格的块结束符。
+  此前按注释习惯补了 `*/` 收尾，被解析成一条模式为 `*/` 的空规则（规则数虚增为 2）。
+  现已移除，并新增一条检查：每条规则的首行模式必须像 URL 路径，否则报错。
+- **Playwright 把 `tests/node/checks.test.mjs` 也当成了自己的用例文件**：
+  该文件名匹配 Playwright 默认的 `*.test.mjs`，于是每次跑端到端都会额外加载它一遍——
+  Playwright 在其中找不到自己的用例，但 `node:test` 的 24 个自测会照常跑完，
+  把 TAP 输出混进结果，并让套件多花约 30 秒。已在 `playwright.config.js` 中加
+  `testIgnore: ['node/**']`，两个测试入口从此互不干扰。
+
 ### 部署配置修复与工程化补强
 
 #### 修复

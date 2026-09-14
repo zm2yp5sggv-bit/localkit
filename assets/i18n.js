@@ -14,6 +14,12 @@
       'footer.line': '© 2026 LocalKit · Made for privacy',
       'footer.privacy': 'Privacy Policy',
 
+      'nf.title': 'Page Not Found — LocalKit',
+      'nf.h1': '404 — Page not found',
+      'nf.p': 'This page does not exist or has moved. Nothing is wrong on your device — every tool still works.',
+      'nf.hint': 'If you followed an older link, the page may now live at a slightly different address. Start from the tools index instead.',
+      'nf.home': 'Back to the tools',
+
       'index.title': 'LocalKit — Free Online Tools That Never Upload Your Files',
       'index.badge': '🔒 100% local — your files never leave your device',
       'index.h1a': 'Free online tools that ',
@@ -578,6 +584,12 @@
       'nav.tools': '工具', 'nav.about': '关于', 'nav.privacy': '隐私政策',
       'footer.line': '© 2026 LocalKit · 为隐私而生',
       'footer.privacy': '隐私政策',
+
+      'nf.title': '页面不存在 — LocalKit',
+      'nf.h1': '404 — 页面不存在',
+      'nf.p': '这个页面不存在，或者已经移动了。你的设备没有任何问题——所有工具都还能正常使用。',
+      'nf.hint': '如果你是从旧链接过来的，页面地址可能略有变化。请从工具索引重新进入。',
+      'nf.home': '返回工具索引',
 
       'index.title': 'LocalKit — 永不上传你文件的免费在线工具',
       'index.badge': '🔒 100% 本地运行——文件永不离开你的设备',

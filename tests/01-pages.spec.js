@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { allPages } from './helpers.js';
+import { allPages, indexablePages, NON_INDEXABLE } from './helpers.js';
 
 const pages = allPages();
 
@@ -90,6 +90,21 @@ test.describe('部署边界', () => {
     expect(csp).toContain("connect-src 'none'");
     expect(res.headers()['x-content-type-options']).toBe('nosniff');
     expect(res.headers()['referrer-policy']).toBe('no-referrer');
+    expect(res.headers()['x-frame-options']).toBe('DENY');
+    expect(res.headers()['cross-origin-opener-policy']).toBe('same-origin');
+  });
+
+  test('HSTS 已启用且取值合法', async ({ request }) => {
+    // 没有 HSTS 时，首次请求仍是明文，可被 SSL-stripping 利用。
+    // 注意 max-age 必须是单个值：若同时在本文件与 Cloudflare 控制台开启了 HSTS，
+    // 响应头会被逗号合并成 "max-age=A, max-age=B"，属非法值浏览器会整条忽略。
+    const res = await request.get('/index.html');
+    const hsts = res.headers()['strict-transport-security'] || '';
+    expect(hsts, '缺少 Strict-Transport-Security').not.toBe('');
+    const ages = hsts.match(/max-age=/g) || [];
+    expect(ages.length, `HSTS 出现多个 max-age（被逗号合并？）: ${hsts}`).toBe(1);
+    const maxAge = Number((hsts.match(/max-age=(\d+)/) || [])[1]);
+    expect(Number.isInteger(maxAge) && maxAge >= 86400, `max-age 过小或非法: ${hsts}`).toBe(true);
   });
 });
 
@@ -104,19 +119,29 @@ test.describe('站点结构完整性', () => {
     expect(toolHrefs).toEqual(expected);
   });
 
-  test('sitemap.xml 收录了全部页面且 URL 唯一', async ({ request }) => {
+  test('sitemap.xml 收录了全部可索引页面、URL 唯一、且不含错误页', async ({ request }) => {
     const res = await request.get('/sitemap.xml');
     expect(res.status()).toBe(200);
     const xml = await res.text();
     const locs = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map(m => m[1]);
 
-    expect(locs.length).toBe(allPages().length);
+    expect(locs.length).toBe(indexablePages().length);
     expect(new Set(locs).size, 'URL 不应重复').toBe(locs.length);
 
-    for (const p of allPages()) {
+    for (const p of indexablePages()) {
       const suffix = p === 'index.html' ? '/' : '/' + p;
       expect(locs.some(l => l.endsWith(suffix)), `sitemap 缺少 ${p}`).toBeTruthy();
     }
+
+    for (const p of NON_INDEXABLE) {
+      expect(locs.some(l => l.endsWith('/' + p)), `sitemap 不应收录错误页 ${p}`).toBe(false);
+    }
+  });
+
+  test('404 页面带 noindex 且不使用 canonical', async ({ page }) => {
+    await page.goto('/404.html');
+    await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', /noindex/);
+    expect(await page.locator('link[rel="canonical"]').count(), '错误页不应设置 canonical').toBe(0);
   });
 
   test('robots.txt 指向 sitemap', async ({ request }) => {
