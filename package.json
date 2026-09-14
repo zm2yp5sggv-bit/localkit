@@ -13,7 +13,7 @@
     "check:deploy": "node scripts/check-deploy.mjs",
     "check:vendor": "node scripts/update-vendor.mjs --check",
     "check": "npm run check:i18n && npm run check:syntax && npm run check:deploy && npm run check:vendor",
-    "test:checks": "node --test tests/node/",
+    "test:checks": "node --test \"tests/node/**/*.test.mjs\"",
     "update:vendor": "node scripts/update-vendor.mjs",
     "test": "playwright test",
     "test:headed": "playwright test --headed",

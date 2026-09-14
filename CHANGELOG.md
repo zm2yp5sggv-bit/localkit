@@ -20,6 +20,11 @@
   与 Cloudflare 官方的「逗号合并」相反，导致上面第一个缺陷在本地怎么测都测不出来。
   现改为与校验脚本共用 `scripts/lib/deploy-config.mjs`，并让本地服务器一并执行 `_redirects`。
 - 修正 `_headers` 里「同名的后一条覆盖前一条」这条与官方文档相反的错误注释。
+- **`npm run test:checks` 在 Linux 上无法运行**：`node --test tests/node/` 的目录形式会被
+  Node 当成模块去执行（`Cannot find module .../tests/node`），Windows 上同样失败。
+  改用 glob 形式 `node --test "tests/node/**/*.test.mjs"`。
+  这个疏漏本身也值得一提——本地验证时我习惯直接传文件路径，从未跑过 `package.json` 里
+  真正的那个命令，于是「验证方式」与「被验证的对象」不是同一个东西。CI 抓到了它。
 
 #### 新增
 
