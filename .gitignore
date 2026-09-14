@@ -13,3 +13,14 @@ _debug/
 
 # private ops playbook (do not publish)
 OPS-本地运营手册.md
+
+# Node / test tooling（仅开发与 CI 使用，站点本身零依赖）
+node_modules/
+test-results/
+playwright-report/
+blob-report/
+.playwright/
+*.log
+
+# 注意：package-lock.json 需要提交，用于锁定开发依赖
+# 注意：assets/vendor/ 是刻意提交的第三方构建产物，不要加入忽略

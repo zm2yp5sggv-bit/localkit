@@ -1,0 +1,105 @@
+{
+  "generated": "2026-09-14",
+  "files": [
+    {
+      "file": "jszip.min.js",
+      "lib": "jszip",
+      "version": "3.10.1",
+      "license": "MIT / GPLv3",
+      "homepage": "https://github.com/Stuk/jszip",
+      "source": "https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js",
+      "bytes": 97630,
+      "sha256": "acc7e41455a80765b5fd9c7ee1b8078a6d160bbbca455aeae854de65c947d59e"
+    },
+    {
+      "file": "pdf-lib.min.js",
+      "lib": "pdf-lib",
+      "version": "1.17.1",
+      "license": "MIT",
+      "homepage": "https://github.com/Hopding/pdf-lib",
+      "source": "https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js",
+      "bytes": 525099,
+      "sha256": "0f9a5cad07941f0826586c94e089d89b918c46e5c17cf2d5a3c6f666e3bc694f"
+    },
+    {
+      "file": "pdfjs/pdf.min.js",
+      "lib": "pdfjs-dist",
+      "version": "3.11.174",
+      "license": "Apache-2.0",
+      "homepage": "https://github.com/mozilla/pdf.js",
+      "source": "https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/legacy/build/pdf.min.js",
+      "bytes": 377116,
+      "sha256": "978fd1b2d134a98e98966186a97777bebf87d8e770dadab1ece3687e21a5aa6c"
+    },
+    {
+      "file": "pdfjs/pdf.worker.min.js",
+      "lib": "pdfjs-dist",
+      "version": "3.11.174",
+      "license": "Apache-2.0",
+      "homepage": "https://github.com/mozilla/pdf.js",
+      "source": "https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/legacy/build/pdf.worker.min.js",
+      "bytes": 1133660,
+      "sha256": "38cde5311957b86bc3669f93e7d2566de333a90055ed6635bef60d9bf00e96f2"
+    },
+    {
+      "file": "docx.umd.js",
+      "lib": "docx",
+      "version": "8.5.0",
+      "license": "MIT",
+      "homepage": "https://github.com/dolanmiu/docx",
+      "source": "https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.js",
+      "bytes": 742858,
+      "sha256": "02d568d203c0180af37609bcf5ff6c0919d220f933a88ca896eba0556a08faad"
+    },
+    {
+      "file": "docx-preview.min.js",
+      "lib": "docx-preview",
+      "version": "0.3.2",
+      "license": "MIT",
+      "homepage": "https://github.com/VolodymyrBaydalka/docxjs",
+      "source": "https://cdn.jsdelivr.net/npm/docx-preview@0.3.2/dist/docx-preview.min.js",
+      "bytes": 71090,
+      "sha256": "95c458b73a718ca96b511b7e712f0b743fe4284502b9ffaea5afdde96ba3036a"
+    },
+    {
+      "file": "jspdf.umd.min.js",
+      "lib": "jspdf",
+      "version": "2.5.1",
+      "license": "MIT",
+      "homepage": "https://github.com/parallax/jsPDF",
+      "source": "https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js",
+      "bytes": 364463,
+      "sha256": "98ccf17aa10c20bb1301762618fcc9b6ab3a4e7f26b6071d64d0b41154df3875"
+    },
+    {
+      "file": "html2canvas.min.js",
+      "lib": "html2canvas",
+      "version": "1.4.1",
+      "license": "MIT",
+      "homepage": "https://github.com/niklasvh/html2canvas",
+      "source": "https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js",
+      "bytes": 198689,
+      "sha256": "e87e550794322e574a1fda0c1549a3c70dae5a93d9113417a429016838eab8cb"
+    },
+    {
+      "file": "qrcode.min.js",
+      "lib": "qrcode-generator",
+      "version": "1.4.4",
+      "license": "MIT",
+      "homepage": "https://github.com/kazuhikoarase/qrcode-generator",
+      "source": "https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js",
+      "bytes": 20768,
+      "sha256": "bb2365e4902f4f84852cf4025e6f6a60325a682aeafa43fb63b7fc8f098d1ef2"
+    },
+    {
+      "file": "md5.min.js",
+      "lib": "js-md5",
+      "version": "0.8.3",
+      "license": "MIT",
+      "homepage": "https://github.com/emn178/js-md5",
+      "source": "https://cdn.jsdelivr.net/npm/js-md5@0.8.3/src/md5.min.js",
+      "bytes": 10652,
+      "sha256": "036734b941c80c9d57ff384c8b36b436986e7d15a785b2e0dd986acaf53652ac"
+    }
+  ]
+}

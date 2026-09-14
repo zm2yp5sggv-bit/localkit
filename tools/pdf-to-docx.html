@@ -110,21 +110,21 @@
       <div class="links">
         <a href="../index.html" data-i18n="nav.tools">Tools</a>
         <a href="../about.html" data-i18n="nav.about">About</a>
-        <a href="../privacy.html" data-i18n="nav.privacy">Privacy Policy</a>
+        <a href="../privacy.html" data-i18n="footer.privacy">Privacy Policy</a>
       </div>
     </div>
   </footer>
 
   <script src="../assets/app.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/legacy/build/pdf.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.js"></script>
+  <script src="../assets/vendor/pdfjs/pdf.min.js"></script>
+  <script src="../assets/vendor/docx.umd.js"></script>
   <script>
   (function () {
     'use strict';
     const { el, setupDropzone, formatBytes, downloadBlob, setStatus } = window.LK;
     const t = (k, v) => window.LKI.t(k, v);
     pdfjsLib.GlobalWorkerOptions.workerSrc =
-      'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/legacy/build/pdf.worker.min.js';
+      '../assets/vendor/pdfjs/pdf.worker.min.js';
     let file = null;
 
     /* ================= text: items -> lines ================= */
@@ -523,19 +523,21 @@
       return { blocks: blocks.concat(rest), images: images, usableCount: usable.length };
     }
 
-    async function convert(file) {
+    /**
+     * 核心转换流程 —— 页面按钮与自动化测试共用同一条路径。
+     * opts.dryRun 为 true 时不触发下载，改为返回结构化摘要与生成的 blob，
+     * 这样测试验证的就是真实产出，而不是另一份复制粘贴出来的流程。
+     */
+    async function convert(file, opts) {
+      const dryRun = !!(opts && opts.dryRun);
       const bytes = await file.arrayBuffer();
       const src = await pdfjsLib.getDocument({ data: bytes.slice(0) }).promise;
       const flat = [];
-      let totalLines = 0;
       for (let p = 1; p <= src.numPages; p++) {
         setStatus(t('pd.working', { i: p, n: src.numPages }));
         const r = await pageToBlocks(src, p);
         r.images.forEach(im => flat.push(im));
-        r.blocks.forEach(b => {
-          flat.push(b);
-          totalLines += b.kind === 'grid' ? b.gridRows.length : (b.lines ? b.lines.length : b.rows ? b.rows.length : 0);
-        });
+        r.blocks.forEach(b => flat.push(b));
       }
       const hasText = flat.some(b =>
         (b.kind === 'text' && b.lines.length) ||
@@ -556,10 +558,10 @@
       flat.sort((a, b) => b.y - a.y);
 
       const children = [];
-      let nTables = 0, nImages = 0, nParas = 0;
+      const summary = { paras: 0, tables: 0, gridTables: 0, images: 0, texts: [], firstGrid: null, sampleCellText: [] };
       for (const b of flat) {
         if (b.kind === 'image') {
-          nImages++;
+          summary.images++;
           const scale = Math.min(1, 600 / (b.w * 96 / 72 || 1));
           const pxW = Math.max(32, Math.round(b.w * 96 / 72 * scale));
           const pxH = Math.max(32, Math.round(b.h * 96 / 72 * scale));
@@ -568,21 +570,32 @@
             spacing: { after: 160 },
           }));
         } else if (b.kind === 'grid') {
-          nTables++;
+          summary.tables++; summary.gridTables++;
+          const cells = b.gridRows.flat().filter(c => c);
+          if (summary.sampleCellText.length < 400) summary.sampleCellText.push.apply(summary.sampleCellText, cells);
+          if (!summary.firstGrid && b.gridRows.length >= 4) summary.firstGrid = b.gridRows.map(r => r.map(c => (c || '').slice(0, 20)));
           children.push(buildGridTable(b.gridRows, b.grid.colXs, b.grid.x0, b.grid.x1));
         } else if (b.kind === 'table') {
-          nTables++;
+          summary.tables++;
+          if (summary.texts.length < 60) summary.texts.push('[TABLE ' + b.rows.length + 'x' + b.colXs.length + ': ' + b.rows.map(r => r.map(c => c.text).join('|')).join(' ; ') + ']');
           children.push(buildTable(b));
         } else {
-          nParas++;
+          summary.paras++;
+          if (summary.texts.length < 60) summary.texts.push(b.lines.map(l => l.text).join(' '));
           children.push(buildPara(b, bodyLeft, median));
         }
       }
 
       const doc = new docx.Document({ sections: [{ properties: {}, children: children }] });
       const blob = await docx.Packer.toBlob(doc);
+
+      if (dryRun) {
+        summary.blob = blob;
+        summary.pages = src.numPages;
+        return summary;
+      }
       downloadBlob(blob, file.name.replace(/\.pdf$/i, '') + '.docx');
-      return { paras: nParas, tables: nTables, images: nImages, pages: src.numPages };
+      return { paras: summary.paras, tables: summary.tables, images: summary.images, pages: src.numPages };
     }
 
     setupDropzone(el('dropzone'), el('fileInput'), async (fl) => {
@@ -611,54 +624,16 @@
       el('runBtn').disabled = false;
     });
 
-    // test hook: returns structured summary instead of downloading
+    /* 自动化测试钩子：复用上面的主流程，只返回结构化摘要而不下载文件。 */
     window.__lkConvert = async (files) => {
-      const f = files[0]; file = f; el('runBtn').disabled = false;
-      const bytes = await f.arrayBuffer();
-      const src = await pdfjsLib.getDocument({ data: bytes.slice(0) }).promise;
-      const flat = [];
-      for (let p = 1; p <= src.numPages; p++) {
-        const r = await pageToBlocks(src, p);
-        r.images.forEach(im => flat.push(im));
-        r.blocks.forEach(b => flat.push(b));
+      const f = files && files[0];
+      if (!f) throw new Error('no file provided');
+      el('runBtn').disabled = true;
+      try {
+        return await convert(f, { dryRun: true });
+      } finally {
+        el('runBtn').disabled = false;
       }
-      const counts = {};
-      flat.forEach(b => { if (b.kind === 'text') b.lines.forEach(l => { const k = Math.round(l.x / 4) * 4; counts[k] = (counts[k] || 0) + 1; }); });
-      let bodyLeft = 0, best = -1;
-      for (const k in counts) if (counts[k] > best) { best = counts[k]; bodyLeft = +k; }
-      const sizes = [];
-      flat.forEach(b => { if (b.kind === 'text') b.lines.forEach(l => sizes.push(l.size)); });
-      sizes.sort((a, b) => a - b);
-      const median = sizes.length ? sizes[Math.floor((sizes.length - 1) / 2)] : 12;
-      flat.sort((a, b) => b.y - a.y);
-      const children = [];
-      const summary = { paras: 0, tables: 0, gridTables: 0, images: 0, texts: [], firstGrid: null, sampleCellText: [] };
-      for (const b of flat) {
-        if (b.kind === 'image') {
-          summary.images++;
-          children.push(new docx.Paragraph({
-            children: [new docx.ImageRun({ data: await canvasPngBytes(b.canvas), transformation: { width: Math.max(32, Math.round(b.w * 96 / 72)), height: Math.max(32, Math.round(b.h * 96 / 72)) } })],
-            spacing: { after: 160 },
-          }));
-        } else if (b.kind === 'grid') {
-          summary.tables++; summary.gridTables++;
-          const flatCells = b.gridRows.flat().filter(c => c);
-          if (summary.sampleCellText.length < 400) summary.sampleCellText.push.apply(summary.sampleCellText, flatCells);
-          if (!summary.firstGrid && b.gridRows.length >= 4) summary.firstGrid = b.gridRows.map(r => r.map(c => (c || '').slice(0, 20)));
-          children.push(buildGridTable(b.gridRows, b.grid.colXs, b.grid.x0, b.grid.x1));
-        } else if (b.kind === 'table') {
-          summary.tables++;
-          summary.texts.push('[TABLE ' + b.rows.length + 'x' + b.colXs.length + ': ' + b.rows.map(r => r.map(c => c.text).join('|')).join(' ; ') + ']');
-          children.push(buildTable(b));
-        } else {
-          summary.paras++;
-          if (summary.texts.length < 60) summary.texts.push(b.lines.map(l => l.text).join(' '));
-          children.push(buildPara(b, bodyLeft, median));
-        }
-      }
-      const doc = new docx.Document({ sections: [{ properties: {}, children: children }] });
-      summary.blob = await docx.Packer.toBlob(doc);
-      return summary;
     };
   })();
   </script>

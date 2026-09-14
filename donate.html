@@ -4,14 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Support LocalKit — Donate</title>
-  <meta name="description" content="LocalKit is free and ad-free. Support its upkeep by scanning a QR code or starring the repository on GitHub.">
+  <meta name="description" content="LocalKit is free and ad-free. Support its upkeep by starring the repository on GitHub.">
   <link rel="canonical" href="https://youngray.asia/donate.html">
   <link rel="icon" href="data:image/svg+xml,&lt;svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'&gt;&lt;rect width='100' height='100' rx='22' fill='%23e11d48'/&gt;&lt;text x='50' y='68' font-size='52' text-anchor='middle' fill='white' font-family='sans-serif' font-weight='bold'&gt;♥&lt;/text&gt;&lt;/svg&gt;">
   <link rel="stylesheet" href="assets/style.css">
   <script src="assets/i18n.js"></script>
   <script src="assets/config.js"></script>
-  <style>
-  </style>
 </head>
 <body>
   <header class="site-header">
@@ -48,7 +46,7 @@
     <p data-i18n="don.note.p">Full transparency: donations pay the domain (about ¥30/year) and hosting (currently ¥0). Anything beyond that funds new tools and thanks the maintainer.</p>
 
     <h2 data-i18n="don.os.h2">Open source</h2>
-    <p data-i18n-html="don.os.p">The whole site is a set of static pages — view source, self-host it or fork it. Repository: <a href="https://github.com/zm2yp5sggv-bit/localkit" rel="noopener">github.com/zm2yp5sggv-bit/localkit</a>.</p>
+    <p data-i18n-html="don.os.p">The whole site is a set of static pages — view source, self-host it or fork it. Repository: <a id="repoLink" href="https://github.com/zm2yp5sggv-bit/localkit" rel="noopener">github.com/zm2yp5sggv-bit/localkit</a>.</p>
 
     <p data-i18n="don.thanks.p">Not in a position to donate? Sharing LocalKit with one friend who needs it helps just as much. ♥</p>
     <p style="font-size:.82rem;color:var(--muted);margin-top:18px" data-i18n="don.legal">Donations on this page are voluntary gifts to support the operation of this website. They are not a public fundraising campaign and do not correspond to any goods or services.</p>
@@ -60,25 +58,32 @@
       <div class="links">
         <a href="index.html" data-i18n="nav.tools">Tools</a>
         <a href="about.html" data-i18n="nav.about">About</a>
-        <a href="privacy.html" data-i18n="nav.privacy">Privacy Policy</a>
+        <a href="privacy.html" data-i18n="footer.privacy">Privacy Policy</a>
       </div>
     </div>
   </footer>
 
   <script>
-    if (window.LK_CONFIG && window.LK_CONFIG.github) {
+    /* 链接统一由 assets/config.js 提供。
+     * 注意执行顺序：don.os.p 是富文本条目，i18n 翻译时会整体替换 innerHTML，
+     * 从而把字典里硬编码的 href 带回来，覆盖掉这里写入的值。
+     * 因此除了立即执行一次，还要注册到 LKI.onApply —— 每次翻译落地后重新应用，
+     * 这样首次加载和每次切换语言都能保证 config.js 生效。 */
+    function applySiteConfig() {
+      var cfg = window.LK_CONFIG || {};
       var g = document.getElementById('ghLink');
-      if (g) g.href = window.LK_CONFIG.github;
-    }
-    if (window.LK_CONFIG && window.LK_CONFIG.repo) {
+      if (g && cfg.github) g.href = cfg.github;
       var r = document.getElementById('repoLink');
-      if (r) r.href = window.LK_CONFIG.repo;
-    }
-    if (window.LK_CONFIG && window.LK_CONFIG.afdian) {
+      if (r && cfg.repo) r.href = cfg.repo;
       var card = document.getElementById('afdianCard');
       var link = document.getElementById('afdianLink');
-      if (card && link) { link.href = window.LK_CONFIG.afdian; card.style.display = ''; }
+      if (card && link && cfg.afdian) {
+        link.href = cfg.afdian;
+        card.style.display = '';
+      }
     }
+    if (window.LKI && window.LKI.onApply) window.LKI.onApply.push(applySiteConfig);
+    applySiteConfig();
   </script>
   <script src="assets/app.js"></script>
 </body>

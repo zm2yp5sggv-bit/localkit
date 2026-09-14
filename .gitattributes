@@ -1,0 +1,15 @@
+# 统一行尾：仓库内一律 LF，检出到工作区也保持 LF。
+# 避免不同平台（Windows 默认 core.autocrlf=true）与编辑器产生
+# 「整文件被改动」的无意义 diff，也让 CI 结果与本地一致。
+* text=auto eol=lf
+
+# 第三方构建产物必须按字节原样存取。
+# 一旦被行尾转换，文件 sha256 就会改变，scripts/update-vendor.mjs --check 会直接失败，
+# 而 CI 依赖这项校验来确认依赖未被篡改。
+assets/vendor/** -text -diff
+
+# 测试夹具是手工构造的二进制文件，同样不需要任何文本处理
+*.png binary
+*.jpg binary
+*.pdf binary
+*.docx binary

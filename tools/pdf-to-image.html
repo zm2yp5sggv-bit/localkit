@@ -126,21 +126,21 @@
       <div class="links">
         <a href="../index.html" data-i18n="nav.tools">Tools</a>
         <a href="../about.html" data-i18n="nav.about">About</a>
-        <a href="../privacy.html" data-i18n="nav.privacy">Privacy Policy</a>
+        <a href="../privacy.html" data-i18n="footer.privacy">Privacy Policy</a>
       </div>
     </div>
   </footer>
 
   <script src="../assets/app.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/legacy/build/pdf.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+  <script src="../assets/vendor/pdfjs/pdf.min.js"></script>
+  <script src="../assets/vendor/jszip.min.js"></script>
   <script>
   (function () {
     'use strict';
-    const { el, setupDropzone, formatBytes, downloadBlob, setStatus } = window.LK;
+    const { el, setupDropzone, formatBytes, downloadBlob, setStatus, esc } = window.LK;
     const t = (k, v) => window.LKI.t(k, v);
     pdfjsLib.GlobalWorkerOptions.workerSrc =
-      'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/legacy/build/pdf.worker.min.js';
+      '../assets/vendor/pdfjs/pdf.worker.min.js';
 
     let file = null, pageCount = 0;
     const results = el('results');
@@ -200,7 +200,7 @@
           thumb.style.cssText = 'height:40px;border-radius:4px;border:1px solid var(--border)';
           item.appendChild(thumb);
           item.insertAdjacentHTML('beforeend',
-            '<span class="name">' + name + '</span>' +
+            '<span class="name">' + esc(name) + '</span>' +
             '<span class="meta">' + formatBytes(blob.size) + '</span>' +
             '<span class="spacer"></span>' +
             '<button class="small ghost">' + t('pi.dl') + '</button>');

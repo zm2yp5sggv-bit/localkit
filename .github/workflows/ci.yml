@@ -1,0 +1,57 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  check:
+    name: 静态检查
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: i18n 一致性（静态文案 / 字典 / 死键）
+        run: node scripts/check-i18n.mjs
+
+      - name: 语法、JSON-LD、资源引用与零外发检查
+        run: node scripts/check-syntax.mjs
+
+      - name: 第三方依赖完整性（比对 assets/vendor 的 sha256）
+        run: node scripts/update-vendor.mjs --check
+
+  e2e:
+    name: 端到端测试
+    runs-on: ubuntu-latest
+    needs: check
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: 安装依赖
+        run: npm ci
+
+      - name: 安装 Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: 运行 Playwright
+        run: npm test
+
+      - name: 上传失败报告
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7

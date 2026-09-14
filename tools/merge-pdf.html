@@ -117,17 +117,17 @@
       <div class="links">
         <a href="../index.html" data-i18n="nav.tools">Tools</a>
         <a href="../about.html" data-i18n="nav.about">About</a>
-        <a href="../privacy.html" data-i18n="nav.privacy">Privacy Policy</a>
+        <a href="../privacy.html" data-i18n="footer.privacy">Privacy Policy</a>
       </div>
     </div>
   </footer>
 
   <script src="../assets/app.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+  <script src="../assets/vendor/pdf-lib.min.js"></script>
   <script>
   (function () {
     'use strict';
-    const { el, setupDropzone, formatBytes, downloadBlob, setStatus } = window.LK;
+    const { el, setupDropzone, formatBytes, downloadBlob, setStatus, esc } = window.LK;
     const t = (k, v) => window.LKI.t(k, v);
     let files = []; // {file, name}
     const list = el('fileList');
@@ -139,7 +139,7 @@
         item.className = 'result-item';
         item.innerHTML =
           '<span class="meta">' + (i + 1) + '.</span>' +
-          '<span class="name">' + f.name + '</span>' +
+          '<span class="name">' + esc(f.name) + '</span>' +
           '<span class="meta">' + formatBytes(f.file.size) + '</span>' +
           '<span class="spacer"></span>' +
           '<button class="small ghost" data-act="up" ' + (i === 0 ? 'disabled' : '') + '>↑</button>' +

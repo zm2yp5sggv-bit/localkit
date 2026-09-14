@@ -1,9 +1,21 @@
-/* LocalKit shared helpers — loaded by every tool page */
+/* LocalKit shared helpers — loaded by every tool page
+ * 约定：任何要拼进 innerHTML 的动态字符串（文件名、用户输入、外部数据）
+ * 都必须先经过 LK.esc() 转义。不要在各工具页里自己重写转义逻辑。 */
 (function () {
   'use strict';
 
   window.LK = {
     el(id) { return document.getElementById(id); },
+
+    /** 转义为 HTML 文本。用于所有要拼进 innerHTML 的动态值。 */
+    esc(value) {
+      return String(value == null ? '' : value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    },
 
     formatBytes(bytes) {
       if (bytes === 0) return '0 B';

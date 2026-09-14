@@ -1,0 +1,29 @@
+# 全站统一的基础编辑器约定
+# 详见 CONTRIBUTING.md
+
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+indent_size = 2
+
+[*.md]
+# Markdown 里行尾两个空格表示换行，不要裁掉
+trim_trailing_whitespace = false
+
+[*.{js,mjs,json,css,html}]
+indent_size = 2
+
+[assets/vendor/**]
+# 第三方压缩产物，不做任何格式化
+insert_final_newline = false
+trim_trailing_whitespace = false
+
+[tests/fixtures/*.{png,pdf,docx}]
+# 二进制夹具
+insert_final_newline = false
+trim_trailing_whitespace = false

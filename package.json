@@ -1,0 +1,26 @@
+{
+  "name": "localkit",
+  "version": "1.0.0",
+  "private": true,
+  "description": "20 个纯浏览器端工具——文件永不上传。注意：本 package.json 只服务于开发与测试，站点本身是零构建、零运行时依赖的静态页面，部署时不需要 npm。",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "serve": "node scripts/serve.mjs 4173",
+    "check:i18n": "node scripts/check-i18n.mjs",
+    "check:vendor": "node scripts/update-vendor.mjs --check",
+    "check:syntax": "node scripts/check-syntax.mjs",
+    "check": "npm run check:i18n && npm run check:syntax && npm run check:vendor",
+    "update:vendor": "node scripts/update-vendor.mjs",
+    "test": "playwright test",
+    "test:headed": "playwright test --headed",
+    "test:ui": "playwright test --ui",
+    "ci": "npm run check && npm test"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.47.2"
+  },
+  "engines": {
+    "node": ">=20.11"
+  }
+}

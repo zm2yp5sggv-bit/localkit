@@ -1,7 +1,10 @@
 /* LocalKit i18n — 中英双语字典与切换逻辑
  * 页面静态源码保持英文（SEO）；切换仅通过 JS 替换可见文案，选择存 localStorage。
- * 静态元素用 data-i18n="key"（textContent）/ data-i18n-html="key"（innerHTML）；
- * JS 动态文案用 LKI.t(key, vars)，变量占位 {n}。 */
+ * 静态元素用 data-i18n="key"（写 textContent）；
+ * 含标记的富文本用 data-i18n-html="key"（写 innerHTML，仅用于字典内自带安全标记的条目）；
+ * 输入框提示语用 data-i18n-ph="key"（写 placeholder 属性）；
+ * JS 动态文案用 LKI.t(key, vars)，变量占位 {n}。
+ * 页面如需在翻译落地后同步 DOM（例如按配置改写链接 href），push 回调到 LKI.onApply。 */
 (function () {
   'use strict';
 
@@ -9,6 +12,7 @@
     en: {
       'nav.tools': 'Tools', 'nav.about': 'About', 'nav.privacy': 'Privacy',
       'footer.line': '© 2026 LocalKit · Made for privacy',
+      'footer.privacy': 'Privacy Policy',
 
       'index.title': 'LocalKit — Free Online Tools That Never Upload Your Files',
       'index.badge': '🔒 100% local — your files never leave your device',
@@ -111,6 +115,7 @@
       'dp.drop.hint': 'Word 2007 and newer (.docx) — one file at a time',
       'dp.run': 'Convert to PDF',
       'dp.badfile': 'Please choose a .docx file.',
+      'dp.ready': '{name} — ready.',
       'dp.oldformat': '.doc (Word 97–2003) is not supported — open it in Word and save as .docx first.',
       'dp.working': 'Rendering document …',
       'dp.topdf': 'Converting page {i}/{n} to PDF …',
@@ -334,7 +339,6 @@
       'priv.ads.p': 'LocalKit runs no advertising and loads no third-party analytics or ad scripts, so no advertising cookies are set. The tools themselves keep everything on your device.',
       'priv.ads1': 'The site may link to an optional donation page; when you visit that external platform, its own privacy policy applies.',
       'priv.ads2': 'We keep no user accounts and no server-side history of the files you process — there is nothing to sell or share.',
-      'priv.eea': 'Privacy question? <a href="https://github.com/zm2yp5sggv-bit/localkit/issues" rel="noopener">Open an issue on GitHub</a> — you will get a human answer.',
       'priv.changes.h2': 'Changes',
       'priv.changes.p': 'If this policy changes materially, we will update this page with a new “last updated” date.',
       'priv.contact.h2': 'Contact',
@@ -413,7 +417,6 @@
       'pg.noambig': 'Exclude look-alikes (0O1lI)', 'pg.count': 'How many',
       'pg.gen': 'Generate',
       'pg.entropy': 'Strength: {n} bits',
-      'pg.weak': 'Weak', 'pg.ok': 'Good', 'pg.strong': 'Strong', 'pg.vault': 'Vault-grade',
       'pg.crack': 'Offline crack estimate: {t}',
       'pg.instant': 'instantly', 'pg.days': '{n} days', 'pg.years': '{n} years', 'pg.centuries': 'centuries',
       'pg.how.h2': 'How it generates',
@@ -432,7 +435,7 @@
       'ug.lede': 'Generate random UUID v4 identifiers in bulk — created locally, never transmitted.',
       'ug.count': 'How many', 'ug.gen': 'Generate',
       'ug.upper': 'Uppercase', 'ug.braces': 'Wrap in braces {…}', 'ug.nohyphen': 'Remove hyphens',
-      'ug.copyall': 'Copy all', 'ug.copy': 'Copy', 'ug.output': 'Generated UUIDs',
+      'ug.copyall': 'Copy all', 'ug.output': 'Generated UUIDs',
       'ug.how.h2': 'What is a UUID v4?',
       'ug.how1': 'A UUID v4 is a 128-bit random identifier — 122 random bits give about 5.3×10³⁶ possibilities.',
       'ug.how2': 'The chance of two colliding is so small that databases, APIs and distributed systems use v4 as unique IDs.',
@@ -525,7 +528,7 @@
       'tsp.crumb': 'Timestamp Converter', 'tsp.h1': 'Timestamp Converter',
       'tsp.lede': 'Convert Unix timestamps to dates and back — seconds or milliseconds, local or UTC.',
       'tsp.now': 'Current Unix timestamp', 'tsp.live': 'live',
-      'tsp.s': 'seconds', 'tsp.ms': 'milliseconds',
+      'tsp.s': 'seconds',
       'tsp.t2d.t': 'Timestamp → Date', 'tsp.t.ph': 'Paste a timestamp (s or ms auto-detected)',
       'tsp.d2t.t': 'Date → Timestamp',
       'tsp.local': 'Your timezone', 'tsp.utc': 'UTC', 'tsp.iso': 'ISO 8601', 'tsp.rel': 'Relative',
@@ -559,21 +562,22 @@
       'pd.how2': 'Press <strong>Convert to Word</strong> — text, tables and images are extracted page by page.',
       'pd.how3': 'Download the .docx and edit it in Word, WPS or Google Docs.',
       'pd.limits.h2': 'What to expect (honest version)',
-      'pd.limits.p': 'PDF stores glyphs at fixed positions, so this tool reconstructs structure from coordinates: paragraphs and indents are rebuilt, simple grid tables become real Word tables, and embedded images are re-inserted in place. Complex merged-cell tables, multi-column layouts and decorative effects stay approximate; scanned PDFs have no text layer and cannot be converted.',
+      'pd.limits.p': 'PDF stores glyphs at fixed positions, so this tool reconstructs structure from coordinates: paragraphs and indents are rebuilt, ruled tables are read from the PDF\'s own border lines and become real Word tables with multi-line cells, and embedded images are re-inserted in place. Borderless tables, merged-cell layouts and decorative effects stay approximate; scanned PDFs have no text layer and cannot be converted.',
       'pd.fq1': 'Will the Word file look exactly like the PDF?',
-      'pd.fa1': 'Content, order, headings, indents, simple tables and images are preserved. Complex merged-cell tables and exact fonts/columns are approximated. Treat the result as an editable draft, not a layout replica.',
+      'pd.fa1': 'Content, order, headings, indents, ruled tables and images are preserved. Borderless tables, merged cells and exact fonts/columns are approximated. Treat the result as an editable draft, not a layout replica.',
       'pd.fq2': 'Why does my scanned PDF fail?',
       'pd.fa2': 'Scanned pages are images — there is no text to extract. OCR (in-browser, via WebAssembly) is on our roadmap.',
       'pd.fq3': 'Is my document uploaded?',
       'pd.fa3': 'Never. Extraction and .docx generation both run inside your browser.',
       'index.card20.t': 'PDF to Word', 'index.card20.d': 'Turn text PDFs into editable Word documents, locally.',
       'about.credits.h2': 'Open source & credits',
-      'about.credits.p': 'LocalKit stands on the shoulders of open source: <a href="https://github.com/mozilla/pdf.js" rel="noopener">PDF.js</a>, <a href="https://github.com/Hopding/pdf-lib" rel="noopener">pdf-lib</a>, <a href="https://github.com/dolanmiu/docx" rel="noopener">docx</a>, <a href="https://github.com/Stuk/jszip" rel="noopener">JSZip</a>, <a href="https://github.com/niklasvh/html2canvas" rel="noopener">html2canvas</a>, <a href="https://github.com/parallax/jsPDF" rel="noopener">jsPDF</a>, <a href="https://github.com/VolodymyrBaydalka/docxjs" rel="noopener">docx-preview</a> and <a href="https://github.com/kazuhikoarase/qrcode-generator" rel="noopener">qrcode-generator</a> — and draws inspiration from <a href="https://github.com/CorentinTh/it-tools" rel="noopener">it-tools</a> and <a href="https://github.com/iib0011/omni-tools" rel="noopener">omni-tools</a>. Thank you, open web.'
+      'about.credits.p': 'LocalKit stands on the shoulders of open source: <a href="https://github.com/mozilla/pdf.js" rel="noopener">PDF.js</a>, <a href="https://github.com/Hopding/pdf-lib" rel="noopener">pdf-lib</a>, <a href="https://github.com/dolanmiu/docx" rel="noopener">docx</a>, <a href="https://github.com/Stuk/jszip" rel="noopener">JSZip</a>, <a href="https://github.com/niklasvh/html2canvas" rel="noopener">html2canvas</a>, <a href="https://github.com/parallax/jsPDF" rel="noopener">jsPDF</a>, <a href="https://github.com/VolodymyrBaydalka/docxjs" rel="noopener">docx-preview</a> and <a href="https://github.com/kazuhikoarase/qrcode-generator" rel="noopener">qrcode-generator</a>, <a href="https://github.com/emn178/js-md5" rel="noopener">js-md5</a> — and draws inspiration from <a href="https://github.com/CorentinTh/it-tools" rel="noopener">it-tools</a> and <a href="https://github.com/iib0011/omni-tools" rel="noopener">omni-tools</a>. Thank you, open web.'
     },
 
     zh: {
       'nav.tools': '工具', 'nav.about': '关于', 'nav.privacy': '隐私政策',
       'footer.line': '© 2026 LocalKit · 为隐私而生',
+      'footer.privacy': '隐私政策',
 
       'index.title': 'LocalKit — 永不上传你文件的免费在线工具',
       'index.badge': '🔒 100% 本地运行——文件永不离开你的设备',
@@ -676,6 +680,7 @@
       'dp.drop.hint': 'Word 2007 及更新版本（.docx）——每次一个文件',
       'dp.run': '转换为 PDF',
       'dp.badfile': '请选择 .docx 文件。',
+      'dp.ready': '{name} — 已就绪。',
       'dp.oldformat': '不支持 .doc（Word 97–2003）格式——请先用 Word 另存为 .docx。',
       'dp.working': '正在渲染文档 …',
       'dp.topdf': '正在把第 {i}/{n} 页写入 PDF …',
@@ -899,7 +904,6 @@
       'priv.ads.p': 'LocalKit 不投放广告，也不加载任何第三方统计或广告脚本，因此不会设置广告 Cookie。工具本身更不会把你的数据带离设备。',
       'priv.ads1': '本站可能链接到可选的赞助页面；访问那个外部平台时，适用其自身的隐私政策。',
       'priv.ads2': '我们没有用户账号，也没有你处理文件的服务器端记录——没有任何东西可被出售或共享。',
-      'priv.eea': '隐私方面的疑问？<a href="https://github.com/zm2yp5sggv-bit/localkit/issues" rel="noopener">在 GitHub 提 Issue</a>，会有人类回复你。',
       'priv.changes.h2': '政策变更',
       'priv.changes.p': '如本政策发生重大变更，我们将在本页面更新并标注新的「最后更新」日期。',
       'priv.contact.h2': '联系我们',
@@ -978,7 +982,6 @@
       'pg.noambig': '排除易混淆字符 (0O1lI)', 'pg.count': '生成数量',
       'pg.gen': '生成',
       'pg.entropy': '强度：{n} 位',
-      'pg.weak': '弱', 'pg.ok': '良好', 'pg.strong': '强', 'pg.vault': '金库级',
       'pg.crack': '离线破解估算：{t}',
       'pg.instant': '瞬间', 'pg.days': '{n} 天', 'pg.years': '{n} 年', 'pg.centuries': '上千年',
       'pg.how.h2': '生成方式',
@@ -997,7 +1000,7 @@
       'ug.lede': '批量生成随机 UUID v4 标识符——本地生成，从不上传。',
       'ug.count': '生成数量', 'ug.gen': '生成',
       'ug.upper': '大写', 'ug.braces': '加花括号 {…}', 'ug.nohyphen': '去掉连字符',
-      'ug.copyall': '复制全部', 'ug.copy': '复制', 'ug.output': '生成的 UUID',
+      'ug.copyall': '复制全部', 'ug.output': '生成的 UUID',
       'ug.how.h2': 'UUID v4 是什么？',
       'ug.how1': 'UUID v4 是 128 位随机标识符——122 个随机位，约 5.3×10³⁶ 种可能。',
       'ug.how2': '碰撞概率小到可以忽略，因此数据库、API 和分布式系统都拿它当唯一 ID。',
@@ -1090,7 +1093,7 @@
       'tsp.crumb': '时间戳转换', 'tsp.h1': '时间戳转换',
       'tsp.lede': 'Unix 时间戳与日期互转——支持秒/毫秒、本地时区与 UTC。',
       'tsp.now': '当前 Unix 时间戳', 'tsp.live': '实时',
-      'tsp.s': '秒', 'tsp.ms': '毫秒',
+      'tsp.s': '秒',
       'tsp.t2d.t': '时间戳 → 日期', 'tsp.t.ph': '粘贴时间戳（自动识别秒/毫秒）',
       'tsp.d2t.t': '日期 → 时间戳',
       'tsp.local': '本地时区', 'tsp.utc': 'UTC', 'tsp.iso': 'ISO 8601', 'tsp.rel': '相对时间',
@@ -1124,21 +1127,23 @@
       'pd.how2': '点「<strong>转换为 Word</strong>」——逐页提取文字、表格与图片。',
       'pd.how3': '下载 .docx，用 Word、WPS 或 Google Docs 编辑。',
       'pd.limits.h2': '效果说明（诚实版）',
-      'pd.limits.p': 'PDF 以固定坐标存放字形，本工具从坐标重建结构：段落与缩进会被还原，简单的规则表格会转成真正的 Word 表格，内嵌图片按原位插回。复杂合并单元格、多栏混排与装饰性效果仍是近似；扫描版没有文字层，无法转换。',
+      'pd.limits.p': 'PDF 以固定坐标存放字形，本工具从坐标重建结构：段落与缩进会被还原；带框线的表格直接从 PDF 自身的边框线读取，转成含多行单元格的真正 Word 表格；内嵌图片按原位插回。无框线表格、合并单元格布局与装饰性效果仍是近似；扫描版没有文字层，无法转换。',
       'pd.fq1': 'Word 文件会和 PDF 长得一模一样吗？',
-      'pd.fa1': '内容、顺序、标题、缩进、简单表格和图片会保留；复杂合并单元格与精确字体、分栏是近似还原。请把结果当可编辑草稿，不是排版复制品。',
+      'pd.fa1': '内容、顺序、标题、缩进、带框线的表格和图片会保留；无框线表格、合并单元格与精确字体、分栏是近似还原。请把结果当可编辑草稿，不是排版复制品。',
       'pd.fq2': '扫描版 PDF 为什么失败？',
       'pd.fa2': '扫描页是图片——没有文字可提取。浏览器内 OCR（WebAssembly）已在计划中。',
       'pd.fq3': '我的文档会被上传吗？',
       'pd.fa3': '永远不会。文字提取和 .docx 生成都在你的浏览器内完成。',
       'index.card20.t': 'PDF 转 Word', 'index.card20.d': '把文字型 PDF 转成可编辑的 Word 文档，全程本地。',
       'about.credits.h2': '开源与致谢',
-      'about.credits.p': 'LocalKit 站在开源社区的肩膀上：<a href="https://github.com/mozilla/pdf.js" rel="noopener">PDF.js</a>、<a href="https://github.com/Hopding/pdf-lib" rel="noopener">pdf-lib</a>、<a href="https://github.com/dolanmiu/docx" rel="noopener">docx</a>、<a href="https://github.com/Stuk/jszip" rel="noopener">JSZip</a>、<a href="https://github.com/niklasvh/html2canvas" rel="noopener">html2canvas</a>、<a href="https://github.com/parallax/jsPDF" rel="noopener">jsPDF</a>、<a href="https://github.com/VolodymyrBaydalka/docxjs" rel="noopener">docx-preview</a> 与 <a href="https://github.com/kazuhikoarase/qrcode-generator" rel="noopener">qrcode-generator</a> 提供了核心能力；<a href="https://github.com/CorentinTh/it-tools" rel="noopener">it-tools</a> 与 <a href="https://github.com/iib0011/omni-tools" rel="noopener">omni-tools</a> 给了我们最初的灵感。向所有开源作者致敬。'
+      'about.credits.p': 'LocalKit 站在开源社区的肩膀上：<a href="https://github.com/mozilla/pdf.js" rel="noopener">PDF.js</a>、<a href="https://github.com/Hopding/pdf-lib" rel="noopener">pdf-lib</a>、<a href="https://github.com/dolanmiu/docx" rel="noopener">docx</a>、<a href="https://github.com/Stuk/jszip" rel="noopener">JSZip</a>、<a href="https://github.com/niklasvh/html2canvas" rel="noopener">html2canvas</a>、<a href="https://github.com/parallax/jsPDF" rel="noopener">jsPDF</a>、<a href="https://github.com/VolodymyrBaydalka/docxjs" rel="noopener">docx-preview</a> 与 <a href="https://github.com/kazuhikoarase/qrcode-generator" rel="noopener">qrcode-generator</a>、<a href="https://github.com/emn178/js-md5" rel="noopener">js-md5</a> 提供了核心能力；<a href="https://github.com/CorentinTh/it-tools" rel="noopener">it-tools</a> 与 <a href="https://github.com/iib0011/omni-tools" rel="noopener">omni-tools</a> 给了我们最初的灵感。向所有开源作者致敬。'
     }
   };
 
   var LKI = {
     lang: 'en',
+    /* 页面注册的回调：每次翻译落地后触发，用于同步由 JS 管理的 DOM（如按 config.js 改写链接） */
+    onApply: [],
     t: function (key, vars) {
       var s = (D[this.lang] && D[this.lang][key]) || D.en[key] || key;
       if (vars) for (var k in vars) s = s.split('{' + k + '}').join(vars[k]);
@@ -1161,8 +1166,16 @@
         var h = this.t(rich[j].getAttribute('data-i18n-html'));
         if (h) rich[j].innerHTML = h;
       }
+      var phNodes = document.querySelectorAll('[data-i18n-ph]');
+      for (var k = 0; k < phNodes.length; k++) {
+        var ph = this.t(phNodes[k].getAttribute('data-i18n-ph'));
+        if (ph) phNodes[k].setAttribute('placeholder', ph);
+      }
       var btn = document.getElementById('langBtn');
       if (btn) btn.textContent = lang === 'en' ? '中文' : 'English';
+      for (var m = 0; m < LKI.onApply.length; m++) {
+        try { LKI.onApply[m](lang); } catch (e) { /* 某个页面的回调失败不应中断翻译 */ }
+      }
     },
     init: function () {
       var saved = null;
