@@ -8,7 +8,7 @@
 (function () {
   'use strict';
 
-  var D = {
+  const D = {
     en: {
       'nav.tools': 'Tools', 'nav.about': 'About', 'nav.privacy': 'Privacy',
       'footer.line': '© 2026 LocalKit · Made for privacy',
@@ -1140,13 +1140,13 @@
     }
   };
 
-  var LKI = {
+  const LKI = {
     lang: 'en',
     /* 页面注册的回调：每次翻译落地后触发，用于同步由 JS 管理的 DOM（如按 config.js 改写链接） */
     onApply: [],
     t: function (key, vars) {
-      var s = (D[this.lang] && D[this.lang][key]) || D.en[key] || key;
-      if (vars) for (var k in vars) s = s.split('{' + k + '}').join(vars[k]);
+      let s = (D[this.lang] && D[this.lang][key]) || D.en[key] || key;
+      if (vars) for (const k in vars) s = s.split('{' + k + '}').join(vars[k]);
       return s;
     },
     apply: function (lang) {
@@ -1154,36 +1154,36 @@
       this.lang = lang;
       try { localStorage.setItem('lk-lang', lang); } catch (e) { /* file:// 或隐私模式可能禁用 */ }
       document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en';
-      var titleKey = document.documentElement.getAttribute('data-title-key');
+      const titleKey = document.documentElement.getAttribute('data-title-key');
       if (titleKey) document.title = this.t(titleKey);
-      var nodes = document.querySelectorAll('[data-i18n]');
-      for (var i = 0; i < nodes.length; i++) {
-        var v = this.t(nodes[i].getAttribute('data-i18n'));
+      const nodes = document.querySelectorAll('[data-i18n]');
+      for (let i = 0; i < nodes.length; i++) {
+        const v = this.t(nodes[i].getAttribute('data-i18n'));
         if (v) nodes[i].textContent = v;
       }
-      var rich = document.querySelectorAll('[data-i18n-html]');
-      for (var j = 0; j < rich.length; j++) {
-        var h = this.t(rich[j].getAttribute('data-i18n-html'));
+      const rich = document.querySelectorAll('[data-i18n-html]');
+      for (let j = 0; j < rich.length; j++) {
+        const h = this.t(rich[j].getAttribute('data-i18n-html'));
         if (h) rich[j].innerHTML = h;
       }
-      var phNodes = document.querySelectorAll('[data-i18n-ph]');
-      for (var k = 0; k < phNodes.length; k++) {
-        var ph = this.t(phNodes[k].getAttribute('data-i18n-ph'));
+      const phNodes = document.querySelectorAll('[data-i18n-ph]');
+      for (let k = 0; k < phNodes.length; k++) {
+        const ph = this.t(phNodes[k].getAttribute('data-i18n-ph'));
         if (ph) phNodes[k].setAttribute('placeholder', ph);
       }
-      var btn = document.getElementById('langBtn');
+      const btn = document.getElementById('langBtn');
       if (btn) btn.textContent = lang === 'en' ? '中文' : 'English';
-      for (var m = 0; m < LKI.onApply.length; m++) {
+      for (let m = 0; m < LKI.onApply.length; m++) {
         try { LKI.onApply[m](lang); } catch (e) { /* 某个页面的回调失败不应中断翻译 */ }
       }
     },
     init: function () {
-      var saved = null;
+      let saved = null;
       try { saved = localStorage.getItem('lk-lang'); } catch (e) { }
-      var lang = saved || ((navigator.language || '').toLowerCase().indexOf('zh') === 0 ? 'zh' : 'en');
+      const lang = saved || ((navigator.language || '').toLowerCase().indexOf('zh') === 0 ? 'zh' : 'en');
       this.apply(lang);
-      var self = this;
-      var btn = document.getElementById('langBtn');
+      const self = this;
+      const btn = document.getElementById('langBtn');
       if (btn) btn.addEventListener('click', function () {
         self.apply(self.lang === 'en' ? 'zh' : 'en');
       });

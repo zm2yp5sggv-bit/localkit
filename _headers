@@ -1,3 +1,18 @@
+# Cloudflare Pages 响应头配置
+#
+# 重要语义（易踩坑，改动前务必先读）：
+#   「An incoming request which matches multiple rules' URL patterns will inherit
+#    all rules' headers.」
+#   「If a header is applied twice in the _headers file, the values are joined with
+#    a comma separator.」
+# 也就是说，多条规则命中同一路径时，同名响应头是**逗号合并**，不是后覆盖前。
+# 这里曾经写过三条都带 Cache-Control 的规则，导致 vendor 文件实际收到的是
+#   Cache-Control: public, max-age=0, must-revalidate,
+#                  public, max-age=31536000, immutable, public, max-age=3600
+# 一串互相冲突的指令，预期的 immutable 根本没生效。
+# 因此现在只保留一条通配规则。任何新增的按路径规则都必须先确认不会与它重复设置同名头——
+# scripts/check-deploy.mjs 会强制检查这一点。
+
 /*
   X-Content-Type-Options: nosniff
   X-Frame-Options: DENY
@@ -6,13 +21,11 @@
   Cross-Origin-Opener-Policy: same-origin
   Cross-Origin-Resource-Policy: same-origin
   Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; worker-src 'self' blob:; connect-src 'none'; form-action 'none'; frame-ancestors 'none'; base-uri 'none'; object-src 'none'
+
+  # 全站都走「每次校验」策略，不设长缓存。
+  # 刻意不为 assets/vendor/ 单独设 immutable，原因有两条：
+  #   1) 那需要再加一条按路径规则来设置同一个响应头，而这正是上面踩过的坑；
+  #   2) vendor 文件名不带内容指纹（jszip.min.js 这类），一旦升级依赖，
+  #      返回访客会在缓存有效期内一直拿到旧版本，排查起来很隐蔽。
+  # 代价只是每个资源多一次条件请求（ETag 命中返回 304），可以忽略。
   Cache-Control: public, max-age=0, must-revalidate
-
-# 注意：Cloudflare Pages 按文件顺序应用规则，同名的后一条覆盖前一条。
-# 因此通配规则必须写在最前面，下方更具体的路径规则才能生效。
-
-/assets/vendor/*
-  Cache-Control: public, max-age=31536000, immutable
-
-/assets/*
-  Cache-Control: public, max-age=3600

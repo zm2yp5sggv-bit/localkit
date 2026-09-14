@@ -32,6 +32,67 @@ test.describe('页面健康检查', () => {
   }
 });
 
+test.describe('部署边界', () => {
+  // Cloudflare Pages 以仓库根目录作为发布目录，开发产物默认会被公开服务。
+  // 线上实测过 /tests/fixtures/sample.pdf 以 application/pdf 正常返回。
+  // _redirects 负责拦掉它们，这里从行为上验证拦截确实生效。
+  const DEV_PATHS = [
+    ['/package.json', /json/i],
+    ['/package-lock.json', /json/i],
+    ['/playwright.config.js', /javascript/i],
+    ['/eslint.config.js', /javascript/i],
+    ['/scripts/vendor.json', /json/i],
+    ['/tests/helpers.js', /javascript/i],
+    ['/tests/fixtures/sample.pdf', /pdf/i],
+    ['/README.md', /markdown/i],
+  ];
+
+  for (const [devPath, forbiddenType] of DEV_PATHS) {
+    test(`${devPath} 不得作为站点资源返回`, async ({ request }) => {
+      const res = await request.get(devPath);
+      const contentType = res.headers()['content-type'] || '';
+      expect(
+        forbiddenType.test(contentType),
+        `${devPath} 竟然以 ${contentType} 返回了内容`
+      ).toBe(false);
+    });
+  }
+
+  test('站点自身资源仍应正常服务（避免拦截规则误伤）', async ({ request }) => {
+    for (const [p, type] of [
+      ['/index.html', /html/],
+      ['/assets/style.css', /css/],
+      ['/assets/app.js', /javascript/],
+      ['/assets/vendor/jszip.min.js', /javascript/],
+      ['/robots.txt', /plain/],
+      ['/sitemap.xml', /xml/],
+    ]) {
+      const res = await request.get(p);
+      expect(res.status(), `${p} 应可访问`).toBe(200);
+      expect(res.headers()['content-type'] || '', `${p} 的 Content-Type 不符`).toMatch(type);
+    }
+  });
+
+  test('响应头不得出现被逗号合并的同名指令', async ({ request }) => {
+    // Cloudflare 对多条规则命中的同名响应头是「逗号合并」。曾经 _headers 里三条规则
+    // 都设置 Cache-Control，导致指令串里出现两个互相冲突的 max-age。
+    for (const p of ['/index.html', '/assets/app.js', '/assets/vendor/jszip.min.js']) {
+      const res = await request.get(p);
+      const cc = res.headers()['cache-control'] || '';
+      const maxAgeCount = (cc.match(/max-age/g) || []).length;
+      expect(maxAgeCount, `${p} 的 Cache-Control 出现了多个 max-age: ${cc}`).toBeLessThanOrEqual(1);
+    }
+  });
+
+  test('安全响应头仍正常下发', async ({ request }) => {
+    const res = await request.get('/index.html');
+    const csp = res.headers()['content-security-policy'] || '';
+    expect(csp).toContain("connect-src 'none'");
+    expect(res.headers()['x-content-type-options']).toBe('nosniff');
+    expect(res.headers()['referrer-policy']).toBe('no-referrer');
+  });
+});
+
 test.describe('站点结构完整性', () => {
   test('首页列出了全部 20 个工具卡片', async ({ page }) => {
     await page.goto('/index.html');

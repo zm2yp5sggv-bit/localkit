@@ -10,6 +10,7 @@
  *   5. 是否残留任何指向第三方 CDN 的引用（本项目承诺零外发请求）
  *
  * 用法：node scripts/check-syntax.mjs
+ * 环境变量：LK_ROOT 指定仓库根目录（供自测使用，默认取脚本上一级）
  */
 
 import fs from 'node:fs';
@@ -17,7 +18,9 @@ import path from 'node:path';
 import vm from 'node:vm';
 import { execFileSync } from 'node:child_process';
 
-const ROOT = path.resolve(import.meta.dirname, '..');
+const ROOT = process.env.LK_ROOT
+  ? path.resolve(process.env.LK_ROOT)
+  : path.resolve(import.meta.dirname, '..');
 
 function walk(dir, acc = []) {
   for (const e of fs.readdirSync(dir, { withFileTypes: true })) {

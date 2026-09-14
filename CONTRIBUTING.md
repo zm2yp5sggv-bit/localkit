@@ -21,13 +21,16 @@ npm run check     # 静态检查，必须零错误
 npm test          # 端到端测试
 ```
 
-CI 会跑同样的命令，任何一项失败都不会合并。`npm run check` 的三项检查作用如下：
+CI 会跑同样的命令，任何一项失败都不会合并。这些检查各自负责什么：
 
 | 命令 | 检查什么 | 为什么需要 |
 |---|---|---|
 | `check:i18n` | 中英字典键对齐、引用无悬空、**静态文案与字典一致**、无死键 | 页面静态源码与字典是同一句文案的两份拷贝，很容易改了一处忘了另一处 |
 | `check:syntax` | JS/内联脚本语法、JSON-LD 合法性、本地资源引用存在、**无第三方 CDN 引用** | 本项目承诺零外发请求 |
+| `check:deploy` | `_headers` 重复响应头、`_redirects` 状态码、**开发产物屏蔽覆盖率** | 写错了不会报错，只会静默不生效或静默泄露 |
 | `check:vendor` | `assets/vendor/` 内文件 sha256 与清单一致 | 依赖是提交进仓库的，需要防止被意外改动 |
+| `lint` | ESLint（ES2020 基线 + `no-var` / `prefer-const` / `eqeqeq`） | 风格靠人记必然漂移 |
+| `test:checks` | 用坏样本验证上面几个脚本确实会报错 | 裁判自己写错时会静默报告「全部通过」，比不检查更危险 |
 
 ## 新增一个工具
 
@@ -38,6 +41,19 @@ CI 会跑同样的命令，任何一项失败都不会合并。`npm run check` �
 3. 在 `assets/i18n.js` 里补上**中英两份**文案。
 
 别忘了用 `node scripts/check-syntax.mjs` 顺便验证资源路径，以及把新页面加入 `sitemap.xml`。
+
+## 部署边界（容易被忽略）
+
+Cloudflare Pages 以**仓库根目录**作为发布目录，所以仓库里任何文件默认都会被当作站点资源公开服务——
+`/tests/fixtures/sample.pdf`、`/package.json`、`/scripts/vendor.json` 都实测可被公网直接下载。
+
+因此：**在仓库根目录新增任何非站点文件时，必须同时在 `_redirects` 里加一条屏蔽规则。**
+漏加会让 `npm run check:deploy` 失败并列出具体是哪些文件。
+
+另外，`_headers` 有一个坑值得先知道：Cloudflare 对**多条规则命中的同名响应头做逗号合并**，不是覆盖。
+所以两条规则都设置 `Cache-Control` 会产出 `public, max-age=0, must-revalidate, public, max-age=31536000, immutable`
+这样互相冲突的指令串。`check:deploy` 会拦截这种情况；确实需要按路径分别设置时，
+可以在后一条规则里先写 `! Cache-Control` 取消前一条的值。
 
 ## i18n 约定（最容易出错的地方）
 
@@ -87,10 +103,17 @@ item.innerHTML = '<span class="name">' + esc(file.name) + '</span>';
 
 ## 代码风格
 
-- 传统脚本，不使用 ES module（这样 `file://` 直接打开也能跑）。工具页的脚本用 IIFE 包裹并加 `'use strict'`。
+**语言基线：ES2020。** 浏览器侧脚本统一按 ES2020 检查并使用 `const` / `let`
+（`no-var` 由 lint 强制），工具页的脚本用 IIFE 包裹并加 `'use strict'`。
+
+- 传统脚本，不使用 ES module（这样 `file://` 直接打开也能跑）。`scripts/` 与 `tests/` 下的
+  Node 脚本可以正常使用 ESM。
 - 全局只挂 `window.LK`（共享工具函数）与 `window.LKI`（i18n），不要在别处污染全局。
-- 缩进 2 空格，单引号，语句末尾保留分号。`.editorconfig` 已配置好基础规则。
+- 缩进 2 空格，单引号，语句末尾保留分号。`.editorconfig` 已配置好基础规则，`npm run lint` 兜底。
 - 每个工具页保留一个 `window.__lkXxx` 测试钩子，返回结构化结果而不是触发下载——端到端测试靠它驱动。
+
+已知的覆盖边界：页面内联 `<script>`（约 2400 行）**不在 ESLint 的检查范围内**，因为 ESLint 无法直接解析 HTML。
+它目前只受 `check:syntax` 的语法检查保护。要覆盖它需要引入 `eslint-plugin-html`，属可选改进。
 
 ## 提交信息
 

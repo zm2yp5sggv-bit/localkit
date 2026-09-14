@@ -7,18 +7,24 @@
   "type": "module",
   "scripts": {
     "serve": "node scripts/serve.mjs 4173",
+    "lint": "eslint .",
     "check:i18n": "node scripts/check-i18n.mjs",
-    "check:vendor": "node scripts/update-vendor.mjs --check",
     "check:syntax": "node scripts/check-syntax.mjs",
-    "check": "npm run check:i18n && npm run check:syntax && npm run check:vendor",
+    "check:deploy": "node scripts/check-deploy.mjs",
+    "check:vendor": "node scripts/update-vendor.mjs --check",
+    "check": "npm run check:i18n && npm run check:syntax && npm run check:deploy && npm run check:vendor",
+    "test:checks": "node --test tests/node/",
     "update:vendor": "node scripts/update-vendor.mjs",
     "test": "playwright test",
     "test:headed": "playwright test --headed",
     "test:ui": "playwright test --ui",
-    "ci": "npm run check && npm test"
+    "ci": "npm run lint && npm run check && npm run test:checks && npm test"
   },
   "devDependencies": {
-    "@playwright/test": "1.47.2"
+    "@eslint/js": "^10.0.1",
+    "@playwright/test": "1.47.2",
+    "eslint": "^10.10.0",
+    "globals": "^16.5.0"
   },
   "engines": {
     "node": ">=20.11"

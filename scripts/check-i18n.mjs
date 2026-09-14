@@ -17,12 +17,15 @@
  *
  * 用法：node scripts/check-i18n.mjs
  * 退出码：0 = 通过，1 = 存在错误
+ * 环境变量：LK_ROOT 指定仓库根目录（供自测使用，默认取脚本上一级）
  */
 
 import fs from 'node:fs';
 import path from 'node:path';
 
-const ROOT = path.resolve(import.meta.dirname, '..');
+const ROOT = process.env.LK_ROOT
+  ? path.resolve(process.env.LK_ROOT)
+  : path.resolve(import.meta.dirname, '..');
 
 /* ------------------------------------------------------------------ *
  * 1. 解析字典
@@ -122,10 +125,6 @@ function decodeEntities(s) {
 
 function norm(s) {
   return decodeEntities(String(s)).replace(/\s+/g, ' ').trim();
-}
-
-function stripTags(s) {
-  return s.replace(/<[^>]*>/g, '');
 }
 
 /* ------------------------------------------------------------------ *

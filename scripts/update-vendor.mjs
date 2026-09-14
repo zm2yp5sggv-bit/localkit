@@ -10,13 +10,16 @@
  * 它会下载新文件、重算哈希、回写清单。
  *
  * 退出码：0 = 通过，1 = 校验失败或下载失败
+ * 环境变量：LK_ROOT 指定仓库根目录（供自测使用，默认取脚本上一级）
  */
 
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 
-const ROOT = path.resolve(import.meta.dirname, '..');
+const ROOT = process.env.LK_ROOT
+  ? path.resolve(process.env.LK_ROOT)
+  : path.resolve(import.meta.dirname, '..');
 const VENDOR_DIR = path.join(ROOT, 'assets', 'vendor');
 const MANIFEST = path.join(ROOT, 'scripts', 'vendor.json');
 

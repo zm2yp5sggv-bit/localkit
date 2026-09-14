@@ -5,59 +5,27 @@
  *   node scripts/serve.mjs           监听 4173
  *   node scripts/serve.mjs 8080      指定端口
  *
- * 站点本身完全静态、不需要构建。这个脚本除了伺服文件，还会读取根目录的 _headers
- * 并逐条下发同样的响应头——包括 Content-Security-Policy。
- * 这样本地与 CI 的测试就运行在与 Cloudflare Pages 一致的 CSP 之下，
- * 避免出现「上线才发现 CSP 把页面拦坏」的情况。
+ * 站点本身完全静态、不需要构建。这个脚本的关键职责是**忠实复现 Cloudflare Pages 的部署语义**：
+ *   - 读取 _headers 并按官方规则下发（同名响应头用逗号合并，支持 "! Name" 取消）
+ *   - 读取 _redirects，匹配时先行返回重定向（包括屏蔽开发产物的那批规则）
+ *
+ * 解析与匹配逻辑放在 scripts/lib/deploy-config.mjs，与 scripts/check-deploy.mjs 共用一份实现。
+ * 此前这里自己写了一套「后覆盖前」的合并逻辑，与 Cloudflare 官方的「逗号合并」不一致，
+ * 结果线上一个真实缺陷在本地怎么测都测不出来——这个教训直接决定了现在的结构。
  */
 
 import http from 'node:http';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { readDeployConfig, resolveHeaders, resolveRedirect } from './lib/deploy-config.mjs';
 
-const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const ROOT = process.env.LK_ROOT
+  ? path.resolve(process.env.LK_ROOT)
+  : path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const PORT = Number(process.argv[2]) || 4173;
 
-/**
- * 解析 Cloudflare Pages 的 _headers 文件。
- * 格式：一行路径规则，缩进的 `Name: value` 属于该规则。
- * 返回 [{ pattern, headers: { name: value } }]，按文件顺序排列。
- */
-function parseHeadersFile(file) {
-  if (!fs.existsSync(file)) return [];
-  const rules = [];
-  let current = null;
-  for (const raw of fs.readFileSync(file, 'utf8').split(/\r?\n/)) {
-    if (!raw.trim() || raw.trim().startsWith('#')) continue;
-    if (!/^\s/.test(raw)) {
-      current = { pattern: raw.trim(), headers: {} };
-      rules.push(current);
-      continue;
-    }
-    if (!current) continue;
-    const i = raw.indexOf(':');
-    if (i === -1) continue;
-    current.headers[raw.slice(0, i).trim()] = raw.slice(i + 1).trim();
-  }
-  return rules;
-}
-
-const HEADER_RULES = parseHeadersFile(path.join(ROOT, '_headers'));
-
-/** 把 Cloudflare 的匹配语法简化成 glob：支持 `/*`（前缀）与完全相等。 */
-function headersFor(urlPath) {
-  const out = {};
-  for (const rule of HEADER_RULES) {
-    if (rule.pattern === '/*') { Object.assign(out, rule.headers); continue; }
-    if (rule.pattern.endsWith('/*')) {
-      if (urlPath.startsWith(rule.pattern.slice(0, -1))) Object.assign(out, rule.headers);
-      continue;
-    }
-    if (urlPath === rule.pattern) Object.assign(out, rule.headers);
-  }
-  return out;
-}
+const { headers: headerRules, redirects: redirectRules } = readDeployConfig(ROOT);
 
 const MIME = {
   '.html': 'text/html; charset=utf-8',
@@ -73,41 +41,64 @@ const MIME = {
   '.ico': 'image/x-icon',
   '.txt': 'text/plain; charset=utf-8',
   '.xml': 'application/xml; charset=utf-8',
-  '.md': 'text/plain; charset=utf-8',
+  '.md': 'text/markdown; charset=utf-8',
   '.pdf': 'application/pdf',
   '.docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
   '.wasm': 'application/wasm',
 };
+
+function sendFile(res, filePath, urlPath) {
+  const deployHeaders = resolveHeaders(headerRules, urlPath);
+  // _headers 未声明缓存策略时，本地开发服务器兜底为 no-store，避免改完文件刷新看不到效果。
+  // 线上此时走 Cloudflare 的默认策略，属已知的本地/线上差异。
+  if (!Object.keys(deployHeaders).some(k => k.toLowerCase() === 'cache-control')) {
+    deployHeaders['Cache-Control'] = 'no-store';
+  }
+
+  fs.stat(filePath, (err, stat) => {
+    if (err || !stat.isFile()) {
+      res.writeHead(404, { 'Content-Type': 'text/html; charset=utf-8', ...deployHeaders });
+      res.end('<h1>404</h1><p>' + urlPath + '</p>');
+      return;
+    }
+    res.writeHead(200, {
+      'Content-Type': MIME[path.extname(filePath).toLowerCase()] || 'application/octet-stream',
+      'Content-Length': stat.size,
+      ...deployHeaders,
+    });
+    fs.createReadStream(filePath).pipe(res);
+  });
+}
 
 const server = http.createServer((req, res) => {
   let urlPath;
   try { urlPath = decodeURIComponent(new URL(req.url, 'http://localhost').pathname); }
   catch { res.writeHead(400).end('Bad Request'); return; }
 
-  if (urlPath.endsWith('/')) urlPath += 'index.html';
-  const filePath = path.join(ROOT, urlPath);
+  // 兼容带尾斜杠的请求（线上由 Cloudflare 的尾斜杠规则处理）
+  const lookup = urlPath.length > 1 && urlPath.endsWith('/') ? [urlPath, urlPath.slice(0, -1)] : [urlPath];
+
+  const rule = lookup.map(p => resolveRedirect(redirectRules, p)).find(Boolean);
+  if (rule) {
+    const deployHeaders = resolveHeaders(headerRules, urlPath);
+    if (rule.code === 200) {
+      sendFile(res, path.join(ROOT, rule.destination), urlPath);
+      return;
+    }
+    res.writeHead(rule.code, { Location: rule.destination, ...deployHeaders });
+    res.end();
+    return;
+  }
+
+  const filePath = path.join(ROOT, urlPath === '/' ? '/index.html' : urlPath);
 
   // 目录穿越防护
   if (!filePath.startsWith(ROOT)) { res.writeHead(403).end('Forbidden'); return; }
 
-  fs.stat(filePath, (err, stat) => {
-    if (err || !stat.isFile()) {
-      res.writeHead(404, { 'Content-Type': 'text/html; charset=utf-8', ...headersFor(urlPath) });
-      res.end('<h1>404</h1><p>' + urlPath + '</p>');
-      return;
-    }
-    const headers = {
-      'Content-Type': MIME[path.extname(filePath).toLowerCase()] || 'application/octet-stream',
-      'Content-Length': stat.size,
-      ...headersFor(urlPath),
-    };
-    if (!headers['Cache-Control']) headers['Cache-Control'] = 'no-store';
-    res.writeHead(200, headers);
-    fs.createReadStream(filePath).pipe(res);
-  });
+  sendFile(res, filePath, urlPath);
 });
 
 server.listen(PORT, '127.0.0.1', () => {
   console.log(`LocalKit 已启动：http://127.0.0.1:${PORT}`);
-  console.log(`已应用 ${HEADER_RULES.length} 条 _headers 规则`);
+  console.log(`已加载 ${headerRules.length} 条 _headers 规则、${redirectRules.filter(r => !r.invalid).length} 条 _redirects 规则`);
 });

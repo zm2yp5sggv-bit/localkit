@@ -82,21 +82,21 @@
     /** Inject the sponsor button into the nav and footer on every page (except donate itself). */
     injectSponsor() {
       if (/donate\.html?$/.test(location.pathname)) return;
-      var pre = location.pathname.indexOf('/tools/') !== -1 ? '../' : '';
-      var nav = document.querySelector('.nav');
+      const pre = location.pathname.indexOf('/tools/') !== -1 ? '../' : '';
+      const nav = document.querySelector('.nav');
       if (nav && !document.getElementById('donateBtn')) {
-        var a = document.createElement('a');
+        const a = document.createElement('a');
         a.id = 'donateBtn';
         a.className = 'donate-btn';
         a.href = pre + 'donate.html';
         a.setAttribute('data-i18n', 'nav.donate');
         a.textContent = '♥ Sponsor';
-        var lang = document.getElementById('langBtn');
+        const lang = document.getElementById('langBtn');
         if (lang) nav.insertBefore(a, lang); else nav.appendChild(a);
       }
-      var links = document.querySelector('.site-footer .links');
+      const links = document.querySelector('.site-footer .links');
       if (links && !links.querySelector('.donate-btn')) {
-        var f = document.createElement('a');
+        const f = document.createElement('a');
         f.className = 'donate-btn';
         f.href = pre + 'donate.html';
         f.setAttribute('data-i18n', 'nav.donate');

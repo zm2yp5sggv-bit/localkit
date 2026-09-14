@@ -1,0 +1,9 @@
+# 让 Issue 创建者看到「安全问题的报告渠道」与文档入口。
+blank_issues_enabled: true
+contact_links:
+  - name: 安全问题（请勿公开）
+    url: https://github.com/zm2yp5sggv-bit/localkit/security/advisories/new
+    about: 数据外发、XSS、依赖被篡改、CSP 绕过等，请走私密报告渠道，详见 SECURITY.md。
+  - name: 贡献指南
+    url: https://github.com/zm2yp5sggv-bit/localkit/blob/main/CONTRIBUTING.md
+    about: 新增工具、i18n 三种属性的用法、转义约定、提交前要跑哪些检查。

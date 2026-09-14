@@ -5,7 +5,43 @@
 
 ## [未发布]
 
-### 修复
+### 部署配置修复与工程化补强
+
+#### 修复
+
+- **`_headers` 的 `Cache-Control` 实际未生效**：Cloudflare Pages 对多条规则命中的同名响应头是
+  **逗号合并**而非覆盖。原先三条规则都设置 `Cache-Control`，导致 vendor 文件收到
+  `public, max-age=0, must-revalidate, public, max-age=31536000, immutable, public, max-age=3600`
+  一串互相冲突的指令，预期的 `immutable` 根本没生效。现收敛为单条通配规则。
+- **开发产物被公开服务**：Cloudflare Pages 以仓库根目录作为发布目录，实测
+  `/tests/fixtures/sample.pdf`、`/package.json`、`/scripts/vendor.json`、`/.github/workflows/ci.yml`、
+  `/README.md` 等均以正确的 MIME 类型返回给公网。现新增 `_redirects` 逐条屏蔽。
+- **本地测试环境与线上语义不一致**：`scripts/serve.mjs` 自行实现的响应头合并用的是「后覆盖前」，
+  与 Cloudflare 官方的「逗号合并」相反，导致上面第一个缺陷在本地怎么测都测不出来。
+  现改为与校验脚本共用 `scripts/lib/deploy-config.mjs`，并让本地服务器一并执行 `_redirects`。
+- 修正 `_headers` 里「同名的后一条覆盖前一条」这条与官方文档相反的错误注释。
+
+#### 新增
+
+- **`scripts/check-deploy.mjs`**：校验 `_redirects` 状态码合法性（Cloudflare Pages 不支持
+  404 / 410，写了会被静默忽略）、`_headers` 同名响应头重叠、以及开发产物的屏蔽覆盖率。
+- **`tests/node/checks.test.mjs`**：17 个自测用例，用「坏样本」证明四个校验脚本确实会报错。
+  裁判本身也需要被验证——此前 `check-i18n` 的死键检测就因把字典文件也纳入搜索范围而形同虚设，
+  会静默地返回「全部通过」，比没有检查更危险。
+- `eslint.config.js` 与 ESLint 依赖：浏览器侧统一按 ES2020 检查，开启 `no-var` / `prefer-const` / `eqeqeq`。
+- `.github/pull_request_template.md` 与 `.github/ISSUE_TEMPLATE/`。
+- `_redirects`：屏蔽开发产物的重定向规则。
+
+#### 变更
+
+- `assets/i18n.js` 与 `assets/app.js` 中残留的 `var` 统一为 `const` / `let`，
+  语言基线正式定为 **ES2020** 并由 lint 强制。
+  （注：此前报告称「`app.js` 与 `i18n.js` 都是 ES5 风格」并不准确——`app.js` 本就以 ES6 为主，
+  只有 `injectSponsor` 一个函数里残留 `var`；真正整体使用 `var` 的是 `i18n.js`。）
+
+### 审计修复（commit 9a2e808）
+
+#### 修复
 
 - **隐私口径自相矛盾**：`privacy.html` 与 `index.html` 的静态源码写着「靠 Google AdSense 广告维持」
   并提到 EEA 同意弹窗，而 `assets/i18n.js` 的字典写的是「完全没有广告，靠自愿赞助」，两者互相否定。

@@ -1,0 +1,39 @@
+# Cloudflare Pages 重定向配置
+#
+# 用途：屏蔽开发产物。
+# Cloudflare Pages 以仓库根目录作为发布目录，因此 tests/、scripts/、package.json
+# 等开发文件默认也会被当作站点资源公开服务（实测 /tests/fixtures/sample.pdf 会以
+# application/pdf 正常返回）。这些文件不属于站点内容，这里统一拦掉。
+#
+# 为什么用 301 回首页而不是 404：
+#   Cloudflare Pages 的 _redirects 只支持 301 / 302 / 303 / 307 / 308 与 200（代理），
+#   官方文档明确写着「Rewrites (other status codes): No」——写 404 或 410 会被直接忽略。
+#   因此这里只能退而求其次用 301。语义上不是最理想的（期望是 404），但能确保内容不被服务。
+#
+# 生效优先级：Redirects execute before headers，且「Redirects are always followed,
+# regardless of whether or not an asset matches the incoming request」——
+# 所以即使文件真实存在，也会被这些规则抢先拦下。
+#
+# 新增开发文件时请同步在这里加规则；scripts/check-deploy.mjs 会校验覆盖率，
+# 漏加会让 CI 失败。
+
+# 测试与工具脚本
+/tests/*               /  301
+/scripts/*             /  301
+
+# 开发依赖与配置
+/package.json          /  301
+/package-lock.json     /  301
+/playwright.config.js  /  301
+/eslint.config.js      /  301
+/.editorconfig         /  301
+/.gitattributes        /  301
+/.gitignore            /  301
+/.github/*             /  301
+
+# 工程文档（README 等仅面向仓库访客，不属于站点内容）
+/README.md             /  301
+/CONTRIBUTING.md       /  301
+/CHANGELOG.md          /  301
+/SECURITY.md           /  301
+/assets/vendor/README.md  /  301

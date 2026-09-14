@@ -24,8 +24,16 @@ jobs:
       - name: 语法、JSON-LD、资源引用与零外发检查
         run: node scripts/check-syntax.mjs
 
+      - name: 部署配置（_headers 重复响应头 / _redirects 状态码与屏蔽覆盖率）
+        run: node scripts/check-deploy.mjs
+
       - name: 第三方依赖完整性（比对 assets/vendor 的 sha256）
         run: node scripts/update-vendor.mjs --check
+
+      # 裁判本身也要被检查：用「坏样本」验证上面几个脚本确实会报错，
+      # 否则它们可能静默地给出虚假的「全部通过」。
+      - name: 校验脚本自测（坏样本注入）
+        run: npm run test:checks
 
   e2e:
     name: 端到端测试
@@ -41,6 +49,9 @@ jobs:
 
       - name: 安装依赖
         run: npm ci
+
+      - name: ESLint
+        run: npm run lint
 
       - name: 安装 Chromium
         run: npx playwright install --with-deps chromium
