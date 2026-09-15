@@ -64,6 +64,74 @@ test.describe('图片压缩', () => {
   });
 });
 
+/* ------------------------------------------------------------------ *
+ * 输出命名与真实编码格式的一致性
+ *
+ * 背景：浏览器 canvas 只能编码 JPEG / WebP / PNG。把 GIF、BMP 这类格式交给
+ * canvas.toBlob() 时它**会静默回退成 PNG**——实测确认：请求 image/gif 得到的是
+ * image/png。因此输出文件的扩展名必须由「可编码白名单」推导，而不是照抄输入类型。
+ * 修复前这里的兜底值是 'img'，GIF/BMP 会产出 xxx-min.img 这种文件。
+ * ------------------------------------------------------------------ */
+
+test.describe('图片压缩 · 输出命名', () => {
+  /** 跑一次压缩并取回结构化结果（含 blob 的真实 MIME 类型）。 */
+  async function compress(page, fixture, mime, format) {
+    await page.goto('/tools/compress-image.html');
+    if (format) await page.selectOption('#format', format);
+    const n = await callHookWithFile(page, '__lkProcess', fixture, mime);
+    const results = await page.evaluate(() => window.__lkResults());
+    return { n, results };
+  }
+
+  test('GIF 输入（默认保持原格式）输出为 .png 而不是 .img', async ({ page }) => {
+    const { n, results } = await compress(page, 'sample.gif', 'image/gif');
+    expect(n).toBe(1);
+
+    const r = results[0];
+    expect(r.outName, 'GIF 无法被 canvas 编码，应替换为 PNG').toMatch(/\.png$/);
+    expect(r.outName.endsWith('.img'), '不得再出现 .img 兜底名').toBe(false);
+    expect(r.type, 'blob 的真实类型必须是 PNG').toBe('image/png');
+    expect(r.substituted, '应标记发生了格式替换').toBe(true);
+
+    // 界面上要能看到这次替换的说明
+    await expect(page.locator('#results .subst'), '应显示替换说明').toHaveCount(1);
+  });
+
+  test('BMP 输入（默认保持原格式）输出为 .png 且类型为 PNG', async ({ page }) => {
+    const { n, results } = await compress(page, 'sample.bmp', 'image/bmp');
+    expect(n).toBe(1);
+
+    const r = results[0];
+    expect(r.outName).toMatch(/\.png$/);
+    expect(r.type).toBe('image/png');
+    expect(r.substituted).toBe(true);
+  });
+
+  test('PNG 输入（默认保持原格式）输出为 -min.png 且不发生替换', async ({ page }) => {
+    const { n, results } = await compress(page, 'sample.png', 'image/png');
+    expect(n).toBe(1);
+
+    const r = results[0];
+    expect(r.outName).toMatch(/-min\.png$/);
+    expect(r.type).toBe('image/png');
+    expect(r.substituted).toBe(false);
+
+    // 未发生替换时不应出现替换说明（防止提示条件写反）
+    await expect(page.locator('#results .subst')).toHaveCount(0);
+  });
+
+  test('PNG 输入、显式选择 JPEG 时输出 .jpg 且不带 -min 后缀', async ({ page }) => {
+    const { n, results } = await compress(page, 'sample.png', 'image/png', 'image/jpeg');
+    expect(n).toBe(1);
+
+    const r = results[0];
+    expect(r.outName).toMatch(/\.jpg$/);
+    expect(r.outName).not.toContain('-min');
+    expect(r.type).toBe('image/jpeg');
+    expect(r.substituted).toBe(false);
+  });
+});
+
 test.describe('图片格式转换', () => {
   test('PNG 转 WebP 输出扩展名正确', async ({ page }) => {
     await page.goto('/tools/convert-image.html');

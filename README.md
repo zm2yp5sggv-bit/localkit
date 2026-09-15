@@ -43,13 +43,32 @@ node scripts/serve.mjs 4173    # 仓库自带的零依赖服务器，会一并�
 1. Fork / 克隆本仓库
 2. [Cloudflare Pages](https://pages.dev) → Create → 连接仓库（或直接拖拽上传文件夹）
 3. **关闭「Pretty URLs」**（Settings → Builds & deployments）。理由见下方「地址形态」。
-4. 绑定自定义域名，把 `index.html`、`tools/*.html`、`sitemap.xml` 里的 `youngray.asia` 换成你的域名
-5. 建议同时添加 `www` 子域并在 Rules → Redirect Rules 里做 `www` → 根域 301
-6. 赞助渠道在 `assets/config.js` 配置（GitHub 默认；爱发电可选）
+4. **把 Caching → Configuration → Browser Cache TTL 设为 `Respect Existing Headers`**。
+   理由见下方「为什么必须关掉 Browser Cache TTL」——**这是最容易漏、后果最迷惑的一项。**
+5. 绑定自定义域名，把 `index.html`、`tools/*.html`、`sitemap.xml` 里的 `youngray.asia` 换成你的域名
+6. 建议同时添加 `www` 子域并在 Rules → Redirect Rules 里做 `www` → 根域 301
+7. 确认 **Web Analytics 处于关闭状态**（它会注入 `beacon.min.js`，与「零第三方脚本」冲突）
+8. 赞助渠道在 `assets/config.js` 配置（GitHub 默认；爱发电可选）
+
+部署完成后跑一次 `npm run smoke` 验证线上状态。
 
 根目录的 `_headers` 会被 Cloudflare Pages 自动识别，用于下发 CSP、HSTS 等安全响应头。其中
 `connect-src 'none'` 会在浏览器层面**强制**禁止本站发起任何网络请求——隐私承诺不只写在文案里，
 而是被策略锁死的。注意 `_headers` 只对 Cloudflare Pages 生效，自建服务器需自行转发。
+
+### 为什么必须关掉 Browser Cache TTL
+
+Cloudflare 区域默认的 **Browser Cache TTL（4 小时）会覆盖 `_headers` 里声明的 `max-age`**，
+而且**只作用于非 HTML 资源**——HTML 完全不受影响。这个不对称正是它难以发现的原因：
+页面看起来正常，但 `assets/*.js`、`*.css`、`vendor/*` 都变成了 4 小时缓存。
+
+后果是每次部署后最长 4 小时内，返回访客会拿到「**新 HTML + 旧字典**」：浏览器认为缓存的
+`i18n.js` 还新鲜、根本不去问服务器，于是新页面引用到旧字典里不存在的词条，
+`LKI.t()` 回退成键名本身，**页脚就直接显示出 `footer.privacy` 这样的字面量**。
+刷新也没用——这不是缓存过期的问题，是缓存还没过期。
+
+`npm run smoke` 的 `[cache]` 分组专门守着这一点：它从 `_headers` 读取声明值，再和线上实际
+响应头逐一比对，被覆盖时会直接指出这一项与修复位置。
 
 ### 地址形态：保留 `.html` 扩展名
 
@@ -98,9 +117,16 @@ npm install
 npm run check        # 静态检查（i18n / 语法 / 部署配置 / 依赖哈希）
 npm run lint         # ESLint
 npm run test:checks  # 校验脚本自身的自测（坏样本注入）
+npm run smoke        # 探测线上：缓存策略、零第三方脚本、安全头是否真生效
 npm test             # Playwright 端到端测试（会自动起本地服务器）
 npm run serve        # 仅启动本地预览服务器
 ```
+
+`npm run smoke` 是唯一会访问线上环境的检查，因此**不在**默认的 `check` 里。
+它分 `pages` / `urlform` / `headers` / `cache` / `thirdparty` / `boundary` / `canonical` 七组，
+可用 `npm run smoke -- --only cache` 只跑其中一组。它的核心价值是探测**仓库看不到的东西**——
+Cloudflare 控制台的设置改动（Browser Cache TTL、Web Analytics、Pretty URLs）没有版本控制，
+只能靠线上断言发现。
 
 `npm run check` 包含四项：
 

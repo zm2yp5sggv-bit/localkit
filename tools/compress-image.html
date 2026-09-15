@@ -71,7 +71,7 @@
       <div class="dropzone" id="dropzone">
         <div class="big">🖼️</div>
         <div class="title" data-i18n="ci.drop.title">Drop images here, or click to choose files</div>
-        <div class="hint" data-i18n="ci.drop.hint">JPG · PNG · WebP · GIF · BMP — as many as you like</div>
+        <div class="hint" data-i18n="ci.drop.hint">JPG · PNG · WebP · GIF · BMP (GIF and BMP are output as PNG) — as many as you like</div>
       </div>
       <input type="file" id="fileInput" accept="image/*" multiple hidden>
 
@@ -159,11 +159,22 @@
 
     el('quality').addEventListener('input', (e) => el('qVal').textContent = e.target.value);
 
-    const extFor = { 'image/jpeg': 'jpg', 'image/webp': 'webp', 'image/png': 'png' };
+    // 浏览器 canvas 只能编码这三种格式。其它输入（GIF / BMP / TIFF / AVIF…）在选择
+    // 「保持原格式」时必须**显式替换**为 PNG——因为 canvas.toBlob(cb, 'image/gif')
+    // 会静默回退成 PNG 字节。若照着输入类型去取扩展名，文件名就会与真实内容不符：
+    // 这里曾经的兜底值是 'img'，于是 GIF/BMP 会产出 xxx-min.img 这种文件。
+    const ENCODABLE = { 'image/jpeg': 'jpg', 'image/webp': 'webp', 'image/png': 'png' };
+    const normType = (t) => (t === 'image/jpg' ? 'image/jpeg' : t);
 
     async function processOne(file) {
       const format = el('format').value;
-      const type = format === 'same' ? (file.type === 'image/jpg' ? 'image/jpeg' : file.type) : format;
+      const inType = normType(file.type);
+      const requested = format === 'same' ? inType : format;
+
+      // 不可编码的格式统一落到 PNG（无损、保留透明通道），扩展名随真实输出走
+      const substituted = !ENCODABLE[requested];
+      const outType = substituted ? 'image/png' : requested;
+
       const q = parseInt(el('quality').value, 10) / 100;
       const maxDim = parseInt(el('maxDim').value, 10) || 0;
 
@@ -172,11 +183,12 @@
       canvas.width = width; canvas.height = height;
       canvas.getContext('2d').drawImage(bitmap, 0, 0, width, height);
       bitmap.close();
-      const blob = await canvasToBlob(canvas, type, q);
+      const blob = await canvasToBlob(canvas, outType, q);
 
       const base = file.name.replace(/\.[^.]+$/, '');
-      const outName = base + (type === file.type ? '-min' : '') + '.' + (extFor[type] || 'img');
-      return { blob, outName, outSize: blob.size, inSize: file.size };
+      // ENCODABLE[outType] 一定命中，所以这里没有、也不该有兜底值
+      const outName = base + (outType === inType ? '-min' : '') + '.' + ENCODABLE[outType];
+      return { blob, outName, outType, substituted, inType, outSize: blob.size, inSize: file.size };
     }
 
     const produced = [];
@@ -197,6 +209,7 @@
           item.innerHTML =
             '<span class="name">' + esc(r.outName) + '</span>' +
             '<span class="meta">' + formatBytes(r.inSize) + ' → ' + formatBytes(r.outSize) + '</span>' +
+            (r.substituted ? '<span class="meta subst">' + t('ci.subst') + '</span>' : '') +
             '<span class="spacer"></span>' +
             (saved > 0 ? '<span class="saved">−' + saved + '%</span>' : '<span class="meta">' + t('ci.nogain') + '</span>') +
             '<button class="small ghost">' + t('ci.dl') + '</button>';
@@ -230,6 +243,16 @@
       while (el('runBtn').disabled) await new Promise(r => setTimeout(r, 100));
       return produced.length;
     };
+
+    // 结构化钩子：暴露产出文件的真实 MIME 类型。
+    // 命名规则的关键是「扩展名必须与真实字节一致」，只断言文件名不足以覆盖这一点——
+    // canvas 会对不支持的格式静默回退，blob.type 正是浏览器给出的真实编码结果。
+    window.__lkResults = () => produced.map(r => ({
+      outName: r.outName,
+      type: r.blob.type,
+      substituted: r.substituted,
+      outSize: r.outSize,
+    }));
   })();
   </script>
 </body>

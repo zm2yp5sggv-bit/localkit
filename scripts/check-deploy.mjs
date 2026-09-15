@@ -15,7 +15,12 @@
  *      因此两条规则同时设置 Cache-Control 会产出一串互相冲突的指令。
  *      （曾经三条规则都设 Cache-Control，导致 immutable 实际未生效。）
  *
- *   3. 开发产物屏蔽覆盖率
+ *   3. 缓存策略必须全站一致
+ *      要求 _headers 对通配路径声明 Cache-Control，且 max-age 只出现一次。
+ *      （这条只是「声明是否自洽」；声明有没有在线上真正生效由 scripts/smoke.mjs 探测，
+ *        因为 Cloudflare 区域的 Browser Cache TTL 会覆盖 max-age，那是仓库看不到的。）
+ *
+ *   4. 开发产物屏蔽覆盖率
  *      Cloudflare Pages 以仓库根目录为发布目录，git 里跟踪的非站点文件会被公开服务。
  *      _redirects 必须逐条把它们拦掉，否则等于把测试与脚本一起发布出去。
  *      （曾经 /tests/fixtures/sample.pdf 可被公网直接下载。）
@@ -29,7 +34,7 @@
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import {
-  readDeployConfig, resolveRedirect,
+  readDeployConfig, resolveRedirect, resolveHeaders,
   samplePath, matches, SUPPORTED_REDIRECT_CODES,
 } from './lib/deploy-config.mjs';
 
@@ -132,13 +137,45 @@ for (const rule of headerRules) {
   }
 }
 
-if (!headerRules.length) errors.push('_headers 不存在或没有任何规则。');
+/* ------------------------------------------------------------------ *
+ * 检查 3：缓存策略必须全站一致
+ *
+ * 曾经为了给 assets/vendor/ 单独设长缓存，加了两条按路径规则，结果同名响应头被
+ * Cloudflare 逗号合并成一串互相冲突的指令。现在统一为一条通配规则，
+ * 这里把「必须有 Cache-Control」和「max-age 只能出现一次」固化下来，
+ * 防止有人为了性能又把它拆开。
+ * 另外，这条声明是否真的在线上生效，由 scripts/smoke.mjs 负责探测——
+ * 因为 Cloudflare 的 Browser Cache TTL 会覆盖 max-age，那是仓库看不到的。
+ */
+
+if (!headerRules.length) {
+  errors.push('_headers 不存在或没有任何规则。');
+} else {
+  const probes = ['/index.html', '/assets/i18n.js', '/assets/vendor/jszip.min.js', '/robots.txt'];
+  for (const p of probes) {
+    const resolved = resolveHeaders(headerRules, p);
+    const cc = resolved['Cache-Control'] || resolved['cache-control'];
+    if (!cc) {
+      errors.push(`_headers 未对 ${p} 声明 Cache-Control（通配规则应当覆盖它）。`);
+      continue;
+    }
+    const ages = cc.match(/max-age/g) || [];
+    if (ages.length !== 1) {
+      errors.push(
+        `_headers 对 ${p} 生效的 Cache-Control 里 max-age 出现了 ${ages.length} 次: ${cc}\n` +
+        `      这说明多条规则同时设置了它——Cloudflare 会把同名响应头逗号合并，\n` +
+        `      产出互相冲突的指令串。请合并为一条通配规则。`
+      );
+    }
+  }
+}
+
 if (!headerRules.some(r => Object.keys(r.headers).some(n => n.toLowerCase() === 'content-security-policy'))) {
   errors.push('_headers 未设置 Content-Security-Policy。');
 }
 
 /* ------------------------------------------------------------------ *
- * 检查 3：开发产物屏蔽覆盖率
+ * 检查 4：开发产物屏蔽覆盖率
  * ------------------------------------------------------------------ */
 
 let tracked = [];

@@ -5,18 +5,30 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
+  # 每天跑一次。仓库代码没变，但 Cloudflare 控制台的设置可能被改动——
+  # 缓存策略、Web Analytics、Pretty URLs 都没有版本控制，只有线上探测能发现。
+  schedule:
+    - cron: '17 3 * * *'
   workflow_dispatch:
 
 jobs:
   check:
-    name: 静态检查
+    name: 静态检查 (Node ${{ matrix.node }})
+    # 定时任务只关心线上状态，跳过纯仓库检查以免每天白跑一遍
+    if: github.event_name != 'schedule'
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # 版本矩阵的作用不只是兼容性——Playwright 1.47.2 曾在 Node 24 下启动即挂起，
+        # 而这类问题只有真的在多个 Node 版本上跑过才会暴露。
+        node: ['20', '22', '24']
     steps:
       - uses: actions/checkout@v4
 
       - uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: ${{ matrix.node }}
 
       - name: i18n 一致性（静态文案 / 字典 / 死键）
         run: node scripts/check-i18n.mjs
@@ -36,15 +48,20 @@ jobs:
         run: npm run test:checks
 
   e2e:
-    name: 端到端测试
+    name: 端到端测试 (Node ${{ matrix.node }})
+    if: github.event_name != 'schedule'
     runs-on: ubuntu-latest
     needs: check
+    strategy:
+      fail-fast: false
+      matrix:
+        node: ['22', '24']
     steps:
       - uses: actions/checkout@v4
 
       - uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: ${{ matrix.node }}
           cache: npm
 
       - name: 安装依赖
@@ -63,6 +80,24 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: playwright-report
+          name: playwright-report-node${{ matrix.node }}
           path: playwright-report/
           retention-days: 7
+
+  smoke:
+    name: 生产站点冒烟
+    # 只有线上环境才有意义，因此 PR 不跑；push 与定时任务都跑
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      # 断言线上实际状态与仓库 _headers 的声明一致：缓存策略是否被
+      # Cloudflare 的 Browser Cache TTL 覆盖、是否被注入第三方脚本、
+      # 安全响应头是否真的下发。
+      - name: 冒烟检查
+        run: npm run smoke

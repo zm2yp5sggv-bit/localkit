@@ -294,6 +294,79 @@ function makeDocxBuffer() {
 }
 
 /* ------------------------------------------------------------------ *
+ * GIF 编码（最小合法构造）
+ *
+ * 用途：验证 compress-image 在「保持原格式」下遇到不可编码的输入时，
+ * 会显式替换为 PNG 并给出对应扩展名（而不是产出 xxx-min.img）。
+ *
+ * 这里只生成 1×1、2 色调色板的 GIF89a。之所以能手写 LZW 而不用实现完整编码器：
+ * 图像只有 1 个像素，码流是「CLEAR(4) → 字面量(0) → EOI(5)」三个码，
+ * 解码端在读第一个码后不会新增码表项，因此码长始终是 3 位、不需要任何表增长逻辑。
+ * 3 位 LSB 优先打包后恰好是 0x44 0x01。
+ * ------------------------------------------------------------------ */
+
+/** 小端 16 位整数，供 GIF / BMP 的字节级构造使用。 */
+function u16le(n) {
+  const b = Buffer.alloc(2);
+  b.writeUInt16LE(n, 0);
+  return b;
+}
+
+function makeGif1x1() {
+  const gct = Buffer.from([0x4f, 0x46, 0xe5, 0xff, 0xff, 0xff]); // 索引 0 靛蓝，1 白
+  return Buffer.concat([
+    Buffer.from('GIF89a', 'ascii'),
+    u16le(1), u16le(1),                 // 逻辑屏幕宽高
+    Buffer.from([0x80, 0x00, 0x00]),    // 有全局色表、2 个表项、背景色索引 0、无宽高比
+    gct,
+    Buffer.from([0x2c]),                // 图像描述符
+    u16le(0), u16le(0), u16le(1), u16le(1),
+    Buffer.from([0x00]),                // 无局部色表、非交错
+    Buffer.from([0x02]),                // LZW 最小码长 = 2
+    Buffer.from([0x02, 0x44, 0x01]),    // 一个数据子块（2 字节）
+    Buffer.from([0x00]),                // 块结束
+    Buffer.from([0x3b]),                // 文件结束
+  ]);
+}
+
+/* ------------------------------------------------------------------ *
+ * BMP 编码（24 位无压缩）
+ * ------------------------------------------------------------------ */
+
+function makeBmp24(width, height, [r, g, b]) {
+  const rowBytes = width * 3;
+  const pad = (4 - (rowBytes % 4)) % 4;          // 每行补齐到 4 字节边界
+  const stride = rowBytes + pad;
+  const pixelBytes = stride * height;
+  const offset = 14 + 40;
+
+  const file = Buffer.alloc(offset + pixelBytes);
+  file.write('BM', 0, 'ascii');
+  file.writeUInt32LE(file.length, 2);
+  file.writeUInt32LE(0, 6);
+  file.writeUInt32LE(offset, 10);
+  file.writeUInt32LE(40, 14);                    // DIB 头长度
+  file.writeInt32LE(width, 18);
+  file.writeInt32LE(height, 22);                 // 正值 = 自下而上存储
+  file.writeUInt16LE(1, 26);                     // 平面数
+  file.writeUInt16LE(24, 28);                    // 位深
+  file.writeUInt32LE(0, 30);                     // 不压缩
+  file.writeUInt32LE(pixelBytes, 34);
+  file.writeInt32LE(2835, 38);
+  file.writeInt32LE(2835, 42);
+  file.writeUInt32LE(0, 46);
+  file.writeUInt32LE(0, 50);
+
+  for (let y = 0; y < height; y++) {
+    for (let x = 0; x < width; x++) {
+      const p = offset + y * stride + x * 3;
+      file[p] = b; file[p + 1] = g; file[p + 2] = r;   // BMP 存 BGR
+    }
+  }
+  return file;
+}
+
+/* ------------------------------------------------------------------ *
  * 写出
  * ------------------------------------------------------------------ */
 
@@ -305,6 +378,8 @@ const out = (name, buf) => {
 
 out('sample.png', makePng(240, 160));
 out('sample-wide.png', makePng(320, 200));
+out('sample.gif', makeGif1x1());
+out('sample.bmp', makeBmp24(8, 8, [0x4f, 0x46, 0xe5]));
 
 out('sample.pdf', textPdf([
   ['LocalKit sample PDF — page one.', 'The quick brown fox jumps over the lazy dog.'],
