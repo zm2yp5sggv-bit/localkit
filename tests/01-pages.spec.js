@@ -128,8 +128,12 @@ test.describe('站点结构完整性', () => {
     expect(locs.length).toBe(indexablePages().length);
     expect(new Set(locs).size, 'URL 不应重复').toBe(locs.length);
 
+    // sitemap 必须收录「最终地址」：Cloudflare Pages 会把 .html 308 跳到无扩展名形式，
+    // 收录 .html 等于让爬虫每次都多走一次跳转。
+    expect(locs.some(l => /\.html$/.test(l)), 'sitemap 不应出现带 .html 的地址').toBe(false);
+
     for (const p of indexablePages()) {
-      const suffix = p === 'index.html' ? '/' : '/' + p;
+      const suffix = p === 'index.html' ? '/' : '/' + p.replace(/\.html$/, '');
       expect(locs.some(l => l.endsWith(suffix)), `sitemap 缺少 ${p}`).toBeTruthy();
     }
 
@@ -151,11 +155,15 @@ test.describe('站点结构完整性', () => {
   });
 
   test('每个工具页都有唯一的 canonical 与 JSON-LD', async ({ page }) => {
+    const ORIGIN = 'https://youngray.asia';
     for (const p of allPages().filter(x => x.startsWith('tools/'))) {
       await page.goto('/' + p);
       const canonical = await page.getAttribute('link[rel=canonical]', 'href');
-      expect(canonical, `${p} 缺少 canonical`).toBeTruthy();
-      expect(canonical).toContain(p);
+
+      // canonical 必须写「最终地址」——Cloudflare Pages 会把 .html 308 跳到无扩展名形式，
+      // 所以带 .html 的 canonical 等于指向一个会跳转的中间地址。
+      const pretty = p.replace(/\.html$/, '');
+      expect(canonical, `${p} 缺少 canonical`).toBe(`${ORIGIN}/${pretty}`);
 
       const blocks = await page.$$eval('script[type="application/ld+json"]', els => els.map(e => e.textContent));
       expect(blocks.length, `${p} 应有 JSON-LD`).toBeGreaterThan(0);

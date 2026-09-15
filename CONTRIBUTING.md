@@ -92,18 +92,31 @@ Cloudflare Pages 以**仓库根目录**作为发布目录，所以仓库里任�
 还要注意：`_headers` 里那个 `/*` 是「匹配所有路径」的**通配模式**，不是 C 风格注释的开头。
 **不要顺手补 `*/` 收尾**——它会被解析成一条模式为 `*/` 的规则。检查脚本会校验每行模式是否像 URL 路径。
 
-### 地址形态：保留 `.html`
+### 地址形态：无扩展名才是最终地址
 
-本项目**关闭**了 Cloudflare Pages 的 Pretty URLs，因此线上地址形态是 `/foo.html`（返回 200），
-而不是 `/foo`（会 404）。这决定了两条硬性约定：
+Cloudflare Pages 会把 `/foo.html` **308 永久重定向**到 `/foo`，且这是平台硬编码行为，
+**没有配置开关**。所以 `/foo` 才是「最终地址」，全站的自身地址声明都必须是这一形式。
 
-- 每个页面的 `<link rel="canonical">` 必须等于它自己的 `.html` 地址；
-- `sitemap.xml` 里的每条 URL 必须指向真实存在的 `.html` 文件，且收录全部可索引页面。
+新增或修改页面时，**四处载体都要同步**，缺一处都会被 `npm run check:syntax` 拦下：
 
-`npm run check:syntax` 会强制这两点（无扩展名地址会因「映射不到真实文件」而报错），
-`tests/01-pages.spec.js` 也有一份行为层的用例。**新增页面时别忘了同步 canonical 与 sitemap。**
+| 载体 | 位置 |
+|---|---|
+| `<link rel="canonical">` | 页面 `<head>` |
+| `<meta property="og:url">` | 页面 `<head>`（有则必须对） |
+| JSON-LD 里的 `"url"` | 页面内的结构化数据 |
+| `<loc>` | `sitemap.xml` |
+
+（这条检查是「漏改」教育出来的：第一次迁移只改了 canonical 与 sitemap，
+漏掉了 `og:url` 与 JSON-LD，所以现在三处一起校验。）
+
+`tests/01-pages.spec.js` 另有一份行为层的用例（页面里的 canonical 必须等于其最终地址、
+sitemap 不得出现 `.html`、无扩展名地址必须返回 200）。
 
 `404.html` 是例外：它不设 canonical，必须带 `noindex`，且**不得**写进 `sitemap.xml`。
+
+**站内链接目前仍写作 `.html`**（例如 `href="privacy.html"`），每次点击会多一次 308 跳转。
+之所以没改成无扩展名，是因为那会让「双击 `index.html` 直接打开」失效——
+`file://` 协议下不存在名为 `privacy` 的文件。这是一个已知的、有意的取舍。
 
 ### 安全响应头的唯一来源
 

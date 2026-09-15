@@ -90,10 +90,44 @@ const server = http.createServer((req, res) => {
     return;
   }
 
-  const filePath = path.join(ROOT, urlPath === '/' ? '/index.html' : urlPath);
+  /* Cloudflare Pages 的 URL 行为——本项目选择顺着它走，而不是对抗它。
+   * 本地必须复现，否则「本地通过、线上不一致」会反复发生：
+   *   1. /foo.html  → 308 永久重定向到 /foo（硬编码，无法配置关闭）
+   *   2. /index.html → 308 到 /
+   *   3. /foo      → 解析到 foo.html 并以 200 返回（这才是「最终地址」）
+   * 正因为第 1 条关不掉，各页面的 canonical 与 sitemap 才写成无扩展名形式。 */
+
+  // 规则 1 & 2：.html 请求重定向到无扩展名形式
+  if (urlPath.endsWith('.html')) {
+    const stripped = urlPath.slice(0, -'.html'.length);
+    const target = stripped === '/index' ? '/' : stripped;
+    if (target !== urlPath) {
+      res.writeHead(308, { Location: target, ...resolveHeaders(headerRules, urlPath) });
+      res.end();
+      return;
+    }
+  }
+
+  // 规则 3：无扩展名的请求解析到同名 .html 文件
+  let filePath = path.join(ROOT, urlPath === '/' ? '/index.html' : urlPath);
+  if (!fs.existsSync(filePath) && !path.extname(urlPath)) {
+    const candidate = filePath + '.html';
+    if (fs.existsSync(candidate)) filePath = candidate;
+  }
 
   // 目录穿越防护
   if (!filePath.startsWith(ROOT)) { res.writeHead(403).end('Forbidden'); return; }
+
+  // 未找到时返回 404.html 的内容（与关闭 SPA fallback 后的 Pages 行为一致）
+  if (!fs.existsSync(filePath)) {
+    const custom = path.join(ROOT, '404.html');
+    if (fs.existsSync(custom)) {
+      const deployHeaders = resolveHeaders(headerRules, urlPath);
+      res.writeHead(404, { 'Content-Type': MIME['.html'], ...deployHeaders });
+      fs.createReadStream(custom).pipe(res);
+      return;
+    }
+  }
 
   sendFile(res, filePath, urlPath);
 });

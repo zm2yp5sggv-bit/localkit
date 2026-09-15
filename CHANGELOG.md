@@ -5,6 +5,47 @@
 
 ## [未发布]
 
+### 更正地址形态：无扩展名才是最终地址
+
+#### 更正
+
+- **上一版文档声称「在 Cloudflare Pages 设置里关闭 Pretty URLs」——该设置不存在。**
+  核实结论（官方社区与文档一致）：`/foo.html` → `/foo` 的 308 跳转是**平台硬编码行为，
+  没有配置开关**。一位 Cloudflare MVP 的原话是 "There's no supported way to prevent Pages
+  today from removing the .html file extension"；社区里也有用户专门为此开帖请求开放开关。
+  也就是说，上一轮选定的「保留 .html」方案在该平台上无法实现，
+  而文档把用户引向了一个不存在的入口。
+
+#### 变更
+
+- **地址形态改为「无扩展名即最终地址」**，顺着平台走而不是对抗它。
+  全站 46 处「自身地址」声明统一改为无扩展名形式：
+
+  | 载体 | 数量 |
+  |---|---|
+  | `<link rel="canonical">` | 24（错误页不设） |
+  | `<meta property="og:url">` | 2 |
+  | JSON-LD 里的 `"url"` | 20 |
+  | `sitemap.xml` 的 `<loc>` | 24（含根路径 1 条不变） |
+
+  第一轮迁移只改了 canonical 与 sitemap，漏掉了 og:url 与 JSON-LD——
+  三者是同一份信息的三个载体，漏掉任何一个都等于对搜索引擎给出互相矛盾的页地址。
+  现已在 `check-syntax` 中把三者一起校验，不会再漏。
+- **`scripts/serve.mjs` 复现平台的 URL 行为**，使本地与线上一致：
+  `/foo.html` → 308、`/index.html` → `/`、无扩展名 → 解析到同名 `.html` 文件；
+  未找到时返回 `404.html` 的内容（与关闭 SPA fallback 后的行为一致）。
+- **`scripts/smoke.mjs` 的 `urlform` 组期望值反转**：不再断言「`.html` 应返回 200」
+  （那是基于错误假设），改为断言平台的真实行为——`.html` 308 到无扩展名、无扩展名返回 200。
+  `canonical` 组同步增加了「不得带 `.html`」的断言。
+- 文档同步更正：README 与 CONTRIBUTING 的「地址形态」一节重写，部署清单里删掉了
+  「关闭 Pretty URLs」这一步，并说明为什么不需要也无法配置。
+
+#### 明确保留的取舍
+
+站内链接仍写作 `.html`（如 `href="privacy.html"`），每次点击会多一次 308 跳转。
+之所以不改成无扩展名：那会让「双击 `index.html` 直接打开」失效——`file://` 下不存在
+名为 `privacy` 的文件，而这是本项目已验证并对外说明的能力。取舍已记入 CONTRIBUTING。
+
 ### Node 版本要求收紧到 ≥ 22
 
 #### 变更

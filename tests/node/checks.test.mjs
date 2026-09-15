@@ -264,20 +264,22 @@ test('check-deploy 能察觉 _headers 里误加了 C 风格的 */ 收尾', () =>
  * 这些用例确保这个决定被脚本锁住，而不是只写在文档里。
  * ================================================================== */
 
-test('check-syntax 能查出 sitemap 里写成了无扩展名地址', () => {
+test('check-syntax 能查出 sitemap 里写了带 .html 的地址', () => {
+  // 反过来：带 .html 才是错的。Cloudflare Pages 会把 /foo.html 308 跳到 /foo，
+  // sitemap 应收录最终地址。
   patch('sitemap.xml', s => s.replace(
-    '<loc>https://youngray.asia/tools/hash-calculator.html</loc>',
-    '<loc>https://youngray.asia/tools/hash-calculator</loc>'
+    '<loc>https://youngray.asia/tools/hash-calculator</loc>',
+    '<loc>https://youngray.asia/tools/hash-calculator.html</loc>'
   ));
   const r = run('check-syntax.mjs');
   assert.equal(r.code, 1, '应报错退出\n' + r.out);
-  assert.match(r.out, /映射不到真实文件/, '应指出地址无法映射到文件');
+  assert.match(r.out, /带了 \.html 扩展名/, '应指出应当使用无扩展名地址');
 });
 
 test('check-syntax 能查出 canonical 与本页地址不一致', () => {
   patch('tools/hash-calculator.html', s => s.replace(
-    'href="https://youngray.asia/tools/hash-calculator.html"',
-    'href="https://youngray.asia/tools/sha256.html"'
+    'href="https://youngray.asia/tools/hash-calculator"',
+    'href="https://youngray.asia/tools/sha256"'
   ));
   const r = run('check-syntax.mjs');
   assert.equal(r.code, 1);
@@ -286,17 +288,38 @@ test('check-syntax 能查出 canonical 与本页地址不一致', () => {
 
 test('check-syntax 能查出 canonical 指向站外地址', () => {
   patch('about.html', s => s.replace(
-    'href="https://youngray.asia/about.html"',
-    'href="https://example.com/about.html"'
+    'href="https://youngray.asia/about"',
+    'href="https://example.com/about"'
   ));
   const r = run('check-syntax.mjs');
   assert.equal(r.code, 1);
   assert.match(r.out, /不是本站地址/, '应指出 canonical 不是本站地址');
 });
 
+test('check-syntax 能查出 og:url 与本页地址不一致', () => {
+  // 「本页地址」有三处载体，og:url 是其中之一——迁移时最容易漏掉的一处
+  patch('index.html', s => s.replace(
+    'property="og:url" content="https://youngray.asia/"',
+    'property="og:url" content="https://youngray.asia/home"'
+  ));
+  const r = run('check-syntax.mjs');
+  assert.equal(r.code, 1, '应报错退出\n' + r.out);
+  assert.match(r.out, /og:url 与本页地址不一致/, '应指出 og:url 与页面地址不符');
+});
+
+test('check-syntax 能查出 JSON-LD 的 url 带了 .html', () => {
+  patch('tools/hash-calculator.html', s => s.replace(
+    '"url": "https://youngray.asia/tools/hash-calculator"',
+    '"url": "https://youngray.asia/tools/hash-calculator.html"'
+  ));
+  const r = run('check-syntax.mjs');
+  assert.equal(r.code, 1, '应报错退出\n' + r.out);
+  assert.match(r.out, /JSON-LD url 带了 \.html 扩展名/, '应指出结构化数据用了会跳转的地址');
+});
+
 test('check-syntax 能查出 sitemap 漏收页面', () => {
   patch('sitemap.xml', s => s.replace(
-    '  <url><loc>https://youngray.asia/about.html</loc><changefreq>yearly</changefreq><priority>0.4</priority></url>\n',
+    '  <url><loc>https://youngray.asia/about</loc><changefreq>yearly</changefreq><priority>0.4</priority></url>\n',
     ''
   ));
   const r = run('check-syntax.mjs');
@@ -307,7 +330,7 @@ test('check-syntax 能查出 sitemap 漏收页面', () => {
 test('check-syntax 能查出错误页被写进 sitemap', () => {
   patch('sitemap.xml', s => s.replace(
     '</urlset>',
-    '  <url><loc>https://youngray.asia/404.html</loc></url>\n</urlset>'
+    '  <url><loc>https://youngray.asia/404</loc></url>\n</urlset>'
   ));
   const r = run('check-syntax.mjs');
   assert.equal(r.code, 1);

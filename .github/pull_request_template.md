@@ -23,8 +23,8 @@
 - [ ] 若新增了**要拼进 `innerHTML` 的动态字符串**，已用 `LK.esc()` 包一层
 - [ ] 若**新增了仓库根目录下的开发文件**，已在 `_redirects` 中把它屏蔽
       （否则会被 Cloudflare Pages 当作站点内容公开服务，`check:deploy` 会报错）
-- [ ] 若**新增了页面**，已同步该页的 `<link rel="canonical">` 与 `sitemap.xml`
-      （本项目保留 `.html` 扩展名，写无扩展名地址会被 `check:syntax` 拦下）
+- [ ] 若**新增了页面**，已同步该页的 `canonical`、`og:url`、JSON-LD 的 `url` 与 `sitemap.xml`
+      （本项目最终地址是无扩展名形式，写 `.html` 会被 `check:syntax` 拦下）
 - [ ] 若**升级或新增了第三方库**，已更新 `scripts/vendor.json` 与 `assets/vendor/README.md`
 
 ## 影响范围

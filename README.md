@@ -42,13 +42,16 @@ node scripts/serve.mjs 4173    # 仓库自带的零依赖服务器，会一并�
 
 1. Fork / 克隆本仓库
 2. [Cloudflare Pages](https://pages.dev) → Create → 连接仓库（或直接拖拽上传文件夹）
-3. **关闭「Pretty URLs」**（Settings → Builds & deployments）。理由见下方「地址形态」。
-4. **把 Caching → Configuration → Browser Cache TTL 设为 `Respect Existing Headers`**。
-   理由见下方「为什么必须关掉 Browser Cache TTL」——**这是最容易漏、后果最迷惑的一项。**
-5. 绑定自定义域名，把 `index.html`、`tools/*.html`、`sitemap.xml` 里的 `youngray.asia` 换成你的域名
-6. 建议同时添加 `www` 子域并在 Rules → Redirect Rules 里做 `www` → 根域 301
-7. 确认 **Web Analytics 处于关闭状态**（它会注入 `beacon.min.js`，与「零第三方脚本」冲突）
-8. 赞助渠道在 `assets/config.js` 配置（GitHub 默认；爱发电可选）
+3. **把 Caching → Configuration → Browser Cache TTL 设为「遵循现有标头」**
+   （英文界面 `Respect Existing Headers`）。**这是最容易漏、后果最迷惑的一项**，
+   理由见下方「为什么必须关掉 Browser Cache TTL」。
+4. 绑定自定义域名，把 `index.html`、`tools/*.html`、`sitemap.xml` 里的 `youngray.asia` 换成你的域名
+5. 建议同时添加 `www` 子域并在 Rules → Redirect Rules 里做 `www` → 根域 301
+6. 确认 **Web Analytics 处于关闭状态**（它会注入 `beacon.min.js`，与「零第三方脚本」冲突）
+7. 赞助渠道在 `assets/config.js` 配置（GitHub 默认；爱发电可选）
+
+> 不需要、也**无法**配置「地址形态」：Cloudflare Pages 会把 `.html` 308 跳到无扩展名地址，
+> 这是平台硬编码行为，没有开关。项目顺着它走——canonical 与 sitemap 都写无扩展名形式。
 
 部署完成后跑一次 `npm run smoke` 验证线上状态。
 
@@ -70,18 +73,30 @@ Cloudflare 区域默认的 **Browser Cache TTL（4 小时）会覆盖 `_headers`
 `npm run smoke` 的 `[cache]` 分组专门守着这一点：它从 `_headers` 读取声明值，再和线上实际
 响应头逐一比对，被覆盖时会直接指出这一项与修复位置。
 
-### 地址形态：保留 `.html` 扩展名
+### 地址形态：无扩展名才是最终地址
 
-Cloudflare Pages 的「Pretty URLs」会把 `/foo.html` **308 跳转**到 `/foo`。本项目**关闭**了它，
-选择让 `/foo.html` 直接返回 200，理由有三条：
+Cloudflare Pages 会把 `/foo.html` **308 永久重定向**到 `/foo`。这**不是可配置项**——
+平台硬编码，没有开关（官方社区与文档均已确认）。所以正确的做法不是去关掉它，
+而是顺着它：**把无扩展名地址当作最终地址**，让全站只有一种地址形态。
 
-- 仓库里本来就是 `.html` 文件，全站内部链接也都是 `.html`，关闭后三者天然一致；
-- 开着 Pretty URLs 时，页面的 `canonical` 与 `sitemap.xml` 里写的是 `.html`，
-  而它会跳转到无扩展名地址——等于 canonical 指向了一个「非最终地址」，属自找的 SEO 不一致；
-- 关闭后本地开发服务器（`scripts/serve.mjs`）的行为与线上完全一致，不需要额外模拟跳转。
+因此以下三处**都必须写无扩展名形式**，且必须一致：
 
-代价：已经存在的无扩展名链接（例如外部站点引用了 `/privacy`）会 404。项目刚上线，这个代价可接受。
-`npm run check:syntax` 会强制 canonical 与 sitemap 保持 `.html` 形态——写错了会被 CI 拦下。
+| 载体 | 位置 | 示例 |
+|---|---|---|
+| `canonical` | 各页 `<head>` | `https://youngray.asia/privacy` |
+| `og:url` | 各页 `<head>` | `https://youngray.asia/privacy` |
+| `url` | 各页 JSON-LD | `https://youngray.asia/tools/hash-calculator` |
+| `<loc>` | `sitemap.xml` | `https://youngray.asia/privacy` |
+
+`npm run check:syntax` 会核对全部 46 处载体：地址必须是本站的、必须等于该页自身的最终地址、
+且不得带 `.html`。漏改任何一处都会被 CI 拦下——**这条检查是被漏改教育出来的**：
+第一次迁移只改了 `canonical` 与 sitemap，漏掉了 `og:url` 与 JSON-LD，所以现在三者一起校验。
+
+本地开发服务器（`scripts/serve.mjs`）会复现平台的这三条行为，保证本地与线上一致：
+`.html` → 308、`/index.html` → `/`、无扩展名 → 解析到同名 `.html` 文件。
+
+> 历史说明：上一版文档曾建议「在 Pages 设置里关闭 Pretty URLs」——那是错的，
+> 该设置不存在。已在 CHANGELOG 更正。
 
 ### 404 页面
 
@@ -125,7 +140,7 @@ npm run serve        # 仅启动本地预览服务器
 `npm run smoke` 是唯一会访问线上环境的检查，因此**不在**默认的 `check` 里。
 它分 `pages` / `urlform` / `headers` / `cache` / `thirdparty` / `boundary` / `canonical` 七组，
 可用 `npm run smoke -- --only cache` 只跑其中一组。它的核心价值是探测**仓库看不到的东西**——
-Cloudflare 控制台的设置改动（Browser Cache TTL、Web Analytics、Pretty URLs）没有版本控制，
+Cloudflare 控制台的设置改动（Browser Cache TTL、Web Analytics、SPA fallback）没有版本控制，
 只能靠线上断言发现。
 
 `npm run check` 包含四项：

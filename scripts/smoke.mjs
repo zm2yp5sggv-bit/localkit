@@ -87,24 +87,34 @@ group('pages', async () => {
   }
 });
 
-/* ── 2. URL 形态：.html 必须直接返回 200 ───────────────────────────
- * 本项目明确选择「保留 .html 扩展名」（即关闭 Cloudflare Pages 的 Pretty URLs）。
- * 若该开关仍打开，.html 会 308 跳到无扩展名地址，而页面的 canonical 与 sitemap
- * 写的都是 .html —— 等于 canonical 指向了一个「非最终地址」。
- * 这一组失败时，去 Pages 的 Settings → Builds & deployments 关闭 Pretty URLs。
+/* ── 2. 地址形态：.html 必须跳转，无扩展名才是最终地址 ─────────────
+ * Cloudflare Pages 会把 /foo.html **308 永久重定向**到 /foo，这是平台硬编码行为，
+ * 没有配置开关（社区与官方文档均已确认）。所以正确的做法不是去关它，而是顺着它：
+ * canonical 与 sitemap 都写无扩展名形式，让「最终地址」唯一。
+ * 这一组就是把这个事实固化成断言。
  */
 
 group('urlform', async () => {
-  for (const p of ['/privacy.html', '/tools/hash-calculator.html']) {
-    const r = await probe(p, { follow: false });
-    if (r.status === 200) ok('urlform', `${p} 直接返回 200`, '扩展名形态正确');
-    else if ([301, 302, 303, 307, 308].includes(r.status)) {
-      bad('urlform', `${p} 被 ${r.status} 重定向`,
-        `Location: ${r.headers.get('location') || '(未提供)'}\n` +
-        `        → Pretty URLs 仍处于开启状态。请在 Cloudflare Pages 的\n` +
-        `          Settings → Builds & deployments 中关闭它。`);
+  const cases = [
+    ['/privacy.html', '/privacy'],
+    ['/tools/hash-calculator.html', '/tools/hash-calculator'],
+  ];
+  for (const [html, pretty] of cases) {
+    const a = await probe(html, { follow: false });
+    const loc = a.headers.get('location') || '';
+    if ([301, 302, 303, 307, 308].includes(a.status) && loc.endsWith(pretty)) {
+      ok('urlform', `${html} → ${a.status} ${pretty}`, '平台行为，符合预期');
     } else {
-      bad('urlform', `${p} 返回 ${r.status}`, '期望 200');
+      bad('urlform', `${html} 的重定向行为异常`,
+        `状态 ${a.status}，Location: ${loc || '(无)'}\n` +
+        `        期望：重定向到 ${pretty}`);
+    }
+
+    const b = await probe(pretty, { follow: false });
+    if (b.status === 200 && /text\/html/i.test(b.contentType)) {
+      ok('urlform', `${pretty} 返回 200`, '最终地址可用');
+    } else {
+      bad('urlform', `${pretty} 未返回 200`, `实际 ${b.status} ${b.contentType || '(无 Content-Type)'}`);
     }
   }
 });
@@ -224,13 +234,20 @@ group('boundary', async () => {
 /* ── 7. canonical 主机与地址形态一致 ─────────────────────────────── */
 
 group('canonical', async () => {
-  for (const p of ['/', '/tools/hash-calculator.html']) {
+  for (const p of ['/', '/tools/hash-calculator']) {
     const r = await probe(p, { follow: true });
     const m = r.body.match(/<link[^>]+rel="canonical"[^>]+href="([^"]+)"/i);
     if (!m) { bad('canonical', `${p} 无 canonical`, '取到的页面里找不到 canonical 标签'); continue; }
+
     const expected = SITE + (p === '/' ? '/' : p);
     if (m[1] === expected) ok('canonical', `${p} canonical 正确`, m[1]);
     else bad('canonical', `${p} 的 canonical 与站点不一致`, `期望 ${expected}\n        实际 ${m[1]}`);
+
+    // canonical 必须指向最终地址；带 .html 就意味着指向一个会 308 跳转的中间地址
+    if (/\.html$/.test(m[1])) {
+      bad('canonical', `${p} 的 canonical 带了 .html 扩展名`,
+        `${m[1]}\n        该地址会被 308 跳到无扩展名形式，canonical 应当直接写最终地址。`);
+    }
   }
 });
 

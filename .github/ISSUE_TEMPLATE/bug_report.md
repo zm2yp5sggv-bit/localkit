@@ -24,7 +24,7 @@ labels: bug
 
 - 浏览器与版本：
 - 操作系统：
-- 页面地址（例如 `https://youngray.asia/tools/pdf-to-docx.html`）：
+- 页面地址（例如 `https://youngray.asia/tools/pdf-to-docx`）：
 - 是否在本地运行（`npm run serve` / 直接打开 `index.html`）：
 
 ## 相关文件
