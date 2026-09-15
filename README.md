@@ -143,6 +143,11 @@ npm run serve        # 仅启动本地预览服务器
 Cloudflare 控制台的设置改动（Browser Cache TTL、Web Analytics、SPA fallback）没有版本控制，
 只能靠线上断言发现。
 
+CI 里用的是 `npm run smoke -- --wait 180`。因为该 job 在 push 后几秒就开始，
+而 Cloudflare Pages 通常还没部署完——不加等待预算会把「还没部署」误报成「部署错了」
+（实测遇到过：push 后 12 秒跑冒烟时 `canonical` 组全红，两分钟后再跑全绿）。
+`--wait` 是**有界**的：预算耗尽仍失败即判定为真的不一致，照常失败。
+
 `npm run check` 包含四项：
 
 - `check:i18n` —— 校验中英字典键是否对齐、页面引用的键是否存在、**静态兜底文案是否与字典英文一致**、

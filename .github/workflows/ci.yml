@@ -101,5 +101,10 @@ jobs:
       # 断言线上实际状态与仓库 _headers 的声明一致：缓存策略是否被
       # Cloudflare 的 Browser Cache TTL 覆盖、是否被注入第三方脚本、
       # 安全响应头是否真的下发。
+      #
+      # --wait 180：本 job 在 push 后几秒就开始，而 Cloudflare Pages 通常还没部署完。
+      # 没有这个等待预算，会把「还没部署」误报成「部署错了」——实测遇到过：
+      # push 后 12 秒跑冒烟时 canonical 组全红，两分钟后再跑全绿。
+      # 预算耗尽仍失败 = 真的不一致，照常失败（不是掩盖问题）。
       - name: 冒烟检查
-        run: npm run smoke
+        run: npm run smoke -- --wait 180

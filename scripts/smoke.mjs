@@ -13,14 +13,15 @@
  * 这两类问题都是在控制台改出来的，没有版本控制，因此必须定期探测。
  *
  * 用法：
- *   node scripts/smoke.mjs                 全量检查
- *   node scripts/smoke.mjs --only cache    只跑某一组（可用组名见末尾提示）
+ *   node scripts/smoke.mjs                      全量检查
+ *   node scripts/smoke.mjs --only cache         只跑某一组（可用组名见末尾提示）
+ *   node scripts/smoke.mjs --wait 180           等待部署收敛，最多 180 秒（CI 用）
  *
  * 环境变量：
  *   LK_SITE  站点根地址，默认 https://youngray.asia
  *   LK_ROOT  仓库根目录，默认脚本上一级（用于读取 _headers 的声明值）
  *
- * 退出码：0 = 全部通过，1 = 有失败项
+ * 退出码：0 = 全部通过，1 = 有失败项（用了 --wait 则是预算耗尽后仍失败）
  */
 
 import fs from 'node:fs';
@@ -36,17 +37,23 @@ const SITE_HOST = new URL(SITE).host;
 const onlyArg = process.argv.indexOf('--only');
 const ONLY = onlyArg !== -1 ? process.argv[onlyArg + 1] : null;
 
+// --wait <秒>：等待部署收敛的预算。CI 在 push 后几秒就跑，Cloudflare 常还没部署完，
+// 没有这个预算会把「还没部署」误报成「部署错了」。预算耗尽仍失败即判定为真实不一致。
+const waitArg = process.argv.indexOf('--wait');
+const waitBudget = waitArg !== -1 ? (Number(process.argv[waitArg + 1]) || 0) : 0;
+
 const failures = [];
 let checks = 0;
+const output = [];
 
 const ok = (group, name, detail) => {
   checks++;
-  console.log(`  ✓ [${group}] ${name}${detail ? '  — ' + detail : ''}`);
+  output.push(`  ✓ [${group}] ${name}${detail ? '  — ' + detail : ''}`);
 };
 const bad = (group, name, detail) => {
   checks++;
   failures.push({ group, name });
-  console.log(`  ✗ [${group}] ${name}\n        ${String(detail).split('\n').join('\n        ')}`);
+  output.push(`  ✗ [${group}] ${name}\n        ${String(detail).split('\n').join('\n        ')}`);
 };
 
 /**
@@ -253,12 +260,6 @@ group('canonical', async () => {
 
 /* ── 执行 ─────────────────────────────────────────────────────────── */
 
-console.log('生产站点冒烟检查');
-console.log('─'.repeat(72));
-console.log(`目标站点 : ${SITE}`);
-console.log(`声明来源 : ${path.join(ROOT, '_headers')}`);
-console.log('─'.repeat(72));
-
 const ALL_GROUPS = ['pages', 'urlform', 'headers', 'cache', 'thirdparty', 'boundary', 'canonical'];
 
 if (!groups.length) {
@@ -267,18 +268,57 @@ if (!groups.length) {
   process.exit(1);
 }
 
-for (const g of groups) {
-  console.log(`\n[${g.name}]`);
-  try { await g.fn(); }
-  catch (e) { bad(g.name, '分组执行异常', e.message + '\n' + (e.stack || '').split('\n').slice(1, 3).join('\n')); }
+/** 跑一遍全部分组，把格式化结果写进 output[]。 */
+async function sweep() {
+  failures.length = 0;
+  checks = 0;
+  output.length = 0;
+  for (const g of groups) {
+    output.push(`\n[${g.name}]`);
+    try { await g.fn(); }
+    catch (e) {
+      bad(g.name, '分组执行异常', e.message + '\n' + (e.stack || '').split('\n').slice(1, 3).join('\n'));
+    }
+  }
+  return failures.length;
 }
 
+console.log('生产站点冒烟检查');
+console.log('─'.repeat(72));
+console.log(`目标站点 : ${SITE}`);
+console.log(`声明来源 : ${path.join(ROOT, '_headers')}`);
+if (waitBudget > 0) console.log(`等待预算 : ${waitBudget}s（用于等部署完成，每 15s 重试一次）`);
+console.log('─'.repeat(72));
+
+/* 为什么需要等待：本检查断言的是**已部署**状态，而 CI 在 push 后几秒就开始跑，
+ * Cloudflare Pages 往往还没部署完——于是一次「还没部署」被误报成「部署错了」。
+ * 实测遇到过一次：push 后 12 秒跑冒烟，canonical 组全红；两分钟后再跑全绿。
+ * 因此这里给一个**有界**的等待预算：反复重试直到通过或预算耗尽。
+ * 预算耗尽仍失败 = 真的不一致，照常失败——不是把问题掩盖掉。 */
+const deadline = Date.now() + waitBudget * 1000;
+let attempt = 0;
+let failed;   // 循环体至少执行一次，因此无需初值
+
+for (;;) {
+  attempt++;
+  failed = await sweep();
+  if (failed === 0 || Date.now() >= deadline) break;
+  const left = Math.round((deadline - Date.now()) / 1000);
+  if (left <= 0) break;
+  process.stdout.write(`\n第 ${attempt} 次未通过（${failed} 项），等 15s 后重试（剩余预算约 ${left}s）…\n`);
+  await new Promise((r) => setTimeout(r, 15_000));
+}
+
+if (waitBudget > 0 && attempt > 1) console.log(`\n（共尝试 ${attempt} 次）`);
+console.log(output.join('\n'));
+
 console.log('\n' + '─'.repeat(72));
-if (failures.length) {
-  console.log(`失败 ${failures.length} / ${checks} 项`);
+if (failed) {
+  console.log(`失败 ${failed} / ${checks} 项`);
   for (const f of failures) console.log(`  ✗ [${f.group}] ${f.name}`);
+  if (waitBudget > 0) console.log(`（已用满 ${waitBudget}s 等待预算，判定为真实不一致）`);
 } else {
   console.log(`全部通过（${checks} 项）`);
 }
 console.log('');
-process.exit(failures.length ? 1 : 0);
+process.exit(failed ? 1 : 0);
