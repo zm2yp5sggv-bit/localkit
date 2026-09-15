@@ -22,7 +22,9 @@ jobs:
       matrix:
         # 版本矩阵的作用不只是兼容性——Playwright 1.47.2 曾在 Node 24 下启动即挂起，
         # 而这类问题只有真的在多个 Node 版本上跑过才会暴露。
-        node: ['20', '22', '24']
+        # 不含 Node 20：它已于 2026-04-30 EOL，官方不再提供安全修复，
+        # 且 node --test 的 glob 参数要 Node 21+ 才支持。
+        node: ['22', '24']
     steps:
       - uses: actions/checkout@v4
 

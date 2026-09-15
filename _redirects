@@ -26,6 +26,7 @@
 /package-lock.json     /  301
 /playwright.config.js  /  301
 /eslint.config.js      /  301
+/.npmrc                /  301
 /.editorconfig         /  301
 /.gitattributes        /  301
 /.gitignore            /  301
