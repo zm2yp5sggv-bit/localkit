@@ -139,6 +139,111 @@ test.describe('文本对比', () => {
     expect(r.added).toBe(0);
     expect(r.removed).toBe(0);
   });
+
+  /* ------------------------------------------------------------------ *
+   * 正确性不变量：把差异应用回原文，必须还原出修改后的文本。
+   *
+   * 这比逐个断言某行是 + 还是 − 更强，而且**与具体算法无关**——任何最小差异
+   * 算法（现有的全表 LCS、将来的线性空间实现）都必须满足它。因此它是后续
+   * 更换算法时的安全网：输出形状可以变，这个不变量不能破。
+   * ------------------------------------------------------------------ */
+  test('差异可还原出两侧原文（最小差异的核心不变量）', async ({ page }) => {
+    await page.goto('/tools/text-diff.html');
+
+    const cases = [
+      ['a\nb\nc', 'a\nB\nc'],                                   // 单行修改
+      ['a\nb\nc', 'a\nb\nc\nd'],                                // 纯追加
+      ['a\nb\nc\nd', 'a\nd'],                                   // 纯删除
+      ['x\ny\nx\ny\nz', 'y\nx\ny\nz\nx'],                       // 重复行（最能考验打破平局的选择）
+      ['a\nb\nc\nd\ne', 'e\nd\nc\nb\na'],                       // 完全逆序
+      ['same\nsame\nsame', 'same\nother\nsame'],                // 相同行夹杂
+      ['', 'only-right'],                                       // 左空
+      ['only-left', ''],                                        // 右空
+    ];
+
+    for (const [a, b] of cases) {
+      const r = await page.evaluate(({ a, b }) => {
+        window.__lkDiff(a, b);
+        // 从渲染结果读回差异：去掉行首的符号 span，只留正文
+        const lines = [...document.querySelectorAll('#output .diff-line')].map((el) => {
+          const clone = el.cloneNode(true);
+          const sign = clone.querySelector('.sign');
+          if (sign) sign.remove();
+          const kind = el.classList.contains('add') ? '+'
+            : el.classList.contains('del') ? '-' : '=';
+          return { kind, text: clone.textContent };
+        });
+        return {
+          fromA: lines.filter((l) => l.kind !== '+').map((l) => l.text).join('\n'),
+          fromB: lines.filter((l) => l.kind !== '-').map((l) => l.text).join('\n'),
+          equal: lines.filter((l) => l.kind === '=').length,
+        };
+      }, { a, b });
+
+      const label = `A=${JSON.stringify(a)} B=${JSON.stringify(b)}`;
+      expect(r.fromA, `保留侧应还原原文 — ${label}`).toBe(a);
+      expect(r.fromB, `新增侧应还原修改文本 — ${label}`).toBe(b);
+      // 未变行数不能超过较短一侧的长度（LCS 的上界）
+      expect(r.equal, `未变行数超出上界 — ${label}`)
+        .toBeLessThanOrEqual(Math.min(a.split('\n').length, b.split('\n').length));
+    }
+  });
+
+  /* ------------------------------------------------------------------ *
+   * 规模上限：按「计算量」而不是「行数」限制
+   * ------------------------------------------------------------------ */
+
+  test('超限输入会先清掉上一次的结果（回归）', async ({ page }) => {
+    await page.goto('/tools/text-diff.html');
+
+    const r = await page.evaluate(() => {
+      // 先跑一次正常对比，制造出「上一次的结果」
+      window.__lkDiff('a\nb\nc', 'a\nB\nc');
+      const before = {
+        lines: document.querySelectorAll('#output .diff-line').length,
+        stats: document.querySelector('#stats').textContent,
+      };
+
+      // 再喂一个必然超限的输入（6000×6000 = 3600 万格 > 2500 万上限）
+      const big = Array.from({ length: 6000 }, (_, i) => 'line ' + i).join('\n');
+      window.__lkDiff(big, big + '\nextra');
+
+      return {
+        before,
+        afterLines: document.querySelectorAll('#output .diff-line').length,
+        afterStats: document.querySelector('#stats').textContent,
+        afterStatus: (document.querySelector('.status') || {}).textContent || '',
+        outputHidden: document.querySelector('#output').hidden,
+      };
+    });
+
+    // 前置条件：确实先产生过结果，否则这个回归用例什么都没测到
+    expect(r.before.lines, '前置条件：应已产生结果').toBeGreaterThan(0);
+    expect(r.before.stats.length).toBeGreaterThan(0);
+
+    // 超限后必须清空——否则旧结果留在屏幕上，看起来像本次输入算出来的
+    expect(r.afterLines, '超限后不应残留差异行').toBe(0);
+    expect(r.afterStats, '超限后不应残留统计').toBe('');
+    expect(r.outputHidden, '超限后结果区应隐藏').toBe(true);
+    expect(r.afterStatus.length, '应给出超限提示').toBeGreaterThan(0);
+  });
+
+  test('不对称输入不再被「行数」规则误拒', async ({ page }) => {
+    await page.goto('/tools/text-diff.html');
+    // 6000 行 vs 10 行：计算量只有 6 万格，很便宜；
+    // 旧规则按「任一侧 > 5000 行」拒绝，属于规则与真实代价不匹配。
+    const r = await page.evaluate(() => {
+      const left = Array.from({ length: 6000 }, (_, i) => 'line ' + i).join('\n');
+      const right = Array.from({ length: 10 }, (_, i) => 'line ' + i).join('\n');
+      window.__lkDiff(left, right);
+      return {
+        lines: document.querySelectorAll('#output .diff-line').length,
+        stats: document.querySelector('#stats').textContent,
+      };
+    });
+    expect(r.lines, '这种输入应当能算出结果').toBeGreaterThan(0);
+    expect(r.stats.length).toBeGreaterThan(0);
+  });
 });
 
 test.describe('文本统计（中日韩感知）', () => {

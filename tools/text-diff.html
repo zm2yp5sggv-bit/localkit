@@ -130,13 +130,31 @@
     'use strict';
     const { el, setStatus } = window.LK;
     const t = (k, v) => window.LKI.t(k, v);
-    const MAX_LINES = 5000;
+    /* 规模上限——按「计算量」而不是「行数」限制。
+     *
+     * 原来的规则是「任一侧超过 5000 行就拒绝」，但 LCS 的代价是 n×m 而不是 max(n,m)：
+     * 「5001 行 vs 5 行」几乎不花钱却会被拒，规则和真实代价对不上。
+     * 实测（Chromium，本机）：5000×5000 这一最坏情况约 419ms、堆增量约 98MB，
+     * 据此把上限定在 2500 万格。
+     */
+    const MAX_CELLS = 25e6;
+    /** 单侧行数上限：这一条与计算量无关，卡的是输出规模（每行要渲染一个 DOM 节点）。 */
+    const MAX_LINES = 20000;
+
+    function clearResult() {
+      const out = el('output');
+      out.hidden = true;
+      out.innerHTML = '';
+      el('stats').textContent = '';
+    }
 
     function diffLines(A, B) {
       const n = A.length, m = B.length;
-      // LCS DP table, walked backwards — Uint32 keeps counts safe, rows are typed arrays
+      // LCS DP table, walked backwards. 用 Uint16 而非 Uint32 存长度：
+      // 值不会超过 min(n,m)，而在 MAX_CELLS 约束下 min(n,m) ≤ 5000
+      // （n×m ≤ 2500 万，n=m 时取最大），远小于 65535，不会溢出。内存占用直接减半。
       const dp = new Array(n + 1);
-      for (let i = 0; i <= n; i++) dp[i] = new Uint32Array(m + 1);
+      for (let i = 0; i <= n; i++) dp[i] = new Uint16Array(m + 1);
       for (let i = n - 1; i >= 0; i--) {
         for (let j = m - 1; j >= 0; j--) {
           dp[i][j] = A[i] === B[j] ? dp[i + 1][j + 1] + 1 : Math.max(dp[i + 1][j], dp[i][j + 1]);
@@ -162,13 +180,16 @@
     function compare() {
       const a = el('left').value, b = el('right').value;
       if (a === b) {
-        el('output').hidden = true; el('stats').textContent = '';
+        clearResult();
         setStatus(t('td.same'), 'ok');
         return;
       }
       const A = a.split('\n'), B = b.split('\n');
-      if (A.length > MAX_LINES || B.length > MAX_LINES) {
-        setStatus(t('td.toolarge', { n: MAX_LINES }), 'err');
+      if (A.length > MAX_LINES || B.length > MAX_LINES || A.length * B.length > MAX_CELLS) {
+        // 必须先清掉上一次的结果。否则旧的行内差异与统计会留在屏幕上，
+        // 看起来就像本次输入算出来的——实测边界测试正是这样被误导的。
+        clearResult();
+        setStatus(t('td.toolarge', { lines: MAX_LINES, cells: MAX_CELLS.toLocaleString() }), 'err');
         return;
       }
       const lines = diffLines(A, B);
@@ -194,8 +215,7 @@
     });
     el('clearBtn').addEventListener('click', () => {
       el('left').value = ''; el('right').value = '';
-      el('output').hidden = true; el('output').innerHTML = '';
-      el('stats').textContent = ''; setStatus('');
+      clearResult(); setStatus('');
     });
 
     // test hook
