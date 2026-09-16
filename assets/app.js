@@ -4,6 +4,16 @@
 (function () {
   'use strict';
 
+  /**
+   * 浏览器 canvas 的单边硬上限。
+   *
+   * 超过它的 canvas **不会抛错**，但 drawImage 会静默变成空操作：
+   * 实测 16384 可用；16385 起 fillRect 不报任何错、而 getImageData 读回全透明。
+   * 所以必须在这里兜住——否则工具会「成功地」交出一张全透明空白图，
+   * 用户拿到的是坏文件却全程看不到任何报错。
+   */
+  const MAX_CANVAS_SIDE = 16384;
+
   window.LK = {
     el(id) { return document.getElementById(id); },
 
@@ -63,12 +73,17 @@
     /** Decode an image file to a bitmap, downscaling if maxDim is set. */
     async decodeImage(file, maxDim) {
       const bitmap = await createImageBitmap(file);
-      const scale = maxDim && Math.max(bitmap.width, bitmap.height) > maxDim
-        ? maxDim / Math.max(bitmap.width, bitmap.height) : 1;
+      const longest = Math.max(bitmap.width, bitmap.height);
+      // 用户指定的 maxDim 与平台硬上限取更小者。调用方通常传 0 表示「不限制」，
+      // 但平台上限不是可选项——不兜住就会静默产出空白图（见 MAX_CANVAS_SIDE 的说明）。
+      const limit = Math.min(maxDim || Infinity, MAX_CANVAS_SIDE);
+      const scale = limit < longest ? limit / longest : 1;
       return {
         bitmap,
         width: Math.max(1, Math.round(bitmap.width * scale)),
         height: Math.max(1, Math.round(bitmap.height * scale)),
+        /** 是否因超出上限而被缩小——供界面提示，避免让用户以为尺寸没变。 */
+        clamped: scale < 1,
       };
     },
 

@@ -13,6 +13,7 @@
       'nav.tools': 'Tools', 'nav.about': 'About', 'nav.privacy': 'Privacy',
       'footer.line': '© 2026 LocalKit · Made for privacy',
       'footer.privacy': 'Privacy Policy',
+      'common.downscaled': 'downscaled to fit the browser limit',
 
       'nf.title': 'Page Not Found — LocalKit',
       'nf.h1': '404 — Page not found',
@@ -585,6 +586,7 @@
       'nav.tools': '工具', 'nav.about': '关于', 'nav.privacy': '隐私政策',
       'footer.line': '© 2026 LocalKit · 为隐私而生',
       'footer.privacy': '隐私政策',
+      'common.downscaled': '超出浏览器上限，已缩小',
 
       'nf.title': '页面不存在 — LocalKit',
       'nf.h1': '404 — 页面不存在',

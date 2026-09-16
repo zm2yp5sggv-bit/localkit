@@ -381,6 +381,12 @@ out('sample-wide.png', makePng(320, 200));
 out('sample.gif', makeGif1x1());
 out('sample.bmp', makeBmp24(8, 8, [0x4f, 0x46, 0xe5]));
 
+// 单边超过浏览器 canvas 硬上限（16384）的图。
+// 用途：验证 decodeImage 会把尺寸兜回上限内——否则 drawImage 会静默变成空操作，
+// 工具「成功」交出的是一张全透明空白图，全程不报任何错。
+// 无压缩 PNG 编码器可以直接写出这个尺寸，浏览器也能解码；用 canvas 反而造不出来。
+out('sample-huge.png', makePng(20000, 64));
+
 out('sample.pdf', textPdf([
   ['LocalKit sample PDF — page one.', 'The quick brown fox jumps over the lazy dog.'],
   ['LocalKit sample PDF — page two.', 'Second page content for split and merge tests.'],

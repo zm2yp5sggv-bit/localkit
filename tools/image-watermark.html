@@ -208,7 +208,7 @@
     }
 
     async function processOne(file) {
-      const { bitmap, width, height } = await decodeImage(file, 0);
+      const { bitmap, width, height, clamped } = await decodeImage(file, 0);
       const canvas = document.createElement('canvas');
       canvas.width = width; canvas.height = height;
       const ctx = canvas.getContext('2d');
@@ -220,7 +220,7 @@
       const ext = type === 'image/jpeg' ? 'jpg' : (type === 'image/webp' ? 'webp' : 'png');
       const blob = await canvasToBlob(canvas, type, 0.92);
       const base = file.name.replace(/\.[^.]+$/, '');
-      return { blob, outName: base + '-wm.' + ext, outSize: blob.size, inSize: file.size };
+      return { blob, outName: base + '-wm.' + ext, clamped, outSize: blob.size, inSize: file.size };
     }
 
     const produced = [];
@@ -245,6 +245,7 @@
           item.insertAdjacentHTML('beforeend',
             '<span class="name">' + esc(r.outName) + '</span>' +
             '<span class="meta">' + formatBytes(r.inSize) + ' → ' + formatBytes(r.outSize) + '</span>' +
+            (r.clamped ? '<span class="meta clamped">' + t('common.downscaled') + '</span>' : '') +
             '<span class="spacer"></span>' +
             '<button class="small ghost">' + t('wm.dl') + '</button>');
           item.querySelector('button').addEventListener('click', () => downloadBlob(r.blob, r.outName));
@@ -275,6 +276,10 @@
       el('wmText').value = '© LocalKit';
       el('runBtn').disabled = false;
       el('runBtn').click();
+      // 必须等到处理真正结束再返回，否则调用方无从判断「何时算完」。
+      // 其余文件型工具的钩子都是这个形态，这里此前是发后不管的。
+      while (el('runBtn').disabled) await new Promise(r => setTimeout(r, 100));
+      return produced.length;
     };
   })();
   </script>

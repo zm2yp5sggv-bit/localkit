@@ -178,7 +178,7 @@
       const q = parseInt(el('quality').value, 10) / 100;
       const maxDim = parseInt(el('maxDim').value, 10) || 0;
 
-      const { bitmap, width, height } = await decodeImage(file, maxDim);
+      const { bitmap, width, height, clamped } = await decodeImage(file, maxDim);
       const canvas = document.createElement('canvas');
       canvas.width = width; canvas.height = height;
       canvas.getContext('2d').drawImage(bitmap, 0, 0, width, height);
@@ -188,7 +188,7 @@
       const base = file.name.replace(/\.[^.]+$/, '');
       // ENCODABLE[outType] 一定命中，所以这里没有、也不该有兜底值
       const outName = base + (outType === inType ? '-min' : '') + '.' + ENCODABLE[outType];
-      return { blob, outName, outType, substituted, inType, outSize: blob.size, inSize: file.size };
+      return { blob, outName, outType, substituted, clamped, inType, outSize: blob.size, inSize: file.size };
     }
 
     const produced = [];
@@ -210,6 +210,7 @@
             '<span class="name">' + esc(r.outName) + '</span>' +
             '<span class="meta">' + formatBytes(r.inSize) + ' → ' + formatBytes(r.outSize) + '</span>' +
             (r.substituted ? '<span class="meta subst">' + t('ci.subst') + '</span>' : '') +
+            (r.clamped ? '<span class="meta clamped">' + t('common.downscaled') + '</span>' : '') +
             '<span class="spacer"></span>' +
             (saved > 0 ? '<span class="saved">−' + saved + '%</span>' : '<span class="meta">' + t('ci.nogain') + '</span>') +
             '<button class="small ghost">' + t('ci.dl') + '</button>';

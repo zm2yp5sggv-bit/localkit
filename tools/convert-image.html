@@ -163,7 +163,7 @@
       const q = parseInt(el('quality').value, 10) / 100;
       const maxDim = parseInt(el('maxDim').value, 10) || 0;
 
-      const { bitmap, width, height } = await decodeImage(file, maxDim);
+      const { bitmap, width, height, clamped } = await decodeImage(file, maxDim);
       const canvas = document.createElement('canvas');
       canvas.width = width; canvas.height = height;
       const ctx = canvas.getContext('2d');
@@ -174,7 +174,7 @@
       const blob = await canvasToBlob(canvas, type, q);
 
       const base = file.name.replace(/\.[^.]+$/, '');
-      return { blob, outName: base + '.' + extFor[type], outSize: blob.size, inSize: file.size };
+      return { blob, outName: base + '.' + extFor[type], clamped, outSize: blob.size, inSize: file.size };
     }
 
     const produced = [];
@@ -195,6 +195,7 @@
           item.innerHTML =
             '<span class="name">' + esc(r.outName) + '</span>' +
             '<span class="meta">' + formatBytes(r.inSize) + ' → ' + formatBytes(r.outSize) + '</span>' +
+            (r.clamped ? '<span class="meta clamped">' + t('common.downscaled') + '</span>' : '') +
             '<span class="spacer"></span>' +
             (delta < 0 ? '<span class="saved">−' + (-delta) + '%</span>' : '<span class="meta">+' + delta + '%</span>') +
             '<button class="small ghost">' + t('cv.dl') + '</button>';

@@ -281,3 +281,74 @@ test.describe('DOCX 转 PDF', () => {
     expect(pages, '至少转换出 1 页').toBeGreaterThanOrEqual(1);
   });
 });
+
+/* ------------------------------------------------------------------ *
+ * 超大图片：canvas 单边硬上限的兜底
+ *
+ * 浏览器 canvas 单边超过 16384 时**不会抛错**，但 drawImage 会静默变成空操作
+ * （实测：16384 可用，16385 起 fillRect 不报错、getImageData 读回全透明）。
+ * 若不做兜底，工具会「成功地」交出一张全透明空白图，而用户看不到任何报错——
+ * 这是最难被发现的一类缺陷：产物是坏的，但全链路都显示成功。
+ *
+ * 夹具 sample-huge.png 是 20000×64：单边超限，且用 canvas 造不出来，
+ * 只能用 PNG 编码器直接写（见 make-fixtures.mjs）。
+ * ------------------------------------------------------------------ */
+
+test.describe('超大图片 · canvas 上限兜底', () => {
+  test('decodeImage 会把超限图缩回上限内，且绘制真的生效', async ({ page }) => {
+    await page.goto('/tools/compress-image.html');
+    const { base64 } = readFixture('sample-huge.png');
+
+    // 注意：不能把回调序列化后再 new Function 执行——站点 CSP 不含 'unsafe-eval'，
+    // 那样会直接被策略拦下。逻辑必须内联在 evaluate 里。
+    const r = await page.evaluate(async (b64) => {
+      const bin = atob(b64);
+      const arr = new Uint8Array(bin.length);
+      for (let i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
+      const file = new File([arr], 'sample-huge.png', { type: 'image/png' });
+
+      const { bitmap, width, height, clamped } = await window.LK.decodeImage(file, 0);
+      const canvas = document.createElement('canvas');
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(bitmap, 0, 0, width, height);
+      bitmap.close();
+      // 关键断言：读回一个像素，确认绘制没有变成空操作
+      const px = ctx.getImageData(1, 1, 1, 1).data;
+      return { width, height, clamped, alpha: px[3], rgb: [px[0], px[1], px[2]] };
+    }, base64);
+
+    expect(r.clamped, '超限图必须被标记为已缩小').toBe(true);
+    expect(Math.max(r.width, r.height), '最长边必须回到 16384 以内').toBeLessThanOrEqual(16384);
+    expect(r.width, '应保持原始宽高比（20000:64 → 16384:52）').toBe(16384);
+    expect(r.alpha, '绘制必须真的生效——为 0 就说明产出的是空白图').toBe(255);
+    expect(r.rgb.some((v) => v > 0), '像素不应全黑/全透明').toBe(true);
+  });
+
+  test('压缩超限图后界面会说明「已缩小」', async ({ page }) => {
+    await page.goto('/tools/compress-image.html');
+
+    const n = await callHookWithFile(page, '__lkProcess', 'sample-huge.png', 'image/png');
+    expect(n).toBe(1);
+
+    const outName = await page.locator('#results .name').first().textContent();
+    expect(outName, '产出名应仍是正常扩展名').toMatch(/\.png$/);
+    await expect(page.locator('#results .clamped'), '应显示「已缩小」说明').toHaveCount(1);
+  });
+
+  test('未超限的图不会显示「已缩小」（防止提示条件写反）', async ({ page }) => {
+    await page.goto('/tools/compress-image.html');
+    const n = await callHookWithFile(page, '__lkProcess', 'sample.png', 'image/png');
+    expect(n).toBe(1);
+    await expect(page.locator('#results .clamped')).toHaveCount(0);
+  });
+
+  test('加水印：曾无条件传 maxDim=0，也必须被兜住', async ({ page }) => {
+    await page.goto('/tools/image-watermark.html');
+    // 这个工具此前写死 decodeImage(file, 0)，即完全不做限制——是最容易被超限图击穿的一个
+    const n = await callHookWithFile(page, '__lkProcess', 'sample-huge.png', 'image/png');
+    expect(n).toBe(1);
+    await expect(page.locator('#results .clamped')).toHaveCount(1);
+  });
+});
